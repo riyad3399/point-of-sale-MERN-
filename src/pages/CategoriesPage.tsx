@@ -18,10 +18,10 @@ const CategoriesPage: React.FC = () => {
   };
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     axios.get("http://localhost:3000/category").then((res) => {
       setCategories(res.data);
-      setLoading(false)
+      setLoading(false);
     });
   }, [activeTab]);
 
@@ -89,14 +89,15 @@ const CategoriesPage: React.FC = () => {
                   {loading ? (
                     <Loading />
                   ) : (
-                    categories.map((product) => (
+                    categories.length > 0 &&
+                    categories?.map((product) => (
                       <ShowCategories
                         product={product}
-                        key={product.categoryId}
+                        setCategories={setCategories}
+                        key={product._id}
                       />
                     ))
                   )}
-                  
                 </table>
               </div>
               <tbody className="flex justify-center">

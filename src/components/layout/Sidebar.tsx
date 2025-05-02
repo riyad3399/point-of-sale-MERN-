@@ -31,17 +31,27 @@ const Sidebar: React.FC = () => {
           <SidebarLink to="/" icon={<LayoutDashboard />} text="Dashboard" />
           <SidebarLink
             to="/categories"
-            icon={<MdCategory size={26}/>}
+            icon={<MdCategory size={26} />}
             text="Categories"
           />
-          <SidebarLink to="/productes" icon={<BiLogoProductHunt size={26}/>} text="Productes" />
-          <SidebarLink to="/pos" icon={<ShoppingCart />} text="Point of Sale" />
+          <SidebarLink
+            to="/productes"
+            icon={<BiLogoProductHunt size={26} />}
+            text="Productes"
+          />
+          <SidebarLink
+            to="/retailSale"
+            icon={<ShoppingCart />}
+            text="Retail Sale"
+          />
+          <SidebarLink to="/pos" icon={<ShoppingCart />} text="Whole Sale" />
           <SidebarLink to="/inventory" icon={<Package />} text="Inventory" />
           <SidebarLink
             to="/transactions"
             icon={<FileText />}
             text="Transactions"
           />
+          <SidebarLink to="/customers" icon={<FileText />} text="Customers" />
           <SidebarLink to="/settings" icon={<Settings />} text="Settings" />
         </div>
       </nav>

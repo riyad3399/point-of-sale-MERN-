@@ -102,7 +102,7 @@ const ProductesPage: React.FC = () => {
                         </td>
                       </tr>
                     ) : (
-                      allProduct.map((product) => (
+                      allProduct?.map((product) => (
                         <ShowProduct product={product} key={product._id} setAllProduct={ setAllProduct}  />
                       ))
                     )}

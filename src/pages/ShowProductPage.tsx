@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 const ShowProductPage: React.FC = () => {
   const location = useLocation();
   const { singleProduct } = location.state || {};
- 
+
   const fields = [
     { label: "Product Code", value: singleProduct?.productCode },
     { label: "Brand", value: singleProduct?.brand },
@@ -21,11 +21,12 @@ const ShowProductPage: React.FC = () => {
       label: "Retail Price",
       value: `$${singleProduct?.retailPrice.toFixed(2)}`,
     },
+    {
+      label: "Whole Sale Price",
+      value: `$${singleProduct?.wholesalePrice.toFixed(2)}`,
+    },
     { label: "Quantity", value: `${singleProduct?.quantity} PC` },
-    // {
-    //   label: "Stock Worth",
-    //   value: `COST: $${stockWorth.costWorth} / PRICE: $${stockWorth.priceWorth}`,
-    // },
+
     { label: "Alert Quantity", value: singleProduct?.alertQuantity.toString() },
     { label: "Tax (%)", value: singleProduct?.tax },
     { label: "Tax Type", value: singleProduct?.taxType },

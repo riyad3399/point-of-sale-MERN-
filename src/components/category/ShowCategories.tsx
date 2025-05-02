@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Trash } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
+import CategoryUpdateModal from "./CategoryUpdateModal";
 
 interface Category {
   categoryId: number;
@@ -20,8 +22,47 @@ const buttonVariants = {
   tap: { scale: 0.9 },
 };
 
-const ShowCategories: React.FC<ShowCategoriesProps> = ({ product }) => {
+const ShowCategories: React.FC<ShowCategoriesProps> = ({
+  product,
+  setCategories,
+}) => {
   const [asignItem, setAsingItem] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+
+
+ const handleDeleteCategory = async (id: string) => {
+   const result = await Swal.fire({
+     title: "Are you sure?",
+     text: "You won't be able to revert this!",
+     icon: "warning",
+     showCancelButton: true,
+     confirmButtonColor: "#3085d6",
+     cancelButtonColor: "#d33",
+     confirmButtonText: "Yes, delete it!",
+   });
+
+   if (result.isConfirmed) {
+     try {
+       await axios.delete(`http://localhost:3000/category/${id}`);
+
+       setCategories((prev) => prev.filter((cat) => cat._id !== id));
+
+       Swal.fire({
+         title: "Deleted!",
+         text: "Your category has been deleted.",
+         icon: "success",
+       });
+     } catch (err) {
+       console.error(err);
+       Swal.fire({
+         title: "Error!",
+         text: "Failed to delete the category.",
+         icon: "error",
+       });
+     }
+   }
+ };
+
 
   useEffect(() => {
     axios
@@ -31,7 +72,6 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({ product }) => {
         const filterData = data.filter(
           (d) => d.category === product.categoryName
         );
-        console.log(filterData);
         setAsingItem(filterData);
       })
       .catch((err) => console.log(err));
@@ -48,27 +88,41 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({ product }) => {
       <td className="px-4 py-2 border text-left">{product?.categoryName}</td>
       <td className="px-4 py-2 border text-left">{asignItem.length}</td>
       <td className="px-4 py-2 border text-left">{product?.status}</td>
-      <td className="px-4 py-2 border text-center space-x-3">
-        <motion.button
-          variants={buttonVariants}
-          initial="initial"
-          whileHover="hover"
-          whileTap="tap"
-          className="text-gray-600 hover:text-green-500"
-          title="Edit"
-        >
-          <FaRegEdit size={22} />
-        </motion.button>
-        <motion.button
-          variants={buttonVariants}
-          initial="initial"
-          whileHover="hover"
-          whileTap="tap"
-          className="text-gray-600 hover:text-red-500"
-          title="Delete"
-        >
-          <Trash size={22} />
-        </motion.button>
+      <td className="px-4 py-2 border text-center">
+        <div className="flex justify-center items-center gap-3">
+          <div>
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-green-500"
+              title="Edit"
+              onClick={() => setModalOpen(true)}
+            >
+              <FaRegEdit size={22} />
+            </motion.button>
+            <CategoryUpdateModal
+              open={modalOpen}
+              product={product}
+              setCategories={setCategories}
+              onClose={() => setModalOpen(false)}
+            />
+          </div>
+          <div>
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-red-500"
+              title="Delete"
+              onClick={() => handleDeleteCategory(product?._id)}
+            >
+              <Trash size={22} />
+            </motion.button>
+          </div>
+        </div>
       </td>
     </motion.tr>
   );

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Trash, View } from "lucide-react";
 import { FaRegEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal";
-import Add from "./Add";
 import axios from "axios";
 import Swal from "sweetalert2";
 import UpdateProduct from "./UpdateProduct";
@@ -18,7 +17,6 @@ const buttonVariants = {
 const ShowProduct: React.FC = ({ product, setAllProduct }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [updateProduct, setUpdateProduct] = useState({})
 
   const navigate = useNavigate();
 
@@ -26,7 +24,7 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
     navigate("/showProduct", { state: { singleProduct, loading } });
   };
 
-  const handleSingleProduct = async (id) => {
+  const handleSingleProduct = async (id:string) => {
     setLoading(true);
     await axios
       .get(`http://localhost:3000/pos/${id}`)
@@ -40,21 +38,42 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
       });
   };
 
-  const handleDeleteProduct = async (id) => {
-    await axios
-      .delete(`http://localhost:3000/pos/${id}`)
-      .then((res) => {
+  const handleDeleteProduct = async (id: string) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:3000/pos/${id}`);
+
+        // Update UI after successful delete
+        setAllProduct((prev) => prev.filter((product) => product._id !== id));
+
         Swal.fire({
-          position: "center",
+          title: "Deleted!",
+          text: "Your product has been deleted.",
           icon: "success",
-          title: "Your Product Delete Successfull!",
-          showConfirmButton: false,
           timer: 1500,
+          showConfirmButton: false,
         });
-        setAllProduct(res.data);
-      })
-      .catch((err) => console.log(err));
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to delete the product.",
+        });
+      }
+    }
   };
+
 
  
 

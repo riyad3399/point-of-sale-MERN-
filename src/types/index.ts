@@ -1,16 +1,21 @@
 // Product types
 export interface Product {
-  id: string;
-  name: string;
+  _id: string;
+  productName: string;
+  productCode: number;
   description: string;
-  price: number;
+  brand: string;
   category: string;
-  image: string;
-  barcode?: string;
-  sku: string;
-  stock: number;
-  isActive: boolean;
+  unit: string;
+  quantity: number;
+  alertQuantity: number;
+  purchasePrice: number;
+  wholesalePrice: number;
+  retailPrice: number;
+  tax: number;
+  taxType: "inclusive" | "exclusive";
 }
+
 // export interface Product {
 //   _id?: string; // Optional, if using MongoDB ObjectId
 //   productName: string;

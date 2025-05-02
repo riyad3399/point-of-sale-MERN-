@@ -37,7 +37,7 @@ const POSPage: React.FC = () => {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold">Point of Sale</h1>
+          <h1 className="text-2xl font-bold">Retail Sale</h1>
           <p className="text-gray-500">Create a new transaction</p>
         </div>
       </div>
