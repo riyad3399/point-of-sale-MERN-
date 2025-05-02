@@ -64,8 +64,8 @@ export default function RetailSalePage() {
   }, []);
 
   return (
-    <div className="p-4 min-h-screen bg-gray-50">
-      <div className="py-5 px-4 rounded-md bg-yellow-100">
+    <div className="p-4 min-h-screen ">
+      <div className="py-5 px-4 rounded-md bg-gray-100">
         <SearchableDropdown />
       </div>
 
@@ -78,12 +78,12 @@ export default function RetailSalePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products..."
-              className="border px-3 py-2 rounded w-full"
+              className="border px-4 py-2 rounded-lg w-full shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border px-3 py-2 rounded"
+              className="border px-4 py-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -93,28 +93,48 @@ export default function RetailSalePage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredProducts.length === 0 ? (
               <motion.div
-                key={product._id}
-                className="bg-white rounded-xl shadow hover:shadow-lg p-4 cursor-pointer"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => addToCart(product._id)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="col-span-full text-center py-20 text-gray-400"
               >
                 <img
-                  src={`http://localhost:3000/pos/image/${product._id}`}
-                  alt={product.productName}
-                  className="h-24 w-full object-cover rounded"
+                  src="/images/empty-box.png"
+                  alt="No products"
+                  className="mx-auto mb-4 h-24 opacity-70"
                 />
-                <h2 className="mt-2 font-semibold text-sm md:text-base">
-                  {product.productName}
-                </h2>
-                <p className="text-blue-600 font-semibold text-sm">
-                  ৳{product.retailPrice.toFixed(2)}
+                <p className="text-lg font-medium">No products found</p>
+                <p className="text-sm text-gray-500">
+                  Try changing the search or category filter
                 </p>
               </motion.div>
-            ))}
+            ) : (
+              filteredProducts.map((product) => (
+                <motion.div
+                  key={product._id}
+                  className="bg-white rounded-xl shadow-md hover:shadow-2xl p-4 cursor-pointer transform transition-all duration-300 hover:scale-105"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  onClick={() => addToCart(product._id)}
+                >
+                  <img
+                    src={`http://localhost:3000/pos/image/${product._id}`}
+                    alt={product.productName}
+                    className="h-32 w-full object-cover rounded-md mb-4 transition-transform duration-300 transform hover:scale-110"
+                  />
+                  <h2 className="font-semibold text-sm md:text-base text-gray-800">
+                    {product.productName}
+                  </h2>
+                  <p className="text-blue-600 font-bold text-sm mt-2">
+                    ৳{product.retailPrice.toFixed(2)}
+                  </p>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
 
