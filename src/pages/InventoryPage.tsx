@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Plus, Edit, Trash2, Tag, Box } from 'lucide-react';
-import { useAppContext } from '../context/AppContext';
 import { Product } from '../types';
 
 const InventoryPage: React.FC = () => {

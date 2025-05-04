@@ -51,18 +51,18 @@ export default function SearchableDropdown() {
 
   return (
     <motion.div
-      className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-6 shadow-md"
+      className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-5 shadow-inner"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
       <div className="w-full flex flex-col md:flex-row justify-between gap-4 items-center">
-        <div className="w-full md:w-3/4">
+        <div className="w-full md:w-3/4 lg:w-3/6">
           <Select
             options={customers}
             onChange={handleChange}
             isSearchable
-            placeholder="🔍 Search by name or phone"
+            placeholder="🔍 Search Customer by name or phone"
             filterOption={customFilter}
             className="text-sm"
           />

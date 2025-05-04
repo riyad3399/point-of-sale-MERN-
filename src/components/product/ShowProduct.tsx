@@ -102,7 +102,7 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
       <td className="px-4 py-3 border text-center">{product.quantity}</td>
       <td className="px-4 py-3 border">
         <div className="flex items-center gap-4 justify-center">
-          <div >
+          <div className="z-40">
             <Modal isOpen={open} onClose={() => setOpen(false)} title="">
               <UpdateProduct product={product} />
             </Modal>

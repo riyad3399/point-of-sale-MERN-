@@ -4,15 +4,17 @@ import { Plus, Minus, Trash, ShoppingCart } from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
 import { Product } from "../types";
-import { TbCurrencyTaka  } from "react-icons/tb";
+import { TbCurrencyTaka } from "react-icons/tb";
+import CheckoutModal from "../components/checkout/CheckoutModal";
 
-export default function RetailSalePage() {
+export default function WholeSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allProduct, setAllProduct] = useState<Product[]>([]);
   const [shippingCost, setShippingCost] = useState(0);
   const [selectReturnSale, setSelectReturnSale] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const addToCart = (id: string) => {
     setCart((prev) => {
@@ -38,16 +40,16 @@ export default function RetailSalePage() {
     );
   };
 
-
- const clearCart = () => {
-   setCart([]);
-   setSelectReturnSale(0);
-   setShippingCost(0);
- };
+  const clearCart = () => {
+    setCart([]);
+    setSelectReturnSale(0);
+    setShippingCost(0);
+  };
 
   const total = cart.reduce((acc, item) => {
+    console.log("item id", acc);
     const product = allProduct.find((p) => p._id === item.id);
-    return acc + item.quantity * (product?.retailPrice || 0);
+    return acc + item.quantity * (product?.wholesalePrice || 0);
   }, 0);
 
   const categories = ["All", ...new Set(allProduct.map((p) => p.category))];
@@ -62,16 +64,18 @@ export default function RetailSalePage() {
   });
 
   const handleReturnSale = (
-    product:Product,
+    product: Product,
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const returnSale = e.target.value === "return";
     if (returnSale) {
-      setSelectReturnSale(product.retailPrice);
+      setSelectReturnSale(product.wholesalePrice);
     } else {
       setSelectReturnSale(0);
     }
   };
+
+  const totalAmount = (total + shippingCost - selectReturnSale);
 
   useEffect(() => {
     const handleGetProduct = async () => {
@@ -83,12 +87,12 @@ export default function RetailSalePage() {
   }, []);
 
   return (
-    <div className="p-4 min-h-screen ">
-      <div className="py-5 px-4 rounded-md bg-gray-100">
+    <div className=" min-h-screen ">
+      <details className="pb-4 px-4 rounded-md">
         <SearchableDropdown />
-      </div>
+      </details>
 
-      <div className="flex flex-col lg:flex-row gap-6 mt-4">
+      <div className="flex flex-col lg:flex-row gap-6 mt-4 p-4 shadow-sm rounded-md">
         {/* Product List */}
         <div className="flex-1">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -156,7 +160,7 @@ export default function RetailSalePage() {
                         {" "}
                         <TbCurrencyTaka size={20} />
                       </span>
-                      {product.retailPrice.toFixed(2)}
+                      {product.wholesalePrice.toFixed(2)}
                     </p>
                   </div>
                 </motion.div>
@@ -166,7 +170,7 @@ export default function RetailSalePage() {
         </div>
 
         {/* Cart Panel */}
-        <div className="w-full lg:w-96 bg-white shadow-xl rounded-2xl p-4 flex flex-col max-h-screen">
+        <div className="w-full lg:w-[35%] bg-white shadow-xl rounded-2xl p-4 flex flex-col max-h-screen">
           <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
             <ShoppingCart /> Items
           </h2>
@@ -200,16 +204,16 @@ export default function RetailSalePage() {
                       <p className="text-xs text-gray-500 flex items-center gap-1">
                         <span>
                           {" "}
-                          <TbCurrencyTaka  size={17}/>
+                          <TbCurrencyTaka size={17} />
                         </span>
-                        {product.retailPrice.toFixed(2)} each
+                        {product.wholesalePrice.toFixed(2)} each
                       </p>
                       <p className="font-semibold text-sm mt-1 flex items-center gap-1">
                         <span>
                           {" "}
                           <TbCurrencyTaka size={18} />
                         </span>
-                        {(product.retailPrice * quantity).toFixed(2)}
+                        {(product.wholesalePrice * quantity).toFixed(2)}
                       </p>
                     </div>
                     <div className="relative">
@@ -268,7 +272,6 @@ export default function RetailSalePage() {
               <span>Total</span>
               <span className="flex items-center gap-1">
                 <span>
-                  {" "}
                   <TbCurrencyTaka size={20} />
                 </span>
                 {(total + shippingCost - selectReturnSale).toFixed(2)}
@@ -282,13 +285,23 @@ export default function RetailSalePage() {
               >
                 <Trash size={16} className="mr-1" /> Clear Cart
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
-              >
-                <ShoppingCart size={18} /> Checkout
-              </motion.button>
+              <div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                  onClick={() => setOpen(true)}
+                >
+                  <ShoppingCart size={18} /> Checkout
+                </motion.button>
+
+                {open && (
+                  <CheckoutModal
+                    totalAmount={totalAmount}
+                    onClose={() => setOpen(false)}
+                  />
+                )}
+              </div>
             </div>
           </motion.div>
         </div>

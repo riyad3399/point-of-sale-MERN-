@@ -11,6 +11,12 @@ interface Customer {
   phone: string;
   address?: string;
 }
+
+  const tabVariants = {
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 },
+  };
 export default function CustomerTabs() {
   const [activeTab, setActiveTab] = useState<"list" | "add">("list");
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -47,10 +53,12 @@ export default function CustomerTabs() {
           {activeTab === "list" && (
             <motion.div
               key="list"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 30 }}
-              transition={{ duration: 0.4 }}
+              variants={tabVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+              className="card overflow-hidden"
             >
               <motion.table className="w-full border border-gray-300 text-left">
                 <thead className="bg-gray-100">
@@ -62,10 +70,12 @@ export default function CustomerTabs() {
                     <th className="p-2 border">Action</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {customers?.map((customer) => (
                     <ShowCustomerList
                       customer={customer}
+                      setCustomers={setCustomers}
                       key={customer.customreId}
                     />
                   ))}

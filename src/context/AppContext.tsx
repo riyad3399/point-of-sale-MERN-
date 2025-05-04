@@ -194,18 +194,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         products,
         categories,
 
-        // Cart
-        cart,
-        addToCart,
-        removeFromCart,
-        updateCartItemQuantity,
-        clearCart,
+       
 
-        // Checkout
-        cartTotal,
-        taxAmount,
-        grandTotal,
-        checkout,
 
         // Transactions
         transactions,

@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, CreditCard, DollarSign, Receipt, CheckCircle } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
+import { Product } from '../../types';
 
 interface CheckoutModalProps {
   onClose: () => void;
 }
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
-  const { cart, cartTotal, taxAmount, grandTotal, checkout } = useAppContext();
+
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [transaction, setTransaction] = useState<any>(null);
+    const [allProduct, setAllProduct] = useState<Product[]>([]);
+  
   
   const handleCheckout = async () => {
     if (!paymentMethod) return;
@@ -44,6 +46,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
     { id: 'cash', label: 'Cash', icon: <DollarSign className="h-5 w-5" /> },
     { id: 'card', label: 'Credit Card', icon: <CreditCard className="h-5 w-5" /> }
   ];
+    useEffect(() => {
+      const handleGetProduct = async () => {
+        const res = await axios.get("http://localhost:3000/pos");
+        const data = await res.data;
+        setAllProduct(data);
+      };
+      handleGetProduct();
+    }, []);
   
   return (
     <motion.div
@@ -72,54 +82,66 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         {!isComplete ? (
           <>
             {/* Order Summary */}
             <div className="p-4 border-b border-gray-200">
               <h3 className="font-medium mb-2">Order Summary</h3>
               <div className="max-h-48 overflow-y-auto mb-3">
-                {cart.map((item) => (
-                  <div key={item.id} className="flex justify-between py-1 text-sm">
+                {allProduct.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex justify-between py-1 text-sm"
+                  >
                     <span>
-                      {item.quantity} × {item.name}
+                      {item.quantity} × {item.productName}
                     </span>
                     <span className="font-medium">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {item.wholesalePrice ? (
+                        <span>
+                          ${(item.wholesalePrice * item.quantity).toFixed(2)}
+                        </span>
+                      ) : (
+                        <span>
+                          ${(item.retailPrice * item.quantity).toFixed(2)}
+                        </span>
+                      )}
                     </span>
                   </div>
                 ))}
               </div>
-              
+
               <div className="space-y-1 text-sm pt-2 border-t border-gray-100">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  {/* <span>${cartTotal.toFixed(2)}</span> */}
                 </div>
                 <div className="flex justify-between">
                   <span>Tax (7%)</span>
-                  <span>${taxAmount.toFixed(2)}</span>
+                  {/* <span>${taxAmount.toFixed(2)}</span> */}
                 </div>
                 <div className="flex justify-between font-bold pt-2 text-base">
                   <span>Total</span>
-                  <span>${grandTotal.toFixed(2)}</span>
+                  {/* <span>${grandTotal.toFixed(2)}</span> */}
                 </div>
               </div>
             </div>
-            
+
             {/* Payment Method */}
             <div className="p-4 border-b border-gray-200">
               <h3 className="font-medium mb-3">Payment Method</h3>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 {paymentMethods.map((method) => (
                   <motion.button
                     key={method.id}
                     className={`
                       flex items-center justify-center gap-2 p-4 rounded-lg border 
-                      ${paymentMethod === method.id
-                        ? 'bg-primary-50 border-primary-200 text-primary-700'
-                        : 'border-gray-200 hover:bg-gray-50'
+                      ${
+                        paymentMethod === method.id
+                          ? "bg-primary-50 border-primary-200 text-primary-700"
+                          : "border-gray-200 hover:bg-gray-50"
                       }
                     `}
                     onClick={() => setPaymentMethod(method.id)}
@@ -132,7 +154,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
                 ))}
               </div>
             </div>
-            
+
             {/* Action Buttons */}
             <div className="p-4 flex gap-3">
               <button
@@ -167,16 +189,18 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ type: 'spring', damping: 10, stiffness: 200 }}
+                transition={{ type: "spring", damping: 10, stiffness: 200 }}
               >
                 <CheckCircle className="h-16 w-16 text-success-500 mb-2" />
               </motion.div>
-              <h3 className="text-xl font-bold text-center">Payment Successful!</h3>
+              <h3 className="text-xl font-bold text-center">
+                Payment Successful!
+              </h3>
               <p className="text-gray-600 text-center mt-1">
                 Transaction #{transaction?.id.substring(0, 8)}
               </p>
             </div>
-            
+
             <div className="space-y-1 text-sm mb-6">
               <div className="flex justify-between font-medium">
                 <span>Payment method</span>
@@ -191,17 +215,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
                 <span>{new Date(transaction?.timestamp).toLocaleString()}</span>
               </div>
             </div>
-            
+
             <div className="flex gap-3">
-              <button
-                onClick={onClose}
-                className="btn-outline flex-1"
-              >
+              <button onClick={onClose} className="btn-outline flex-1">
                 Close
               </button>
-              <button
-                className="btn-primary flex-1 flex items-center justify-center gap-2"
-              >
+              <button className="btn-primary flex-1 flex items-center justify-center gap-2">
                 <Receipt className="h-5 w-5" />
                 Print Receipt
               </button>

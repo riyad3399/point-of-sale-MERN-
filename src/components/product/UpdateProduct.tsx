@@ -85,7 +85,7 @@ const UpdateProduct: React.FC = ({ product }) => {
 
 
   return (
-    <div className="max-w-2xl max-h-xl">
+    <div className="max-w-2xl max-h-xl ">
       <motion.h2
         variants={fieldVariants}
         className="text-2xl font-semibold text-gray-800 mb-6"

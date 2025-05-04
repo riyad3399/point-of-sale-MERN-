@@ -20,14 +20,19 @@ export default function AddCustomer() {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: Customer) => {
-    console.log(data);
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/customer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          customerName: data.customerName.trim(),
+          phone: data.phone.trim(),
+          address: data.address?.trim(),
+        }),
       });
 
       if (response.ok) {
@@ -48,6 +53,8 @@ export default function AddCustomer() {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,36 +64,39 @@ export default function AddCustomer() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.4 }}
-      className="space-y-5"
+      className="space-y-6 bg-white p-6 rounded-2xl shadow-lg max-w-2xl mx-auto"
     >
-      <div className="flex gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Name */}
-        <div className="w-full">
+        <div>
           <label className="block text-sm font-medium text-gray-700">
             Name
           </label>
           <input
             {...register("customerName", { required: "Name is required" })}
-            className="w-full mt-1 p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="John Doe"
           />
           {errors.customerName && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
+            <p className="text-red-500 text-xs mt-1">
+              {errors.customerName.message}
+            </p>
           )}
         </div>
 
         {/* Phone */}
-        <div className="w-full">
+        <div>
           <label className="block text-sm font-medium text-gray-700">
             Phone
           </label>
           <input
+            type="tel"
             {...register("phone", { required: "Phone is required" })}
-            className="w-full mt-1 p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="+880 1234-567890"
           />
           {errors.phone && (
-            <p className="text-red-500 text-sm">{errors.phone.message}</p>
+            <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
           )}
         </div>
       </div>
@@ -98,22 +108,28 @@ export default function AddCustomer() {
         </label>
         <textarea
           {...register("address")}
-          className="w-full mt-1 p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="123 Street Name, City"
           rows={3}
         />
       </div>
 
-      {/* Submit */}
+      {/* Submit Button */}
       <motion.button
-        whileTap={{ scale: 0.95 }}
-        disabled={loading}
+        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.02 }}
         type="submit"
-        className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition duration-300"
+        disabled={loading}
+        className={`w-full py-3 rounded-xl text-white font-semibold transition-all duration-300 ${
+          loading
+            ? "bg-blue-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        }`}
       >
         {loading ? (
-          <span className="flex justify-center items-center">
-            <Loader className="animate-spin" />
+          <span className="flex justify-center items-center gap-2">
+            <Loader className="animate-spin h-5 w-5" />
+            Processing...
           </span>
         ) : (
           "Add Customer"
