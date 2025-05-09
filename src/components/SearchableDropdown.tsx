@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { motion } from "framer-motion";
@@ -9,45 +8,51 @@ type OptionType = {
   label: string;
   customerName: string;
   phone: string;
+  address?: string;
 };
 
-export default function SearchableDropdown() {
-  const [customers, setCustomers] = useState<OptionType[]>([]);
-  const [selectWalking, setSelectWalking] = useState<OptionType | null>(null);
-
-  useEffect(() => {
-    axios.get("http://localhost:3000/customer").then((res) => {
-      const options = res.data.map((customer: any) => ({
-        value: customer.customerId,
-        label: `${customer.customerName} | ${customer.phone}`,
-        customerName: customer.customerName.toLowerCase(),
-        phone: customer.phone,
-      }));
-
-      const optionsWithWalkingCustomer = [
-        {
-          value: "walking",
-          label: "🚶 Walking Customer",
-          phone: "",
-          customerName: "",
-        },
-        ...options,
-      ];
-      setCustomers(optionsWithWalkingCustomer);
-    });
-  }, []);
+export default function SearchableDropdown({
+  selectWalking,
+  setSelectWalking,
+  customers,
+  setAddedCustomer,
+}) {
+  const [walkingName, setWalkingName] = useState("");
+  const [walkingPhone, setWalkingPhone] = useState("");
+  const [walkingAddress, setWalkingAddress] = useState("");
 
   const handleChange = (selected: OptionType | null) => {
+    setAddedCustomer(selected);
     setSelectWalking(selected);
+    if (selected?.value !== "walking") {
+      // Clear walking input fields if not walking customer
+      setWalkingName("");
+      setWalkingPhone("");
+      setWalkingAddress("");
+    }
   };
 
   const customFilter = (option: { data: OptionType }, inputValue: string) => {
     const search = inputValue.toLowerCase();
     return (
-      option.data.customerName.includes(search) ||
+      option.data.customerName.toLowerCase().includes(search) ||
       option.data.phone.includes(search)
     );
   };
+
+  // Update parent state when walking input changes
+  useEffect(() => {
+    if (selectWalking?.value === "walking" && walkingName && walkingPhone) {
+      setSelectWalking({
+        value: "walking",
+        label: "Walking Customer",
+        customerName: walkingName,
+        phone: walkingPhone,
+        address: walkingAddress,
+      });
+    }
+  }, [walkingName, walkingPhone, walkingAddress]);
+
 
   return (
     <motion.div
@@ -86,14 +91,18 @@ export default function SearchableDropdown() {
               type="text"
               className="w-full text-sm outline-none"
               placeholder="Customer Name"
+              value={walkingName}
+              onChange={(e) => setWalkingName(e.target.value)}
             />
           </div>
           <div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 shadow-sm bg-white">
             <Phone size={16} className="text-gray-500" />
             <input
-              type="text"
+              type="number"
               className="w-full text-sm outline-none"
               placeholder="Customer Mobile"
+              value={walkingPhone}
+              onChange={(e) => setWalkingPhone(e.target.value)}
             />
           </div>
           <div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 shadow-sm bg-white">
@@ -102,6 +111,8 @@ export default function SearchableDropdown() {
               type="text"
               className="w-full text-sm outline-none"
               placeholder="Customer Address"
+              value={walkingAddress}
+              onChange={(e) => setWalkingAddress(e.target.value)}
             />
           </div>
         </motion.div>

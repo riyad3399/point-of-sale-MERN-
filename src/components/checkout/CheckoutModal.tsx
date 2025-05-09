@@ -5,31 +5,43 @@ import {
   CreditCard,
   DollarSign,
   PhoneCall,
-  CheckCircle,
-  Receipt,
   CalendarDays,
 } from "lucide-react";
+import Invoice from "./Invoice";
+import axios from "axios";
+import Swal from "sweetalert2";
 
-interface PaymentMethod {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
+interface Product {
+  name: string;
+  quantity: number;
+  price: number;
 }
 
 interface CheckoutModalProps {
   onClose: () => void;
   totalAmount: number;
+  products: Product[];
+  selectWalking: {
+    customerName: string;
+    phone: string;
+    address: string;
+    value: "walking";
+    label: "Walking Customer";
+  };
 }
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClose,
   totalAmount,
+  products,
+  selectWalking,
+  customers,
+  addedCustomer,
 }) => {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [transactionId, setTransactionId] = useState("");
-
+  const [transactionId, setTransactionId] = useState<number>(0);
   const [paidAmount, setPaidAmount] = useState<number | "">("");
   const [discount, setDiscount] = useState<number | "">("");
   const [dueAmount, setDueAmount] = useState<number>(0);
@@ -43,20 +55,69 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setDueAmount(due);
   }, [paidAmount, discount, totalAmount]);
 
+  const handleAddWalkingCustomer = async (): Promise<boolean> => {
+    const { phone, customerName, address, value } = selectWalking;
+
+    if (value !== "walking") {
+      return true;
+    }
+    
+    try {
+      const res = await axios.post("http://localhost:3000/customer", {
+        customerName,
+        phone,
+        address,
+      });
+
+      if (res.status === 201 || res.status === 200) {
+        console.log("Customer added:", res.data);
+        return true;
+      }
+
+      return false;
+    } catch (err: any) {
+      if (err.response?.status === 409) {
+        Swal.fire({
+          icon: "error",
+          title: "এই ফোন নম্বরটি ইতিমধ্যে আছে",
+          text: err.response?.data?.message || "Customer already exists.",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Customer Add ব্যর্থ হয়েছে",
+          text: err.response?.data?.message || "দয়া করে পরে আবার চেষ্টা করুন।",
+        });
+      }
+      return false;
+    }
+  };
+
   const handleCheckout = () => {
     if (dueAmount > 0 && !dueDate) return;
     setIsProcessing(true);
     setTimeout(() => {
-      setTransactionId("TXN" + Date.now());
+      setTransactionId((prev) => prev + 1);
       setIsProcessing(false);
       setIsComplete(true);
     }, 1500);
   };
 
+  const handleFullCheckout = async () => {
+    const customerAdded = await handleAddWalkingCustomer();
+
+    if (!customerAdded) {
+      // Customer add হয় নাই, মানে conflict হয়েছে — checkout e যাওয়া যাবে না
+      return;
+    }
+
+    handleCheckout(); // এখন checkout শুরু করো
+  };
+
   const inputBase =
     "w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition";
 
-  const paymentMethods: PaymentMethod[] = [
+  const paymentMethods = [
     { id: "cash", label: "Cash", icon: <DollarSign className="w-5 h-5" /> },
     { id: "bkash", label: "bKash", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "nagad", label: "Nagad", icon: <CreditCard className="w-5 h-5" /> },
@@ -107,7 +168,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div className="space-y-6 px-5 py-6">
             <div className="text-lg font-semibold flex justify-between">
               <span>Total</span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <span>৳ {totalAmount.toFixed(2)}</span>
             </div>
 
             {/* Inputs */}
@@ -186,60 +247,53 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={onClose}
-                className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCheckout}
-                disabled={isProcessing || (dueAmount > 0 && !dueDate)}
-                className="flex-1 py-2 bg-blue-600 text-white rounded-lg flex justify-center items-center gap-2 disabled:opacity-50 transition"
-              >
-                {isProcessing ? (
-                  <>
-                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-                    Processing
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-5 w-5" />
-                    Complete
-                  </>
-                )}
-              </button>
+            {/* Action button */}
+            <div className="mt-4 flex gap-2 pt-2">
+              <div className="flex-1">
+                <button
+                  onClick={onClose}
+                  className="w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <div className="flex-1">
+                <button
+                  onClick={handleFullCheckout}
+                  disabled={isProcessing || (dueAmount > 0 && !dueDate)}
+                  className="w-full py-2 bg-blue-600 text-white rounded-lg flex justify-center items-center gap-2 disabled:opacity-50 transition"
+                >
+                  {isProcessing ? (
+                    <>
+                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      Processing
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-5 w-5" />
+                      Complete
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="p-6 text-center space-y-4">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 10 }}
-              className="flex justify-center"
-            >
-              <CheckCircle className="h-16 w-16 text-green-500" />
-            </motion.div>
-            <h3 className="text-xl font-bold">Payment Successful!</h3>
-            <p className="text-sm text-gray-600">
-              Transaction ID: {transactionId}
-            </p>
-            <div className="flex gap-3 pt-4">
-              <button
-                onClick={onClose}
-                className="flex-1 py-2 border rounded-lg"
-              >
-                Close
-              </button>
-              <button className="flex-1 py-2 bg-green-600 text-white rounded-lg flex items-center justify-center gap-2">
-                <Receipt className="w-5 h-5" />
-                Print Receipt
-              </button>
-            </div>
-          </div>
+          <Invoice
+            transactionId={transactionId}
+            checkoutDate={new Date().toLocaleString()}
+            paymentMethod={paymentMethod}
+            products={products}
+            totalAmount={totalAmount}
+            discount={typeof discount === "number" ? discount : 0}
+            paidAmount={typeof paidAmount === "number" ? paidAmount : 0}
+            dueAmount={dueAmount}
+            dueDate={dueDate}
+            selectWalking={selectWalking}
+            addedCustomer={addedCustomer}
+            customers={customers}
+          />
         )}
       </motion.div>
     </motion.div>

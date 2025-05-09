@@ -95,3 +95,22 @@
          text-2xl font-semibold bg-white shadow-sm border border-gray-100
          hover:bg-gray-50 active:scale-95 transition-all;
 }
+
+
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice-print, #invoice-print * {
+    visibility: visible;
+  }
+
+  #invoice-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

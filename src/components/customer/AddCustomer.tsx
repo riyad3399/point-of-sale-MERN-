@@ -20,6 +20,7 @@ export default function AddCustomer() {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: Customer) => {
+    console.log(data);
     setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/customer", {
@@ -35,6 +36,8 @@ export default function AddCustomer() {
         }),
       });
 
+      const result = await response.json()
+
       if (response.ok) {
         Swal.fire({
           position: "center",
@@ -47,8 +50,8 @@ export default function AddCustomer() {
       } else {
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: "Failed to add Customer!",
+          title: response.statusText,
+          text: result.message,
         });
       }
     } catch (err) {
@@ -90,7 +93,7 @@ export default function AddCustomer() {
             Phone
           </label>
           <input
-            type="tel"
+            type="number"
             {...register("phone", { required: "Phone is required" })}
             className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="+880 1234-567890"
