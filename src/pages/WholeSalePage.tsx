@@ -6,6 +6,7 @@ import axios from "axios";
 import { Product } from "../types";
 import { TbCurrencyTaka } from "react-icons/tb";
 import CheckoutModal from "../components/checkout/CheckoutModal";
+import Swal from "sweetalert2";
 
 type OptionType = {
   value: string;
@@ -19,7 +20,7 @@ export default function WholeSalePage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allProduct, setAllProduct] = useState<Product[]>([]);
-  const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [shippingCost, setShippingCost] = useState<number>(0);
   const [selectReturnSale, setSelectReturnSale] = useState(0);
   const [open, setOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -95,6 +96,25 @@ export default function WholeSalePage() {
       setSelectReturnSale(0);
     }
   };
+
+  const handleCheckoutModalOpen = () => {
+    if (selectWalking === null) {
+      Swal.fire({
+        icon: "error",
+        title: "Please select a Customer",
+      });
+      setOpen(false);
+    } else if (cart.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Cart is empty",
+      });
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  };
+  
 
   const productsInCart = cart
     .map((item) => {
@@ -365,13 +385,14 @@ export default function WholeSalePage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
-                  onClick={() => setOpen(true)}
+                  onClick={handleCheckoutModalOpen}
                 >
                   <ShoppingCart size={18} /> Checkout
                 </motion.button>
 
                 {open && (
                   <CheckoutModal
+                    saleSystemValue={"wholeSale"}
                     products={productsInCart}
                     addedCustomer={addedCustomer}
                     selectWalking={selectWalking}

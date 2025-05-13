@@ -4,15 +4,29 @@ import { Plus, Minus, Trash, ShoppingCart } from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
 import { Product } from "../types";
-import { TbCurrencyTaka  } from "react-icons/tb";
+import { TbCurrencyTaka } from "react-icons/tb";
+import CheckoutModal from "../components/checkout/CheckoutModal";
+import Swal from "sweetalert2";
+
+type OptionType = {
+  value: string;
+  label: string;
+  customerName: string;
+  phone: string;
+};
 
 export default function RetailSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allProduct, setAllProduct] = useState<Product[]>([]);
-  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingCost, setShippingCost] = useState<number>(0);
   const [selectReturnSale, setSelectReturnSale] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [customers, setCustomers] = useState<OptionType[]>([]);
+  const [selectWalking, setSelectWalking] = useState<OptionType | null>(null);
+  const [addedCustomer, setAddedCustomer] = useState<OptionType | null>(null);
 
   const addToCart = (id: string) => {
     setCart((prev) => {
@@ -24,6 +38,17 @@ export default function RetailSalePage() {
       }
       return [...prev, { id, quantity: 1 }];
     });
+  };
+
+  const deleteSelectedItems = () => {
+    setCart((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
+    setSelectedItems([]); // clear selection
+  };
+
+  const toggleSelectItem = (id: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -38,12 +63,11 @@ export default function RetailSalePage() {
     );
   };
 
-
- const clearCart = () => {
-   setCart([]);
-   setSelectReturnSale(0);
-   setShippingCost(0);
- };
+  const clearCart = () => {
+    setCart([]);
+    setSelectReturnSale(0);
+    setShippingCost(0);
+  };
 
   const total = cart.reduce((acc, item) => {
     const product = allProduct.find((p) => p._id === item.id);
@@ -62,7 +86,7 @@ export default function RetailSalePage() {
   });
 
   const handleReturnSale = (
-    product:Product,
+    product: Product,
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const returnSale = e.target.value === "return";
@@ -73,22 +97,80 @@ export default function RetailSalePage() {
     }
   };
 
+  const handleCheckoutModalOpen = () => {
+    if (selectWalking === null) {
+      Swal.fire({
+        icon: "error",
+        title: "Please select a Customer",
+      });
+      setOpen(false);
+    } else if (cart.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Cart is empty",
+      });
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  };
+
+  const productsInCart = cart
+    .map((item) => {
+      const fullProduct = allProduct.find((p) => p._id === item.id);
+      if (!fullProduct) return null;
+      return {
+        name: fullProduct.productName,
+        quantity: item.quantity,
+        price: fullProduct.retailPrice,
+      };
+    })
+    .filter(Boolean);
+
+  const totalAmount = total + shippingCost - selectReturnSale;
+
   useEffect(() => {
     const handleGetProduct = async () => {
       const res = await axios.get("http://localhost:3000/pos");
       const data = await res.data;
       setAllProduct(data);
     };
+
+    axios.get("http://localhost:3000/customer").then((res) => {
+      const options = res.data.map((customer: any) => ({
+        value: customer.customerId,
+        label: `${customer.customerName} | ${customer.phone}`,
+        customerName: customer.customerName.toLowerCase(),
+        phone: customer.phone,
+      }));
+
+      const optionsWithWalkingCustomer = [
+        {
+          value: "walking",
+          label: "🚶 Walking Customer",
+          phone: "",
+          customerName: "",
+        },
+        ...options,
+      ];
+      setCustomers(optionsWithWalkingCustomer);
+    });
+
     handleGetProduct();
   }, []);
 
   return (
-    <div className="p-4 min-h-screen ">
-      <div className="py-5 px-4 rounded-md bg-gray-100">
-        <SearchableDropdown />
+    <div className=" min-h-screen ">
+      <div className="my-2">
+        <SearchableDropdown
+          customers={customers}
+          selectWalking={selectWalking}
+          setSelectWalking={setSelectWalking}
+          setAddedCustomer={setAddedCustomer}
+        />
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 mt-4">
+      <div className="flex flex-col lg:flex-row gap-6 mt-4 p-4 shadow-sm rounded-md">
         {/* Product List */}
         <div className="flex-1">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -166,12 +248,26 @@ export default function RetailSalePage() {
         </div>
 
         {/* Cart Panel */}
-        <div className="w-full lg:w-96 bg-white shadow-xl rounded-2xl p-4 flex flex-col max-h-screen">
-          <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-            <ShoppingCart /> Items
-          </h2>
+        <div className="w-full lg:w-[35%] bg-white shadow-xl rounded-2xl p-4 flex flex-col max-h-screen">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+              <ShoppingCart /> Items
+            </h2>
+            {selectedItems.length > 0 && (
+              <div className="flex justify-end mb-2">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={deleteSelectedItems}
+                  className="text-sm text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md flex items-center gap-1"
+                >
+                  <Trash size={16} />
+                  Remove
+                </motion.button>
+              </div>
+            )}
+          </div>
 
-          <div className="flex-1 overflow-y-auto pr-1 space-y-4">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-4 py-2">
             <AnimatePresence>
               {cart.map(({ id, quantity }) => {
                 const product = allProduct.find((p) => p._id === id);
@@ -179,11 +275,18 @@ export default function RetailSalePage() {
                 return (
                   <motion.div
                     key={id}
-                    className="flex items-start gap-3 border-b pb-4"
+                    className="flex items-start gap-3 border-b pb-4 relative"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.includes(id)}
+                      onChange={() => toggleSelectItem(id)}
+                      className="mt-4"
+                    />
+
                     <div className="w-12 h-12 rounded-md overflow-hidden">
                       <motion.img
                         whileHover={{ scale: 1.1 }}
@@ -193,36 +296,30 @@ export default function RetailSalePage() {
                         className="object-cover w-full h-full"
                       />
                     </div>
+
                     <div className="flex-1">
-                      <p className="font-medium text-sm">
-                        {product.productName}
-                      </p>
-                      <p className="text-xs text-gray-500 flex items-center gap-1">
-                        <span>
-                          {" "}
-                          <TbCurrencyTaka  size={17}/>
-                        </span>
+                      <div className="flex justify-between">
+                        <p className="font-medium text-sm">
+                          {product.productName}
+                        </p>
+                        <select
+                          className={`text-xs absolute right-12 top-6  px-1 py-0.5 rounded-md ring-1 ring-blue-400 focus:outline-none`}
+                          onChange={(e) => handleReturnSale(product, e)}
+                        >
+                          <option value="sale">Sale</option>
+                          <option value="return">Return</option>
+                        </select>
+                      </div>
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <TbCurrencyTaka size={17} />
                         {product.retailPrice.toFixed(2)} each
                       </p>
                       <p className="font-semibold text-sm mt-1 flex items-center gap-1">
-                        <span>
-                          {" "}
-                          <TbCurrencyTaka size={18} />
-                        </span>
+                        <TbCurrencyTaka size={18} />
                         {(product.retailPrice * quantity).toFixed(2)}
                       </p>
                     </div>
-                    <div className="relative">
-                      <select
-                        className="bg-cyan-100 absolute right-6 top-4  focus:outline-none rounded-sm ring-2 ring-blue-500"
-                        onChange={() => handleReturnSale(product, event)}
-                      >
-                        <option value="sale">Sale</option>
-                        <option value="return">Return</option>
-                      </select>
-                    </div>
 
-                    {/* Quantity Buttons in Column */}
                     <div className="flex flex-col items-center gap-1">
                       <button
                         onClick={() => updateQuantity(id, 1)}
@@ -268,7 +365,6 @@ export default function RetailSalePage() {
               <span>Total</span>
               <span className="flex items-center gap-1">
                 <span>
-                  {" "}
                   <TbCurrencyTaka size={20} />
                 </span>
                 {(total + shippingCost - selectReturnSale).toFixed(2)}
@@ -278,17 +374,32 @@ export default function RetailSalePage() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={clearCart}
-                className="text-sm text-gray-500 hover:text-red-500 flex items-center"
+                className="text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
               >
                 <Trash size={16} className="mr-1" /> Clear Cart
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
-              >
-                <ShoppingCart size={18} /> Checkout
-              </motion.button>
+              <div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                  onClick={handleCheckoutModalOpen}
+                >
+                  <ShoppingCart size={18} /> Checkout
+                </motion.button>
+
+                {open && (
+                  <CheckoutModal
+                    saleSystemValue={"retailSale"}
+                    products={productsInCart}
+                    addedCustomer={addedCustomer}
+                    selectWalking={selectWalking}
+                    totalAmount={totalAmount}
+                    customers={customers}
+                    onClose={() => setOpen(false)}
+                  />
+                )}
+              </div>
             </div>
           </motion.div>
         </div>

@@ -35,6 +35,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   totalAmount,
   products,
   selectWalking,
+  saleSystemValue,
   customers,
   addedCustomer,
 }) => {
@@ -101,6 +102,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setIsProcessing(false);
       setIsComplete(true);
     }, 1500);
+   
   };
 
   const handleFullCheckout = async () => {
@@ -110,8 +112,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       // Customer add হয় নাই, মানে conflict হয়েছে — checkout e যাওয়া যাবে না
       return;
     }
+   
 
     handleCheckout(); // এখন checkout শুরু করো
+
+    
   };
 
   const inputBase =
@@ -291,7 +296,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
             dueAmount={dueAmount}
             dueDate={dueDate}
             selectWalking={selectWalking}
-            addedCustomer={addedCustomer}
+            saleSystemValue={saleSystemValue}
             customers={customers}
           />
         )}

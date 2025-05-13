@@ -64,6 +64,7 @@ export default function SearchableDropdown({
       <div className="w-full flex flex-col md:flex-row justify-between gap-4 items-center">
         <div className="w-full md:w-3/4 lg:w-3/6">
           <Select
+            required
             options={customers}
             onChange={handleChange}
             isSearchable
