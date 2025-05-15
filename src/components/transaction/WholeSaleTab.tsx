@@ -1,30 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { PrinterIcon, Search, Trash } from "lucide-react";
+import { EditIcon, PrinterIcon, Search, Trash, ViewIcon } from "lucide-react";
 import Loading from "../Loading";
+import Pagination from "../Pagination";
+import { useNavigate } from "react-router-dom";
+import InvoiceDuePaymentModal from "./InvoiceDuePaymentModal";
+import { InvoiceType } from "../../types";
 
-type Transaction = {
-  _id: string;
-  transactionId: number;
-  createdAt: string;
-  dueDate: string;
-  updatedAt: string;
-  customer: { name: string; phone: string };
-  paymentMethod: string;
-  saleSystem: string;
-  items: { name: string; quantity: number; price: number }[];
-  totals: {
-    total: number;
-    discount: number;
-    payable: number;
-    paid: number;
-    due: number;
-  };
-};
 
 export default function WholeSaleTab() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -34,6 +20,12 @@ export default function WholeSaleTab() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10); // Items per page
+  const [editingInvoice, setEditingInvoice] = useState<InvoiceType | null>(
+    null
+  );
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -46,6 +38,7 @@ export default function WholeSaleTab() {
         setError("Data load করতে সমস্যা হয়েছে");
         setLoading(false);
       });
+    
   }, []);
 
   // Pagination logic
@@ -77,12 +70,50 @@ export default function WholeSaleTab() {
   // Handle Delete
   const handleDelete = (id: string) => {
     axios
-      .delete(`http://localhost:3000/invoice/wholesale/${id}`)
+      .delete(`http://localhost:3000/invoice/${id}`)
       .then(() => {
         setTransactions(transactions.filter((tx) => tx._id !== id));
       })
-      .catch((err) => setError("Transaction delete করতে সমস্যা হয়েছে"));
+      .catch((err) => setError("InvoiceType delete করতে সমস্যা হয়েছে"));
   };
+
+  // handle invoice view
+  const handleInvoiceView = async (id: string) => {
+    await axios.get(`http://localhost:3000/invoice/${id}`).then((res) => {
+      navigate("/invoiceView", { state: { invoice: res.data } });
+    });
+  };
+
+  // Edit modal open handler
+  const handleEdit = (invoice: InvoiceType) => {
+    setEditingInvoice(invoice);
+    setModalOpen(true);
+    console.log(invoice);
+  };
+
+  const handleSaveEdit = async (updatedData: any) => {
+    if (!editingInvoice) return;
+
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/invoice/${editingInvoice._id}`,
+        updatedData
+      );
+
+      // 🧠 update local state:
+      setTransactions((prev) =>
+        prev.map((tx) =>
+          tx._id === editingInvoice._id ? { ...tx, ...res.data } : tx
+        )
+      );
+
+      setModalOpen(false); // modal close
+      setEditingInvoice(null); // reset state
+    } catch (err) {
+      console.error("Update error:", err);
+    }
+  };
+  
 
   // Print Invoice
   const handlePrint = (id: string) => {
@@ -159,7 +190,7 @@ export default function WholeSaleTab() {
       {/* Table / Results */}
       {loading ? (
         <div className="text-center py-10 text-blue-500 font-medium">
-          <Loading/>
+          <Loading />
         </div>
       ) : error ? (
         <div className="text-center py-10 text-red-500 font-medium">
@@ -235,12 +266,24 @@ export default function WholeSaleTab() {
                           {tx.paymentMethod}
                         </td>
                         <td className="">
-                          <div className="flex items-center justify-center gap-3">
+                          <div className="flex items-center justify-center gap-2">
                             <button
                               className="text-blue-500 hover:text-blue-700"
                               onClick={() => handlePrint(tx._id)}
                             >
                               <PrinterIcon />
+                            </button>
+                            <button
+                              onClick={() => handleInvoiceView(tx._id)}
+                              className="ml-2 text-blue-500 hover:text-blue-700"
+                            >
+                              <ViewIcon />
+                            </button>
+                            <button
+                              className="ml-2 text-green-500 hover:text-green-700"
+                              onClick={() => handleEdit(tx)}
+                            >
+                              <EditIcon />
                             </button>
                             <button
                               className="ml-2 text-red-500 hover:text-red-700"
@@ -300,24 +343,24 @@ export default function WholeSaleTab() {
           </table>
         </div>
       )}
+      <InvoiceDuePaymentModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        invoice={editingInvoice}
+        onSave={handleSaveEdit}
+      />
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-          onClick={prevPage}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <span>Page {page}</span>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-          onClick={nextPage}
-          disabled={currentTransactions.length < pageSize}
-        >
-          Next
-        </button>
+      <div className="flex justify-end">
+        <Pagination
+          page={page}
+          setPage={setPage}
+          totalPages={Math.ceil(transactions.length / pageSize)}
+          pageSize={pageSize}
+          currentTransactions={currentTransactions}
+          prevPage={prevPage}
+          nextPage={nextPage}
+        />
       </div>
     </div>
   );

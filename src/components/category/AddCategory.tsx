@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
+import { Loader } from "lucide-react";
 
 type FormValues = {
   categoryId: number;
@@ -11,6 +12,8 @@ type FormValues = {
 const AddCategory: React.FC = () => {
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
+  const [loading, setLoading] = useState<boolean>(false);
+
 
   const handleGenerateNumber = () => {
     const number = Math.floor(Math.random() * 900000) + 100000;
@@ -23,6 +26,7 @@ const AddCategory: React.FC = () => {
 
   const handleCategorySubmit = async (data: FormValues) => {
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:3000/category", {
         method: "POST",
         headers: {
@@ -51,6 +55,8 @@ const AddCategory: React.FC = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,12 +96,25 @@ const AddCategory: React.FC = () => {
           </div>
         </div>
 
-        <button
+       
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.02 }}
           type="submit"
-          className="w-full py-3 bg-blue-600 text-white text-lg rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 transition duration-300"
+          disabled={loading}
+          className={`w-full py-3  transition-all duration-300 ${
+            loading ? "bg-blue-500 cursor-not-allowed" : "btn-primary"
+          }`}
         >
-          Add Category
-        </button>
+          {loading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader className="animate-spin h-5 w-5" />
+              Processing...
+            </span>
+          ) : (
+            "Add Category"
+          )}
+        </motion.button>
       </form>
     </motion.div>
   );

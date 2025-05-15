@@ -258,7 +258,7 @@ export default function RetailSalePage() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={deleteSelectedItems}
-                  className="text-sm text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md flex items-center gap-1"
+                  className="text-sm text-white btn-danger px-3 py-1 rounded-md flex items-center gap-1"
                 >
                   <Trash size={16} />
                   Remove
@@ -382,7 +382,7 @@ export default function RetailSalePage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                  className="btn-primary text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
                   onClick={handleCheckoutModalOpen}
                 >
                   <ShoppingCart size={18} /> Checkout

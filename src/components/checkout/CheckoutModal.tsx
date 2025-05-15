@@ -267,7 +267,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <button
                   onClick={handleFullCheckout}
                   disabled={isProcessing || (dueAmount > 0 && !dueDate)}
-                  className="w-full py-2 bg-blue-600 text-white rounded-lg flex justify-center items-center gap-2 disabled:opacity-50 transition"
+                  className="w-full py-2 btn-primary text-white rounded-lg flex justify-center items-center gap-2 disabled:opacity-50 transition"
                 >
                   {isProcessing ? (
                     <>

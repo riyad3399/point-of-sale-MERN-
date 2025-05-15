@@ -3,28 +3,13 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { PrinterIcon, Search, Trash } from "lucide-react";
 import Loading from "../Loading";
+import Pagination from "../Pagination";
+import { InvoiceType } from "../../types";
 
-type Transaction = {
-  _id: string;
-  transactionId: number;
-  createdAt: string;
-  dueDate: string;
-  updatedAt: string;
-  customer: { name: string; phone: string };
-  paymentMethod: string;
-  saleSystem: string;
-  items: { name: string; quantity: number; price: number }[];
-  totals: {
-    total: number;
-    discount: number;
-    payable: number;
-    paid: number;
-    due: number;
-  };
-};
+
 
 export default function AllTransactions() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -81,7 +66,7 @@ export default function AllTransactions() {
       .then(() => {
         setTransactions(transactions.filter((tx) => tx._id !== id));
       })
-      .catch((err) => setError("Transaction delete করতে সমস্যা হয়েছে"));
+      .catch((err) => setError("InvoiceType delete করতে সমস্যা হয়েছে"));
   };
 
   // Print Invoice
@@ -159,7 +144,7 @@ export default function AllTransactions() {
       {/* Table / Results */}
       {loading ? (
         <div className="text-center py-10 text-blue-500 font-medium">
-          <Loading/>
+          <Loading />
         </div>
       ) : error ? (
         <div className="text-center py-10 text-red-500 font-medium">
@@ -302,22 +287,16 @@ export default function AllTransactions() {
       )}
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-          onClick={prevPage}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <span>Page {page}</span>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-          onClick={nextPage}
-          disabled={currentTransactions.length < pageSize}
-        >
-          Next
-        </button>
+      <div className="flex justify-end">
+        <Pagination
+          page={page}
+          setPage={setPage}
+          totalPages={Math.ceil(transactions.length / pageSize)}
+          pageSize={pageSize}
+          currentTransactions={currentTransactions}
+          prevPage={prevPage}
+          nextPage={nextPage}
+        />
       </div>
     </div>
   );

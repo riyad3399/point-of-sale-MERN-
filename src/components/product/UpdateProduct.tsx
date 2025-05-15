@@ -302,7 +302,7 @@ const UpdateProduct: React.FC = ({ product }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition duration-200"
+            className="w-full  text-white py-3 rounded-xl font-semibold btn-primary transition duration-200"
           >
             Update Product
           </motion.button>

@@ -5,12 +5,15 @@ import axios from "axios";
 import ShowProduct from "../components/product/ShowProduct";
 import Loading from "../components/Loading";
 import { Box } from "lucide-react";
+import Pagination from "../components/Pagination"; // Make sure path is correct
 
 const ProductesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("productes");
   const [allProduct, setAllProduct] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const tabVariants = {
     initial: { opacity: 0, y: 10 },
@@ -18,22 +21,37 @@ const ProductesPage: React.FC = () => {
     exit: { opacity: 0, y: -10 },
   };
 
- useEffect(() => {
-   setLoading(true); 
-   axios
-     .get("http://localhost:3000/pos")
-     .then((res) => {
-       setAllProduct(res.data);
-       setLoading(false);
-     })
-     .catch((error) => {
-       console.error("Error fetching products:", error);
-     })
-     
- }, [activeTab]);
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get("http://localhost:3000/pos")
+      .then((res) => {
+        setAllProduct(res.data);
+        setLoading(false);
+        setCurrentPage(1); // Reset page when tab or data changes
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+        setLoading(false);
+      });
+  }, [activeTab]);
+
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentProducts = allProduct.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(allProduct.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
   return (
-    <div className=" mx-auto p-4">
+    <div className="mx-auto p-4">
+      {/* Tab Buttons */}
       <div className="flex border-b border-gray-200 mb-4">
         <button
           onClick={() => setActiveTab("productes")}
@@ -80,7 +98,7 @@ const ProductesPage: React.FC = () => {
                         Product ID
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-600">
-                        Phroduct Name
+                        Product Name
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-600">
                         Category
@@ -94,23 +112,26 @@ const ProductesPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* map show all productes */}
                     {loading ? (
                       <tr>
                         <td colSpan={6} className="text-center py-6">
-                         <Loading/>
+                          <Loading />
                         </td>
                       </tr>
                     ) : (
-                      allProduct?.map((product) => (
-                        <ShowProduct product={product} key={product._id} setAllProduct={ setAllProduct}  />
+                      currentProducts.map((product) => (
+                        <ShowProduct
+                          product={product}
+                          key={product._id}
+                          setAllProduct={setAllProduct}
+                        />
                       ))
                     )}
                   </tbody>
                 </table>
               </div>
 
-              {allProduct.length === 0 && (
+              {!loading && allProduct.length === 0 && (
                 <div className="py-6 text-center text-gray-500">
                   <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
                   <p>No products found</p>
@@ -127,14 +148,28 @@ const ProductesPage: React.FC = () => {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 w-full mx-auto "
+              className="absolute inset-0 w-full mx-auto"
             >
               <Index />
             </motion.div>
           )}
         </AnimatePresence>
+        <div className="flex justify-end">
+          {!loading && activeTab === "productes" && (
+            <Pagination
+              page={currentPage}
+              totalPages={totalPages}
+              pageSize={itemsPerPage}
+              currentTransactions={currentProducts}
+              prevPage={prevPage}
+              nextPage={nextPage}
+              setPage={setCurrentPage}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
 export default ProductesPage;

@@ -18,6 +18,7 @@ import ShowProduct from "./pages/ShowProductPage";
 import CustomersPage from "./pages/CustomersPage";
 import RetailSalePage from "./pages/RetailSalePage";
 import WholeSalePage from "./pages/WholeSalePage";
+import InvoiceView from "./components/transaction/InvoiceView";
 
 function App() {
   return (
@@ -33,12 +34,14 @@ function App() {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="productes" element={<ProductesPage />} />
           <Route path="showProduct" element={<ShowProduct />} />
+          <Route path="invoiceView" element={<InvoiceView />} />
           <Route path="wholeSale" element={<WholeSalePage />} />
           <Route path="retailSale" element={<RetailSalePage />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          
         </Route>
 
         {/* Fallback route */}

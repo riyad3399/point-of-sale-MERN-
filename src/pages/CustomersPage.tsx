@@ -4,6 +4,7 @@ import AddCustomer from "../components/customer/AddCustomer";
 import ShowCustomerList from "../components/customer/ShowCustomerList";
 import axios from "axios";
 import { Box } from "lucide-react";
+import Pagination from "../components/Pagination"; 
 
 interface Customer {
   customreId: number;
@@ -12,24 +13,41 @@ interface Customer {
   address?: string;
 }
 
-  const tabVariants = {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 },
-  };
+const tabVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+};
+
 export default function CustomerTabs() {
   const [activeTab, setActiveTab] = useState<"list" | "add">("list");
   const [customers, setCustomers] = useState<Customer[]>([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
-    // Replace with your API call
     axios.get("http://localhost:3000/customer").then((res) => {
       setCustomers(res.data);
-      console.log(res.data);
+      setCurrentPage(1); // Reset to first page when data changes
     });
   }, [activeTab]);
+
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentCustomers = customers.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(customers.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
   return (
-    <div className="w-full  mx-auto mt-10 bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="w-full mx-auto mt-10 bg-white rounded-2xl shadow-xl overflow-hidden">
       {/* Tab Header */}
       <div className="flex justify-center border-b bg-gray-50">
         {["list", "add"].map((tab) => (
@@ -72,18 +90,20 @@ export default function CustomerTabs() {
                 </thead>
 
                 <tbody>
-                  {customers?.map((customer) => (
+                  {currentCustomers.map((customer, idx) => (
                     <ShowCustomerList
                       customer={customer}
                       setCustomers={setCustomers}
                       key={customer.customreId}
+                      index={indexOfFirst + idx + 1} // serial number
                     />
                   ))}
                 </tbody>
               </motion.table>
+
               <div className="flex justify-center">
                 {customers.length === 0 && (
-                  <div className="py-6 text-center fle text-gray-500">
+                  <div className="py-6 text-center text-gray-500">
                     <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
                     <p>No customer found</p>
                   </div>
@@ -91,6 +111,7 @@ export default function CustomerTabs() {
               </div>
             </motion.div>
           )}
+
           {activeTab === "add" && (
             <motion.div
               key="add"
@@ -103,6 +124,19 @@ export default function CustomerTabs() {
             </motion.div>
           )}
         </AnimatePresence>
+        <div className="flex justify-end">
+          {customers.length > 0 && activeTab !== "add"&& (
+            <Pagination
+              page={currentPage}
+              totalPages={totalPages}
+              pageSize={itemsPerPage}
+              currentTransactions={currentCustomers}
+              prevPage={prevPage}
+              nextPage={nextPage}
+              setPage={setCurrentPage}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

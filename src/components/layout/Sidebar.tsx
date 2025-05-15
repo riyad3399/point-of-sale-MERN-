@@ -57,54 +57,63 @@ const Sidebar: React.FC = () => {
             icon={<LayoutDashboard />}
             text="Dashboard"
             collapsed={collapsed}
+            title="Dashboard"
           />
           <SidebarLink
             to="/categories"
             icon={<MdCategory size={22} />}
             text="Categories"
             collapsed={collapsed}
+            title="Categories"
           />
           <SidebarLink
             to="/productes"
             icon={<BiLogoProductHunt size={22} />}
             text="Productes"
             collapsed={collapsed}
+            title="Productes"
           />
           <SidebarLink
             to="/retailSale"
             icon={<ShoppingCart />}
             text="Retail Sale"
             collapsed={collapsed}
+            title="Retail Sale"
           />
           <SidebarLink
             to="/wholeSale"
             icon={<ShoppingCart />}
             text="Whole Sale"
             collapsed={collapsed}
+            title="Whole Sale"
           />
           <SidebarLink
             to="/inventory"
             icon={<Package />}
             text="Inventory"
             collapsed={collapsed}
+            title="Inventory"
           />
           <SidebarLink
             to="/transactions"
             icon={<FileText />}
             text="Transactions"
             collapsed={collapsed}
+            title="Transactions"
           />
           <SidebarLink
             to="/customers"
             icon={<Users />}
             text="Customers"
             collapsed={collapsed}
+            title="Customers"
           />
           <SidebarLink
             to="/settings"
             icon={<Settings />}
             text="Settings"
             collapsed={collapsed}
+            title="Settings"
           />
         </div>
       </nav>
@@ -127,6 +136,7 @@ interface SidebarLinkProps {
   icon: React.ReactNode;
   text: string;
   collapsed: boolean;
+  title: string;
 }
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({
@@ -134,10 +144,12 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
   icon,
   text,
   collapsed,
+  title
 }) => {
   return (
     <NavLink
       to={to}
+      title={title}
       className={({ isActive }) =>
         `flex items-center gap-3 px-3 py-2 rounded-md transition-colors
          ${

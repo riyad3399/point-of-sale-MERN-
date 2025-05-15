@@ -45,7 +45,7 @@ const Invoice: React.FC<InvoiceProps> = ({
   const payable = totalAmount - discount;
   const balance = paidAmount - payable;
 
-  // 🧠 Prevent duplicate saving
+  // Prevent duplicate saving
   const invoicePostedRef = useRef(false);
 
   useEffect(() => {
@@ -183,7 +183,7 @@ const Invoice: React.FC<InvoiceProps> = ({
             whileTap={{ scale: 0.95 }}
             whileHover={{ scale: 1.03 }}
             transition={{ type: "spring", stiffness: 300 }}
-            className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 mb-2 rounded-xl shadow-md hover:bg-blue-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200"
+            className="flex items-center gap-2  text-white px-3 py-2 mb-2 rounded-xl shadow-md  btn-primary transition-all duration-200"
           >
             <Printer className="w-4 h-4" />
             Print

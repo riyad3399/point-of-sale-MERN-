@@ -71,3 +71,24 @@ export interface User {
   avatar?: string;
   isActive: boolean;
 }
+
+// invoice type
+export interface InvoiceType  {
+  _id: string;
+  transactionId: number;
+  createdAt: string;
+  dueDate: string;
+  nextDueDate?: string;
+  updatedAt: string;
+  customer: { name: string; phone: string };
+  paymentMethod: string;
+  saleSystem: string;
+  items: { name: string; quantity: number; price: number }[];
+  totals: {
+    total: number;
+    discount: number;
+    payable: number;
+    paid: number;
+    due: number;
+  };
+};
