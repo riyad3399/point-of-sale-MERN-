@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { PrinterIcon, Search, Trash } from "lucide-react";
+import { EditIcon, PrinterIcon, Search, Trash, ViewIcon } from "lucide-react";
 import Loading from "../Loading";
 import Pagination from "../Pagination";
+import { useNavigate } from "react-router-dom";
+import InvoiceDuePaymentModal from "./InvoiceDuePaymentModal";
 import { InvoiceType } from "../../types";
 
 
-
-export default function RetailSaleTab() {
+export default function WholeSaleTab() {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,6 +20,12 @@ export default function RetailSaleTab() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10); // Items per page
+  const [editingInvoice, setEditingInvoice] = useState<InvoiceType | null>(
+    null
+  );
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -31,7 +38,8 @@ export default function RetailSaleTab() {
         setError("Data load করতে সমস্যা হয়েছে");
         setLoading(false);
       });
-  }, []);
+    
+  }, [transactions]);
 
   // Pagination logic
   const startIndex = (page - 1) * pageSize;
@@ -69,6 +77,44 @@ export default function RetailSaleTab() {
       .catch((err) => setError("InvoiceType delete করতে সমস্যা হয়েছে"));
   };
 
+  // handle invoice view
+  const handleInvoiceView = async (id: string) => {
+    await axios.get(`http://localhost:3000/invoice/${id}`).then((res) => {
+      navigate("/invoiceView", { state: { invoice: res.data } });
+    });
+  };
+
+  // Edit modal open handler
+  const handleEdit = (invoice: InvoiceType) => {
+    setEditingInvoice(invoice);
+    setModalOpen(true);
+    console.log(invoice);
+  };
+
+  const handleSaveEdit = async (updatedData: any) => {
+    if (!editingInvoice) return;
+
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/invoice/${editingInvoice._id}`,
+        updatedData
+      );
+
+      // 🧠 update local state:
+      setTransactions((prev) =>
+        prev.map((tx) =>
+          tx._id === editingInvoice._id ? { ...tx, ...res.data } : tx
+        )
+      );
+
+      setModalOpen(false); // modal close
+      setEditingInvoice(null); // reset state
+    } catch (err) {
+      console.error("Update error:", err);
+    }
+  };
+  
+
   // Print Invoice
   const handlePrint = (id: string) => {
     const tx = transactions.find((tx) => tx._id === id);
@@ -77,35 +123,123 @@ export default function RetailSaleTab() {
     const printWindow = window.open("", "", "width=800,height=600");
     printWindow?.document.write(`
       <html>
-        <head><title>Invoice - ${tx.transactionId}</title></head>
-        <body>
+        <head>
+          <title>Invoice - ${tx.transactionId}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 40px;
+              color: #333;
+            }
+            h1 {
+              text-align: center;
+              margin-bottom: 10px;
+            }
+            .section {
+              margin-bottom: 20px;
+            }
+            .customer-info, .invoice-info {
+              font-size: 16px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+            }
+            th, td {
+              border: 1px solid #aaa;
+              padding: 10px;
+              text-align: left;
+            }
+            th {
+              background-color: #f4f4f4;
+            }
+            .totals {
+              text-align: right;
+              font-size: 16px;
+              margin-top: 10px;
+            }
+            .totals div {
+              margin-bottom: 4px;
+            }
+            .footer {
+              margin-top: 40px;
+              text-align: center;
+              font-size: 14px;
+              color: #777;
+            }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
           <h1>Invoice #${tx.transactionId}</h1>
-          <p>Customer: ${tx.customer.name} - ${tx.customer.phone}</p>
-          <table border="1">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tx.items
-                .map(
-                  (item) => `
+    
+          <div class="section customer-info">
+            <strong>Customer:</strong> ${tx.customer.name} (${
+      tx.customer.phone
+    })<br/>
+            <strong>Date:</strong> ${new Date(
+              tx.createdAt
+            ).toLocaleDateString()}
+          </div>
+    
+          <div class="section">
+            <table>
+              <thead>
                 <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>৳${item.price}</td>
-                </tr>`
-                )
-                .join("")}
-            </tbody>
-          </table>
-          <div>Total: ৳${tx.totals.payable}</div>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Price (৳)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tx.items
+                  .map(
+                    (item) => `
+                    <tr>
+                      <td>${item.name}</td>
+                      <td>${item.quantity}</td>
+                      <td>৳${item.price.toFixed(2)}</td>
+                    </tr>`
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+    
+          <div class="section totals">
+            <div><strong>Total:</strong> ৳${tx.totals.total.toFixed(2)}</div>
+            <div><strong>Discount:</strong> ৳${tx.totals.discount.toFixed(
+              2
+            )}</div>
+            <div><strong>Payable:</strong> ৳${tx.totals.payable.toFixed(
+              2
+            )}</div>
+            <div><strong>Paid:</strong> ৳${tx.totals.paid.toFixed(2)}</div>
+            <div><strong>Due:</strong> ৳${tx.totals.due.toFixed(2)}</div>
+            ${
+              tx.dueDate
+                ? `<div><strong>Due Date:</strong> ${new Date(
+                    tx.dueDate
+                  ).toLocaleDateString()}</div>`
+                : ""
+            }
+            ${
+              tx.nextDueDate
+                ? `<div><strong>Next Due Date:</strong> ${new Date(
+                    tx.nextDueDate
+                  ).toLocaleDateString()}</div>`
+                : ""
+            }
+          </div>
+    
+          <div class="footer">
+            Thank you for your business!
+          </div>
         </body>
       </html>
     `);
+    
+    
     printWindow?.document.close();
     printWindow?.print();
   };
@@ -220,12 +354,24 @@ export default function RetailSaleTab() {
                           {tx.paymentMethod}
                         </td>
                         <td className="">
-                          <div className="flex items-center justify-center gap-3">
+                          <div className="flex items-center justify-center gap-2">
                             <button
                               className="text-blue-500 hover:text-blue-700"
                               onClick={() => handlePrint(tx._id)}
                             >
                               <PrinterIcon />
+                            </button>
+                            <button
+                              onClick={() => handleInvoiceView(tx._id)}
+                              className="ml-2 text-blue-500 hover:text-blue-700"
+                            >
+                              <ViewIcon />
+                            </button>
+                            <button
+                              className="ml-2 text-green-500 hover:text-green-700"
+                              onClick={() => handleEdit(tx)}
+                            >
+                              <EditIcon />
                             </button>
                             <button
                               className="ml-2 text-red-500 hover:text-red-700"
@@ -285,6 +431,12 @@ export default function RetailSaleTab() {
           </table>
         </div>
       )}
+      <InvoiceDuePaymentModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        invoice={editingInvoice}
+        onSave={handleSaveEdit}
+      />
 
       {/* Pagination */}
       <div className="flex justify-end">

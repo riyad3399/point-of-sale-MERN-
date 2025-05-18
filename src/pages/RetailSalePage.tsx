@@ -120,10 +120,11 @@ export default function RetailSalePage() {
       const fullProduct = allProduct.find((p) => p._id === item.id);
       if (!fullProduct) return null;
       return {
+        productId: fullProduct._id, // ✅ ঠিক spelling
         name: fullProduct.productName,
         quantity: item.quantity,
         price: fullProduct.retailPrice,
-      };
+      };      
     })
     .filter(Boolean);
 
@@ -131,7 +132,7 @@ export default function RetailSalePage() {
 
   useEffect(() => {
     const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/pos");
+      const res = await axios.get("http://localhost:3000/product");
       const data = await res.data;
       setAllProduct(data);
     };
@@ -224,7 +225,7 @@ export default function RetailSalePage() {
                 >
                   <div className="overflow-hidden inline-block w-full h-28">
                     <img
-                      src={`http://localhost:3000/pos/image/${product._id}`}
+                      src={`http://localhost:3000/product/image/${product._id}`}
                       alt={product.productName}
                       className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md "
                     />
@@ -291,7 +292,7 @@ export default function RetailSalePage() {
                       <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
-                        src={`http://localhost:3000/pos/image/${product._id}`}
+                        src={`http://localhost:3000/product/image/${product._id}`}
                         alt={product.productName}
                         className="object-cover w-full h-full"
                       />

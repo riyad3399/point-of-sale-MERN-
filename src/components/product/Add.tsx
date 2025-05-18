@@ -55,7 +55,7 @@ const Add: React.FC = () => {
         formData.append("photo", data.photo[0]);
       }
 
-      const response = await fetch("http://localhost:3000/pos", {
+      const response = await fetch("http://localhost:3000/product", {
         method: "POST",
         body: formData,
       });

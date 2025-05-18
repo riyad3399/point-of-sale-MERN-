@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -24,65 +25,80 @@ const containerVariants = {
 
 const UpdateProduct: React.FC = ({ product }) => {
   const { register, handleSubmit, reset } = useForm();
+  const [Categories, setCategories] = useState([]);
 
- const onSubmit = async (data: any) => {
-   try {
-     const formData = new FormData();
+  const onSubmit = async (data: any) => {
+    try {
+      const formData = new FormData();
 
-     for (const key in data) {
-       if (key !== "photo") {
-         formData.append(key, data[key]);
-       }
-     }
+      for (const key in data) {
+        if (key !== "photo") {
+          formData.append(key, data[key]);
+        }
+      }
 
-     if (data.photo && data.photo[0]) {
-       formData.append("photo", data.photo[0]);
-     }
+      if (data.photo && data.photo[0]) {
+        formData.append("photo", data.photo[0]);
+      }
 
-     const response = await fetch(`http://localhost:3000/pos/${product._id}`, {
-       method: "PUT",
-       body: formData,
-     });
+      const response = await fetch(
+        `http://localhost:3000/product/${product._id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
 
-     if (response.ok) {
-         Swal.fire("Success!", "Product updated successfully.", "success");
-         console.log(response);
-     } else {
-       Swal.fire(
-         "Error",
-         "Something went wrong while updating the product.",
-         "error"
-       );
-     }
-   } catch (error) {
-     console.error("Error submitting form:", error);
-     Swal.fire("Error", "Network or server error.", "error");
-   }
- };
+      if (response.ok) {
+        Swal.fire("Success!", "Product updated successfully.", "success");
+        console.log(response);
 
+      } else {
+        Swal.fire(
+          "Error",
+          "Something went wrong while updating the product.",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      Swal.fire("Error", "Network or server error.", "error");
+    }
+  };
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        await axios
+          .get("http://localhost:3000/category")
+          .then((res) => setCategories(res.data));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCategory();
+  }, []);
+
+  useEffect(() => {
     
-   useEffect(() => {
-     if (product) {
-       reset({
-         productName: product.productName || "",
-         productCode: product.productCode || "",
-         category: product.category || "",
-         brand: product.brand || "",
-         purchasePrice: product.purchasePrice || "",
-         retailPrice: product.retailPrice || "",
-         wholesalePrice: product.wholesalePrice || "",
-         quantity: product.quantity || "",
-         alertQuantity: product.alertQuantity || "",
-         unit: product.unit || "",
-         tax: product.tax || "",
-         taxType: product.taxType || "",
-         description: product.Description || "",
-        
-       });
-     }
-   }, [product, reset]);
-
-
+    if (product) {
+      reset({
+        productName: product.productName || "",
+        productCode: product.productCode || "",
+        category: product.category?.toLowerCase() || "",
+        brand: product.brand || "",
+        purchasePrice: product.purchasePrice || "",
+        retailPrice: product.retailPrice || "",
+        wholesalePrice: product.wholesalePrice || "",
+        quantity: product.quantity || "",
+        alertQuantity: product.alertQuantity || "",
+        unit: product.unit || "",
+        tax: product.tax || "",
+        taxType: product.taxType || "",
+        description: product.Description || "",
+      });
+    }
+  }, [product, reset]);
 
   return (
     <div className="max-w-2xl max-h-xl ">
@@ -111,7 +127,6 @@ const UpdateProduct: React.FC = ({ product }) => {
               {...register("productName", {
                 required: "Product Name is required",
               })}
-              
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -140,9 +155,14 @@ const UpdateProduct: React.FC = ({ product }) => {
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
               <option value="">Select</option>
-              <option value="electronics">Electronics</option>
-              <option value="clothing">Clothing</option>
-              <option value="groceries">Groceries</option>
+              {Categories.map((cat) => (
+                <option
+                  key={cat.categoryId}
+                  value={cat.categoryName.toLowerCase()}
+                >
+                  {cat.categoryName}
+                </option>
+              ))}
             </select>
           </div>
 

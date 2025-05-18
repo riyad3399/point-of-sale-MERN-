@@ -24,7 +24,7 @@ const ProductesPage: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/pos")
+      .get("http://localhost:3000/product")
       .then((res) => {
         setAllProduct(res.data);
         setLoading(false);

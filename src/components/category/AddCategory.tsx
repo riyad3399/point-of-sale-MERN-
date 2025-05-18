@@ -66,7 +66,7 @@ const AddCategory: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className=" rounded-3xl p-6 w-full mx-auto "
+      className=" rounded-2xl p-6 w-full mx-auto "
     >
       <form onSubmit={handleSubmit(handleCategorySubmit)} className="space-y-5">
         <div className="grid gap-6">

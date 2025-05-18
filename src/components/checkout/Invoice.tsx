@@ -4,6 +4,7 @@ import { Printer } from "lucide-react";
 import axios from "axios";
 
 interface Product {
+  productId: string;
   name: string;
   quantity: number;
   price: number;
@@ -26,7 +27,7 @@ interface InvoiceProps {
   dueDate?: string;
   selectWalking?: Customer;
   customers: Customer[];
-  saleSystemValue: string
+  saleSystemValue: string;
 }
 
 const Invoice: React.FC<InvoiceProps> = ({
@@ -44,6 +45,7 @@ const Invoice: React.FC<InvoiceProps> = ({
 }) => {
   const payable = totalAmount - discount;
   const balance = paidAmount - payable;
+  // console.log(products);
 
   // Prevent duplicate saving
   const invoicePostedRef = useRef(false);
@@ -68,6 +70,7 @@ const Invoice: React.FC<InvoiceProps> = ({
           },
           paymentMethod,
           items: products.map((item) => ({
+            productId: item.productId,
             name: item.name,
             quantity: item.quantity,
             price: item.price,
@@ -85,6 +88,7 @@ const Invoice: React.FC<InvoiceProps> = ({
         });
 
         console.log("✅ Invoice saved:");
+        console.log(response);
       } catch (error) {
         console.error("❌ Error saving invoice:", error);
         invoicePostedRef.current = false; // Retry allowed if error

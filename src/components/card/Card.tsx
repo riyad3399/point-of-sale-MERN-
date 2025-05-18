@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 
 const Card: React.FC = ({ product }) => {
-    console.log(product);
+  console.log(product);
   return (
     <motion.div
       whileHover={{ scale: 1.03 }}
@@ -13,7 +13,7 @@ const Card: React.FC = ({ product }) => {
       {/* Product Image */}
       <div className="relative w-full h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
         <img
-          src={`http://localhost:3000/pos/image/${product._id}`}
+          src={`http://localhost:3000/product/image/${product._id}`}
           alt={product.productName}
           loading="lazy"
           className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300 ease-in-out"

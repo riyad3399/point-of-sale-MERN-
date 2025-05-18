@@ -12,6 +12,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 interface Product {
+  productId: string;
   name: string;
   quantity: number;
   price: number;
@@ -39,6 +40,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   customers,
   addedCustomer,
 }) => {
+  // console.log(products);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);

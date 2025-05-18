@@ -67,7 +67,7 @@ export default function AddCustomer() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.4 }}
-      className="space-y-6 ring-1 ring-blue-400 p-6 rounded-2xl  max-w-2xl mx-auto"
+      className="space-y-6 ring-2 ring-blue-500 p-6 rounded-2xl  max-w-2xl mx-auto"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Name */}

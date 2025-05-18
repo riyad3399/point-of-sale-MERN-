@@ -1,60 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { X, CreditCard, DollarSign, Receipt, CheckCircle } from 'lucide-react';
-import { Product } from '../../types';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { X, CreditCard, DollarSign, Receipt, CheckCircle } from "lucide-react";
+import { Product } from "../../types";
 
 interface CheckoutModalProps {
   onClose: () => void;
 }
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
-
-  const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [transaction, setTransaction] = useState<any>(null);
-    const [allProduct, setAllProduct] = useState<Product[]>([]);
-  
-  
+  const [allProduct, setAllProduct] = useState<Product[]>([]);
+
   const handleCheckout = async () => {
     if (!paymentMethod) return;
-    
+
     setIsProcessing(true);
-    
+
     try {
       const result = await checkout(paymentMethod);
       setTransaction(result);
       setIsComplete(true);
     } catch (error) {
-      console.error('Checkout failed:', error);
+      console.error("Checkout failed:", error);
     } finally {
       setIsProcessing(false);
     }
   };
-  
+
   const overlayVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1 }
+    visible: { opacity: 1 },
   };
-  
+
   const modalVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', damping: 25, stiffness: 300 } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { type: "spring", damping: 25, stiffness: 300 },
+    },
   };
-  
+
   const paymentMethods = [
-    { id: 'cash', label: 'Cash', icon: <DollarSign className="h-5 w-5" /> },
-    { id: 'card', label: 'Credit Card', icon: <CreditCard className="h-5 w-5" /> }
+    { id: "cash", label: "Cash", icon: <DollarSign className="h-5 w-5" /> },
+    {
+      id: "card",
+      label: "Credit Card",
+      icon: <CreditCard className="h-5 w-5" />,
+    },
   ];
-    useEffect(() => {
-      const handleGetProduct = async () => {
-        const res = await axios.get("http://localhost:3000/pos");
-        const data = await res.data;
-        setAllProduct(data);
-      };
-      handleGetProduct();
-    }, []);
-  
+  useEffect(() => {
+    const handleGetProduct = async () => {
+      const res = await axios.get("http://localhost:3000/product");
+      const data = await res.data;
+      setAllProduct(data);
+    };
+    handleGetProduct();
+  }, []);
+
   return (
     <motion.div
       className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"

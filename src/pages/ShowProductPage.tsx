@@ -83,7 +83,7 @@ const ShowProductPage: React.FC = () => {
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             <img
-              src={`http://localhost:3000/pos/image/${singleProduct?._id}`}
+              src={`http://localhost:3000/product/image/${singleProduct?._id}`}
               alt="Product"
               className="w-32 h-32 object-cover rounded-xl border border-gray-300 shadow-sm"
             />

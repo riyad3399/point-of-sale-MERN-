@@ -24,10 +24,10 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
     navigate("/showProduct", { state: { singleProduct, loading } });
   };
 
-  const handleSingleProduct = async (id:string) => {
+  const handleSingleProduct = async (id: string) => {
     setLoading(true);
     await axios
-      .get(`http://localhost:3000/pos/${id}`)
+      .get(`http://localhost:3000/product/${id}`)
       .then((res) => {
         handleViewProduct(res.data);
         setLoading(false);
@@ -51,7 +51,7 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/pos/${id}`);
+        await axios.delete(`http://localhost:3000/product/${id}`);
 
         // Update UI after successful delete
         setAllProduct((prev) => prev.filter((product) => product._id !== id));
@@ -74,9 +74,6 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
     }
   };
 
-
- 
-
   return (
     <motion.tr
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -90,7 +87,7 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 300 }}
             loading="lazy"
-            src={`http://localhost:3000/pos/image/${product._id}`}
+            src={`http://localhost:3000/product/image/${product._id}`}
             alt={product.productName}
             className="object-cover w-full h-full"
           />

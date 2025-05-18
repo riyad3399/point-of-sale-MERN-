@@ -202,7 +202,7 @@ export default function InvoiceDuePaymentModal({
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-5 py-2 rounded-md text-white font-semibold bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50"
+            className="px-5 py-2 rounded-md text-white font-semibold btn-primary transition disabled:opacity-50"
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>

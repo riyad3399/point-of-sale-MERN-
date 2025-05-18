@@ -141,9 +141,9 @@ const CategoriesPage: React.FC = () => {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.4 }}
-              className="relative w-[70%] mx-auto bg-white rounded-3xl shadow-lg p-6"
+              className="relative w-[70%] mx-auto bg-white rounded-2xl ring-2 ring-blue-500 p-6"
             >
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4 ml-5">
                 Add New Category
               </h2>
               <AddCategory />

@@ -29,44 +29,42 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
   const [asignItem, setAsingItem] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const handleDeleteCategory = async (id: string) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
 
- const handleDeleteCategory = async (id: string) => {
-   const result = await Swal.fire({
-     title: "Are you sure?",
-     text: "You won't be able to revert this!",
-     icon: "warning",
-     showCancelButton: true,
-     confirmButtonColor: "#3085d6",
-     cancelButtonColor: "#d33",
-     confirmButtonText: "Yes, delete it!",
-   });
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:3000/category/${id}`);
 
-   if (result.isConfirmed) {
-     try {
-       await axios.delete(`http://localhost:3000/category/${id}`);
+        setCategories((prev) => prev.filter((cat) => cat._id !== id));
 
-       setCategories((prev) => prev.filter((cat) => cat._id !== id));
-
-       Swal.fire({
-         title: "Deleted!",
-         text: "Your category has been deleted.",
-         icon: "success",
-       });
-     } catch (err) {
-       console.error(err);
-       Swal.fire({
-         title: "Error!",
-         text: "Failed to delete the category.",
-         icon: "error",
-       });
-     }
-   }
- };
-
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your category has been deleted.",
+          icon: "success",
+        });
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to delete the category.",
+          icon: "error",
+        });
+      }
+    }
+  };
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/pos")
+      .get("http://localhost:3000/product")
       .then((res) => {
         const data = res.data;
         const filterData = data.filter(

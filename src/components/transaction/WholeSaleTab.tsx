@@ -39,7 +39,7 @@ export default function WholeSaleTab() {
         setLoading(false);
       });
     
-  }, []);
+  }, [transactions]);
 
   // Pagination logic
   const startIndex = (page - 1) * pageSize;
@@ -123,32 +123,118 @@ export default function WholeSaleTab() {
     const printWindow = window.open("", "", "width=800,height=600");
     printWindow?.document.write(`
       <html>
-        <head><title>Invoice - ${tx.transactionId}</title></head>
-        <body>
+        <head>
+          <title>Invoice - ${tx.transactionId}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 40px;
+              color: #333;
+            }
+            h1 {
+              text-align: center;
+              margin-bottom: 10px;
+            }
+            .section {
+              margin-bottom: 20px;
+            }
+            .customer-info, .invoice-info {
+              font-size: 16px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+            }
+            th, td {
+              border: 1px solid #aaa;
+              padding: 10px;
+              text-align: left;
+            }
+            th {
+              background-color: #f4f4f4;
+            }
+            .totals {
+              text-align: right;
+              font-size: 16px;
+              margin-top: 10px;
+            }
+            .totals div {
+              margin-bottom: 4px;
+            }
+            .footer {
+              margin-top: 40px;
+              text-align: center;
+              font-size: 14px;
+              color: #777;
+            }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
           <h1>Invoice #${tx.transactionId}</h1>
-          <p>Customer: ${tx.customer.name} - ${tx.customer.phone}</p>
-          <table border="1">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tx.items
-                .map(
-                  (item) => `
+    
+          <div class="section customer-info">
+            <strong>Customer:</strong> ${tx.customer.name} (${
+      tx.customer.phone
+    })<br/>
+            <strong>Date:</strong> ${new Date(
+              tx.createdAt
+            ).toLocaleDateString()}
+          </div>
+    
+          <div class="section">
+            <table>
+              <thead>
                 <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>৳${item.price}</td>
-                </tr>`
-                )
-                .join("")}
-            </tbody>
-          </table>
-          <div>Total: ৳${tx.totals.payable}</div>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Price (৳)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tx.items
+                  .map(
+                    (item) => `
+                    <tr>
+                      <td>${item.name}</td>
+                      <td>${item.quantity}</td>
+                      <td>৳${item.price.toFixed(2)}</td>
+                    </tr>`
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+    
+          <div class="section totals">
+            <div><strong>Total:</strong> ৳${tx.totals.total.toFixed(2)}</div>
+            <div><strong>Discount:</strong> ৳${tx.totals.discount.toFixed(
+              2
+            )}</div>
+            <div><strong>Payable:</strong> ৳${tx.totals.payable.toFixed(
+              2
+            )}</div>
+            <div><strong>Paid:</strong> ৳${tx.totals.paid.toFixed(2)}</div>
+            <div><strong>Due:</strong> ৳${tx.totals.due.toFixed(2)}</div>
+            ${
+              tx.dueDate
+                ? `<div><strong>Due Date:</strong> ${new Date(
+                    tx.dueDate
+                  ).toLocaleDateString()}</div>`
+                : ""
+            }
+            ${
+              tx.nextDueDate
+                ? `<div><strong>Next Due Date:</strong> ${new Date(
+                    tx.nextDueDate
+                  ).toLocaleDateString()}</div>`
+                : ""
+            }
+          </div>
+    
+          <div class="footer">
+            Thank you for your business!
+          </div>
         </body>
       </html>
     `);

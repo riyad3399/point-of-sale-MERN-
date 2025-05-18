@@ -1,6 +1,9 @@
+import axios from "axios";
 import { motion } from "framer-motion";
-import { ShoppingCart } from "lucide-react";
+import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import ViewPaymentDetailsModal from "./ViewPaymentDetailsModal";
+import { useState } from "react";
 
 interface InvoiceType {
   invoice: {
@@ -25,12 +28,43 @@ interface InvoiceType {
 export default function InvoiceView() {
   const location = useLocation();
   const { invoice }: InvoiceType = location.state || {};
+  const [isOpen, setIsOpen] = useState(false);
+  const [paymentDetailsData, setPaymentDetailsData] = useState([]);
+
+  const handlePaymentDetailsView = async (id: number) => {
+    await axios
+      .get(`http://localhost:3000/invoice/${id}/payment-details`)
+      .then((res) => {
+        const data = res.data;
+        setPaymentDetailsData(data);
+        console.log(data);
+      });
+    setIsOpen(true);
+  };
 
   return (
     <div className="max-w-5xl mx-auto">
-      <Link to="/transactions" className="btn-primary mb-3">
-        Back
-      </Link>
+      {isOpen && (
+        <ViewPaymentDetailsModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          paymentDetailsData={paymentDetailsData}
+        />
+      )}
+      <div className="flex justify-between">
+        <Link to="/transactions">
+          <button className="flex mb-4 items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition duration-200 shadow-sm">
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+        </Link>
+        <button
+          onClick={() => handlePaymentDetailsView(invoice.transactionId)}
+          className="btn-primary mb-3"
+        >
+          View Payment Details
+        </button>
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

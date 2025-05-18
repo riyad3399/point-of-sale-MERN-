@@ -114,13 +114,13 @@ export default function WholeSalePage() {
       setOpen(true);
     }
   };
-  
 
   const productsInCart = cart
     .map((item) => {
       const fullProduct = allProduct.find((p) => p._id === item.id);
       if (!fullProduct) return null;
       return {
+        productId: fullProduct._id,
         name: fullProduct.productName,
         quantity: item.quantity,
         price: fullProduct.wholesalePrice,
@@ -132,34 +132,33 @@ export default function WholeSalePage() {
 
   useEffect(() => {
     const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/pos");
+      const res = await axios.get("http://localhost:3000/product");
       const data = await res.data;
       setAllProduct(data);
     };
 
-      axios.get("http://localhost:3000/customer").then((res) => {
-        const options = res.data.map((customer: any) => ({
-          value: customer.customerId,
-          label: `${customer.customerName} | ${customer.phone}`,
-          customerName: customer.customerName.toLowerCase(),
-          phone: customer.phone,
-        }));
+    axios.get("http://localhost:3000/customer").then((res) => {
+      const options = res.data.map((customer: any) => ({
+        value: customer.customerId,
+        label: `${customer.customerName} | ${customer.phone}`,
+        customerName: customer.customerName.toLowerCase(),
+        phone: customer.phone,
+      }));
 
-        const optionsWithWalkingCustomer = [
-          {
-            value: "walking",
-            label: "🚶 Walking Customer",
-            phone: "",
-            customerName: "",
-          },
-          ...options,
-        ];
-        setCustomers(optionsWithWalkingCustomer);
-      });
+      const optionsWithWalkingCustomer = [
+        {
+          value: "walking",
+          label: "🚶 Walking Customer",
+          phone: "",
+          customerName: "",
+        },
+        ...options,
+      ];
+      setCustomers(optionsWithWalkingCustomer);
+    });
 
     handleGetProduct();
   }, []);
-
 
   return (
     <div className=" min-h-screen ">
@@ -226,7 +225,7 @@ export default function WholeSalePage() {
                 >
                   <div className="overflow-hidden inline-block w-full h-28">
                     <img
-                      src={`http://localhost:3000/pos/image/${product._id}`}
+                      src={`http://localhost:3000/product/image/${product._id}`}
                       alt={product.productName}
                       className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md "
                     />
@@ -293,7 +292,7 @@ export default function WholeSalePage() {
                       <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
-                        src={`http://localhost:3000/pos/image/${product._id}`}
+                        src={`http://localhost:3000/product/image/${product._id}`}
                         alt={product.productName}
                         className="object-cover w-full h-full"
                       />
