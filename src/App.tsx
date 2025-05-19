@@ -19,7 +19,7 @@ import CustomersPage from "./pages/CustomersPage";
 import RetailSalePage from "./pages/RetailSalePage";
 import WholeSalePage from "./pages/WholeSalePage";
 import InvoiceView from "./components/transaction/InvoiceView";
-import ViewPaymentDetailsModal from "./components/transaction/ViewPaymentDetailsModal";
+import ReportPage from "./pages/ReportPage";
 
 function App() {
   return (
@@ -41,6 +41,7 @@ function App() {
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="customers" element={<CustomersPage />} />
+          <Route path="report" element={<ReportPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 

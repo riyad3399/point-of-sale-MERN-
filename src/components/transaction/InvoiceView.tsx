@@ -1,6 +1,6 @@
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, View } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ViewPaymentDetailsModal from "./ViewPaymentDetailsModal";
 import { useState } from "react";
@@ -60,9 +60,9 @@ export default function InvoiceView() {
         </Link>
         <button
           onClick={() => handlePaymentDetailsView(invoice.transactionId)}
-          className="btn-primary mb-3"
+          className="btn-primary mb-3 flex items-center gap-2"
         >
-          View Payment Details
+          <View/> Details
         </button>
       </div>
       <motion.div

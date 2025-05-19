@@ -4,6 +4,32 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import axios from "axios";
 
+interface CategoryType {
+  categoryId: string;
+  categoryName: string;
+}
+
+interface ProductType {
+  _id: string;
+  productName: string;
+  productCode: string;
+  category: string;
+  brand: string;
+  purchasePrice: number;
+  retailPrice: number;
+  wholesalePrice: number;
+  quantity: number;
+  alertQuantity: number;
+  unit: string;
+  tax: number;
+  taxType: string;
+  description: string;
+}
+
+interface UpdateProductProps {
+  product: ProductType;
+}
+
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0 },
@@ -23,12 +49,20 @@ const containerVariants = {
   },
 };
 
-const UpdateProduct: React.FC = ({ product }) => {
-  const { register, handleSubmit, reset } = useForm();
-  const [Categories, setCategories] = useState([]);
+const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: any) => {
     try {
+      setLoading(true);
       const formData = new FormData();
 
       for (const key in data) {
@@ -44,34 +78,40 @@ const UpdateProduct: React.FC = ({ product }) => {
       const response = await fetch(
         `http://localhost:3000/product/${product._id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           body: formData,
         }
       );
 
-      if (response.ok) {
-        Swal.fire("Success!", "Product updated successfully.", "success");
-        console.log(response);
+      const result = await response.json();
 
+      if (response.ok) {
+        Swal.fire(
+          "Success!",
+          result.message || "Product updated successfully.",
+          "success"
+        );
+        reset(data);
       } else {
         Swal.fire(
           "Error",
-          "Something went wrong while updating the product.",
+          result.message || "Failed to update product.",
           "error"
         );
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error:", error);
       Swal.fire("Error", "Network or server error.", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        await axios
-          .get("http://localhost:3000/category")
-          .then((res) => setCategories(res.data));
+        const res = await axios.get("http://localhost:3000/category");
+        setCategories(res.data);
       } catch (err) {
         console.log(err);
       }
@@ -80,12 +120,11 @@ const UpdateProduct: React.FC = ({ product }) => {
   }, []);
 
   useEffect(() => {
-    
     if (product) {
       reset({
         productName: product.productName || "",
         productCode: product.productCode || "",
-        category: product.category?.toLowerCase() || "",
+        category: product.category || "",
         brand: product.brand || "",
         purchasePrice: product.purchasePrice || "",
         retailPrice: product.retailPrice || "",
@@ -95,13 +134,15 @@ const UpdateProduct: React.FC = ({ product }) => {
         unit: product.unit || "",
         tax: product.tax || "",
         taxType: product.taxType || "",
-        description: product.Description || "",
+        description: product.description || "",
       });
     }
   }, [product, reset]);
 
+  // const filterCategory= categories.find(cat => cat.categoryId === reset.)
+
   return (
-    <div className="max-w-2xl max-h-xl ">
+    <div className="max-w-2xl">
       <motion.h2
         variants={fieldVariants}
         className="text-2xl font-semibold text-gray-800 mb-6"
@@ -116,7 +157,7 @@ const UpdateProduct: React.FC = ({ product }) => {
         initial="hidden"
         animate="visible"
       >
-        {/* Product Name and Product Code */}
+        {/* Product Name & Code */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
@@ -127,43 +168,54 @@ const UpdateProduct: React.FC = ({ product }) => {
               {...register("productName", {
                 required: "Product Name is required",
               })}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
+            {errors.productName && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.productName.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700 flex justify-between">
+            <label className="text-sm font-medium text-gray-700">
               Product Code / SKU
             </label>
             <input
               type="text"
               {...register("productCode")}
               readOnly
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-600"
+              className="mt-1 w-full px-4 py-2 border rounded-xl bg-gray-100 text-gray-600"
             />
           </div>
         </motion.div>
 
-        {/* Category and Brand */}
+        {/* Category & Brand */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
               Category
             </label>
             <select
-              {...register("category", { required: "Category is required" })}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              {...register("category")}
+              
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select</option>
-              {Categories.map((cat) => (
+              {categories.map((cat) => (
                 <option
                   key={cat.categoryId}
-                  value={cat.categoryName.toLowerCase()}
+                  value={cat.categoryName}
                 >
                   {cat.categoryName}
                 </option>
               ))}
             </select>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.category.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -171,92 +223,105 @@ const UpdateProduct: React.FC = ({ product }) => {
             <input
               type="text"
               {...register("brand")}
-              placeholder="e.g. Apple"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </motion.div>
 
-        {/* Prices and Quantity */}
+        {/* Prices & Quantity */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Purchase Price (ক্রয় মূল্য)
+              Purchase Price
             </label>
             <input
               type="number"
               {...register("purchasePrice", {
                 required: "Purchase Price is required",
               })}
-              placeholder="e.g. 999.99"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
+            {errors.purchasePrice && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.purchasePrice.message}
+              </p>
+            )}
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Retail Price (খুচরা মূল্য)
+              Retail Price
             </label>
             <input
               type="number"
               {...register("retailPrice", {
                 required: "Retail Price is required",
               })}
-              placeholder="e.g. 1099.99"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
+            {errors.retailPrice && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.retailPrice.message}
+              </p>
+            )}
           </div>
         </motion.div>
 
+        {/* Wholesale Price & Quantity */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Wholesale Price (পাইকারি মূল্য)
+              Wholesale Price
             </label>
             <input
               type="number"
               {...register("wholesalePrice", {
                 required: "Wholesale Price is required",
               })}
-              placeholder="e.g. 950.00"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
+            {errors.wholesalePrice && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.wholesalePrice.message}
+              </p>
+            )}
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Quantity (পরিমাণ)
+              Quantity
             </label>
             <input
               type="number"
               {...register("quantity", { required: "Quantity is required" })}
-              placeholder="e.g. 100"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
+            {errors.quantity && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.quantity.message}
+              </p>
+            )}
           </div>
         </motion.div>
 
-        {/* Alert Quantity and Unit */}
+        {/* Alert & Unit */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Alert Quantity (সতর্কীকরণ)
+              Alert Quantity
             </label>
             <input
               type="number"
               {...register("alertQuantity")}
-              placeholder="e.g. 10"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">
-              Unit (একক)
-            </label>
+            <label className="text-sm font-medium text-gray-700">Unit</label>
             <select
               {...register("unit")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select</option>
               <option value="pcs">Pcs</option>
@@ -266,15 +331,14 @@ const UpdateProduct: React.FC = ({ product }) => {
           </div>
         </motion.div>
 
-        {/* Tax and Tax Type */}
+        {/* Tax & Tax Type */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">Tax (%)</label>
             <input
               type="number"
               {...register("tax")}
-              placeholder="e.g. 15"
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -284,7 +348,7 @@ const UpdateProduct: React.FC = ({ product }) => {
             </label>
             <select
               {...register("taxType")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select</option>
               <option value="inclusive">Inclusive</option>
@@ -300,31 +364,31 @@ const UpdateProduct: React.FC = ({ product }) => {
           </label>
           <textarea
             {...register("description")}
-            placeholder="Write a short product description..."
             rows={3}
-            className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
           />
         </motion.div>
 
-        {/* Photo Upload */}
+        {/* Photo */}
         <motion.div variants={fieldVariants}>
           <label className="text-sm font-medium text-gray-700">Photo</label>
           <input
             type="file"
             {...register("photo")}
-            className="block w-full mt-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+            className="block w-full mt-2 text-sm text-gray-500 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
           />
         </motion.div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <motion.div variants={fieldVariants}>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
             type="submit"
-            className="w-full  text-white py-3 rounded-xl font-semibold btn-primary transition duration-200"
+            disabled={loading}
+            className="w-full py-3 rounded-xl text-white font-semibold bg-blue-600 hover:bg-blue-700 transition duration-200"
           >
-            Update Product
+            {loading ? "Updating..." : "Update Product"}
           </motion.button>
         </motion.div>
       </motion.form>

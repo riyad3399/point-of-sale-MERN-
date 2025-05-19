@@ -161,7 +161,7 @@ export default function WholeSalePage() {
   }, []);
 
   return (
-    <div className=" min-h-screen ">
+    <div className="">
       <div className="my-2">
         <SearchableDropdown
           customers={customers}
@@ -173,7 +173,7 @@ export default function WholeSalePage() {
 
       <div className="flex flex-col lg:flex-row gap-6 mt-4 p-4 shadow-sm rounded-md">
         {/* Product List */}
-        <div className="flex-1">
+        <div className=" flex-1 ">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <input
               type="text"
@@ -195,56 +195,58 @@ export default function WholeSalePage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProducts.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="col-span-full text-center py-20 text-gray-400"
-              >
-                <img
-                  src="/images/empty-box.png"
-                  alt="No products"
-                  className="mx-auto mb-4 h-24 opacity-70"
-                />
-                <p className="text-lg font-medium">No products found</p>
-                <p className="text-sm text-gray-500">
-                  Try changing the search or category filter
-                </p>
-              </motion.div>
-            ) : (
-              filteredProducts.map((product) => (
+          <div className="max-h-screen overflow-y-auto py-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredProducts.length === 0 ? (
                 <motion.div
-                  key={product._id}
-                  className="bg-white rounded-xl shadow-md hover:shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 w-full"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  onClick={() => addToCart(product._id)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="col-span-full text-center py-20 text-gray-400"
                 >
-                  <div className="overflow-hidden inline-block w-full h-28">
-                    <img
-                      src={`http://localhost:3000/product/image/${product._id}`}
-                      alt={product.productName}
-                      className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md "
-                    />
-                  </div>
-                  <div className="p-2">
-                    <h2 className="font-semibold text-sm  text-gray-800">
-                      {product.productName}
-                    </h2>
-                    <p className="text-blue-600 font-bold text-sm mt-2 flex items-center gap-1">
-                      <span>
-                        {" "}
-                        <TbCurrencyTaka size={20} />
-                      </span>
-                      {product.wholesalePrice.toFixed(2)}
-                    </p>
-                  </div>
+                  <img
+                    src="/images/empty-box.png"
+                    alt="No products"
+                    className="mx-auto mb-4 h-24 opacity-70"
+                  />
+                  <p className="text-lg font-medium">No products found</p>
+                  <p className="text-sm text-gray-500">
+                    Try changing the search or category filter
+                  </p>
                 </motion.div>
-              ))
-            )}
+              ) : (
+                filteredProducts.map((product) => (
+                  <motion.div
+                    key={product._id}
+                    className="bg-white rounded-xl shadow-md hover:shadow-xl cursor-pointer transform transition-all duration-300 hover:scale-105 w-full"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    onClick={() => addToCart(product._id)}
+                  >
+                    <div className="overflow-hidden inline-block w-full h-28">
+                      <img
+                        src={`http://localhost:3000/product/image/${product._id}`}
+                        alt={product.productName}
+                        className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md "
+                      />
+                    </div>
+                    <div className="p-2">
+                      <h2 className="font-semibold text-sm  text-gray-800">
+                        {product.productName}
+                      </h2>
+                      <p className="text-blue-600 font-bold text-sm mt-2 flex items-center gap-1">
+                        <span>
+                          {" "}
+                          <TbCurrencyTaka size={20} />
+                        </span>
+                        {product.wholesalePrice.toFixed(2)}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
@@ -268,7 +270,7 @@ export default function WholeSalePage() {
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1 space-y-4 py-2">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-4 py-2 ">
             <AnimatePresence>
               {cart.map(({ id, quantity }) => {
                 const product = allProduct.find((p) => p._id === id);

@@ -35,7 +35,6 @@ export interface Product {
 //   __v?: number; // Mongoose version key
 // }
 
-
 // Cart types
 
 export interface CartItem {
@@ -57,7 +56,7 @@ export interface Transaction {
   paymentMethod: string;
   cashierName: string;
   timestamp: string;
-  status: 'completed' | 'refunded' | 'voided';
+  status: "completed" | "refunded" | "voided";
   notes?: string;
 }
 
@@ -67,13 +66,13 @@ export interface User {
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'cashier' | 'manager';
+  role: "admin" | "cashier" | "manager";
   avatar?: string;
   isActive: boolean;
 }
 
 // invoice type
-export interface InvoiceType  {
+export interface InvoiceType {
   _id: string;
   transactionId: number;
   createdAt: string;
@@ -91,4 +90,12 @@ export interface InvoiceType  {
     paid: number;
     due: number;
   };
-};
+  paymentDetails?: {
+    _id: string;
+    currentPaymentDate: string;
+    discount: number;
+    paid: number;
+    nextDueAmount: number;
+    nextDueDate: string;
+  }[];
+}

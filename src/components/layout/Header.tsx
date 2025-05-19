@@ -1,39 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Menu, Bell, Search } from "lucide-react";
+import { Menu, Bell } from "lucide-react";
 import axios from "axios";
 
 const Header: React.FC = () => {
-  const [showUserMenu, setShowUserMenu] = React.useState(false);
-  const [productes, setProductes] = useState([]);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
   const [lowStockItems, setLowStockItems] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-
+ 
   useEffect(() => {
-    axios.get("http://localhost:3000/product").then((res) => {
-      setProductes(res.data);
+    // Initial fetch
+    fetchProducts();
 
-      const lowStock = res.data.filter(
-        (item: any) => item.quantity < item.alertQuantity
-      );
-      setLowStockItems(lowStock);
-    });
-  }, [lowStockItems]);
+    // Auto fetch every 10 seconds
+    const interval = setInterval(() => {
+      fetchProducts();
+    }, 10000); // 10000 ms = 10 seconds
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
   
 
-  console.log(productes);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/product");
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
+
+  // 2. Watch for low stock whenever products change
+  useEffect(() => {
+    const lowStock = products.filter(
+      (item) => item.quantity <= item.alertQuantity
+    );
+    setLowStockItems(lowStock);
+  }, [products]);
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
       <div className="px-4 md:px-6 py-3 flex items-center justify-end">
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Menu */}
         <div className="md:hidden">
           <button className="btn-outline btn-sm mr-2">
             <Menu className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Right Side - User */}
+        {/* Right Section */}
         <div className="flex items-center gap-4">
           {/* Notifications */}
           <div className="relative">

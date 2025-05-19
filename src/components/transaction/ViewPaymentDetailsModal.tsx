@@ -13,14 +13,23 @@ type PaymentDetail = {
 type PaymentDetailsProps = {
   isOpen: boolean;
   setIsOpen: (val: boolean) => void;
-  paymentDetailsData: PaymentDetail[];
+  paymentDetailsData: {
+    customer: {
+      name: string;
+      phone: string;
+    };
+    paymentDetails: PaymentDetail[];
+  };
 };
+
 
 const ViewPaymentDetailsModal = ({
   isOpen,
   setIsOpen,
   paymentDetailsData,
 }: PaymentDetailsProps) => {
+  const { paymentDetails, customer } = paymentDetailsData;
+  console.log(paymentDetails, customer);
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -66,7 +75,7 @@ const ViewPaymentDetailsModal = ({
             </style>
           </head>
           <body>
-            <h1>Sunoda POS</h1>
+            <h1>Alim Traders</h1>
             <h2>Customer Payment History</h2>
             ${printContents}
             <p style="text-align:center;margin-top:40px;">--- End of Report ---</p>
@@ -112,23 +121,25 @@ const ViewPaymentDetailsModal = ({
           </div>
 
           {/* Print Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handlePrint}
-            className="mb-4 w-fit btn-primary text-white py-2 rounded-xl font-semibold shadow flex items-center justify-center gap-2"
-          >
-            <Printer className="w-4 h-4" />
-            Print
-          </motion.button>
+          {paymentDetails.length > 0 && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handlePrint}
+              className="mb-4 w-fit btn-primary text-white py-2 rounded-xl font-semibold shadow flex items-center justify-center gap-2"
+            >
+              <Printer className="w-4 h-4" />
+              Print
+            </motion.button>
+          )}
 
           {/* Payment Details */}
           <div
             id="printable-area"
             className="overflow-y-auto flex-1 space-y-4 pr-2"
           >
-            {paymentDetailsData.length > 0 ? (
-              paymentDetailsData.map((payment, index) => (
+            {paymentDetails.length > 0 ? (
+              paymentDetails.map((payment, index) => (
                 <motion.div
                   key={payment._id || index}
                   initial={{ opacity: 0, y: 10 }}
@@ -137,23 +148,23 @@ const ViewPaymentDetailsModal = ({
                   className="print-box bg-gray-50 p-4 rounded-xl border"
                 >
                   <p>
-                    <span className="label">🗓 Payment Date:</span>{" "}
+                    <span className="label">Payment Date:</span>{" "}
                     {formatDate(payment.currentPaymentDate)}
                   </p>
                   <p>
-                    <span className="label">🎁 Discount:</span> ৳
+                    <span className="label">Discount:</span> ৳
                     {payment.discount.toFixed(2)}
                   </p>
                   <p>
-                    <span className="label">💸 Paid:</span> ৳
+                    <span className="label">Paid:</span> ৳
                     {payment.paid.toFixed(2)}
                   </p>
                   <p>
-                    <span className="label">📌 Next Due Amount:</span> ৳
+                    <span className="label">Next Due Amount:</span> ৳
                     {payment.nextDueAmount.toFixed(2)}
                   </p>
                   <p>
-                    <span className="label">📅 Next Due Date:</span>{" "}
+                    <span className="label">Next Due Date:</span>{" "}
                     {formatDate(payment.nextDueDate)}
                   </p>
                 </motion.div>

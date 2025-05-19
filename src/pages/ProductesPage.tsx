@@ -87,6 +87,10 @@ const ProductesPage: React.FC = () => {
               transition={{ duration: 0.3 }}
               className="card overflow-hidden"
             >
+              <div>
+                <input type="search" name="" id="" />
+               
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>

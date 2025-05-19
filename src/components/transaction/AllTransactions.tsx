@@ -117,6 +117,8 @@ export default function AllTransactions() {
     const tx = transactions.find((tx) => tx._id === id);
     if (!tx) return;
 
+   
+
     const printWindow = window.open("", "", "width=800,height=600");
     printWindow?.document.write(`
       <html>
@@ -129,8 +131,7 @@ export default function AllTransactions() {
               color: #333;
             }
             h1 {
-              text-align: center;
-              margin-bottom: 10px;
+              margin: 0;
             }
             .section {
               margin-bottom: 20px;
@@ -165,10 +166,22 @@ export default function AllTransactions() {
               font-size: 14px;
               color: #777;
             }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            }
+            .header img {
+              height: 60px;
+            }
           </style>
         </head>
-        <body onload="window.print(); window.close();">
-          <h1>Invoice #${tx.transactionId}</h1>
+        <body>
+          <div class="header">
+            <div><h1>Invoice #${tx.transactionId}</h1></div>
+            <img id="invoiceLogo" src="https://i.ibb.co/mHZkPKd/r-logo.png" alt="Logo" />
+          </div>
     
           <div class="section customer-info">
             <strong>Customer:</strong> ${tx.customer.name} (${
@@ -203,38 +216,88 @@ export default function AllTransactions() {
             </table>
           </div>
     
-          <div class="section totals">
-            <div><strong>Total:</strong> ৳${tx.totals.total.toFixed(2)}</div>
-            <div><strong>Discount:</strong> ৳${tx.totals.discount.toFixed(
-              2
-            )}</div>
-            <div><strong>Payable:</strong> ৳${tx.totals.payable.toFixed(
-              2
-            )}</div>
-            <div><strong>Paid:</strong> ৳${tx.totals.paid.toFixed(2)}</div>
-            <div><strong>Due:</strong> ৳${tx.totals.due.toFixed(2)}</div>
-            ${
-              tx.dueDate
-                ? `<div><strong>Due Date:</strong> ${new Date(
-                    tx.dueDate
-                  ).toLocaleDateString()}</div>`
-                : ""
-            }
-            ${
-              tx.nextDueDate
-                ? `<div><strong>Next Due Date:</strong> ${new Date(
-                    tx.nextDueDate
-                  ).toLocaleDateString()}</div>`
-                : ""
-            }
+          <div class="section totals" style="display:flex; justify-content: space-between;align-items:flex-start; text-align: right">
+            <div style=" text-align: justify; text-align-last: left;">
+              <div><strong>Total:</strong> ৳${tx.totals.total.toFixed(2)}</div>
+              <div><strong>Discount:</strong> ৳${tx.totals.discount.toFixed(
+                2
+              )}</div>
+            </div>
+            <div style=" text-align: justify; text-align-last: left;">
+              <div><strong>Payable:</strong> ৳${tx.totals.payable.toFixed(
+                2
+              )}</div>
+              <div><strong>Paid:</strong> ৳${tx.totals.paid.toFixed(2)}</div>
+            </div>
+            <div style=" text-align: justify; text-align-last: left;">
+              <div><strong>Due:</strong> ৳${tx.totals.due.toFixed(2)}</div>
+              ${
+                tx.dueDate
+                  ? `<div><strong>Due Date:</strong> ${new Date(
+                      tx.dueDate
+                    ).toLocaleDateString()}</div>`
+                  : ""
+              }
+              ${
+                tx.nextDueDate
+                  ? `<div><strong>Next Due Date:</strong> ${new Date(
+                      tx.nextDueDate
+                    ).toLocaleDateString()}</div>`
+                  : ""
+              }
+            </div>
           </div>
+    
+          ${
+            tx.paymentDetails && tx.paymentDetails.length > 0
+              ? `
+          <div class="section">
+            <h3 style="margin-top: 40px; font-size: 16px;">Payment History</h3>
+            ${tx.paymentDetails
+              .map(
+                (p) => `
+              <div style="border: 1px solid #ccc; border-radius: 6px; padding: 10px; margin-bottom: 10px; font-size: 14px;">
+                <div><strong>Payment Date:</strong> ${new Date(
+                  p.currentPaymentDate
+                ).toLocaleDateString()}</div>
+                <div><strong>Discount:</strong> ৳${p.discount.toFixed(2)}</div>
+                <div><strong>Paid:</strong> ৳${p.paid.toFixed(2)}</div>
+                <div><strong>Next Due Amount:</strong> ৳${p.nextDueAmount.toFixed(
+                  2
+                )}</div>
+                <div><strong>Next Due Date:</strong> ${new Date(
+                  p.nextDueDate
+                ).toLocaleDateString()}</div>
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+          `
+              : ""
+          }
     
           <div class="footer">
             Thank you for your business!
           </div>
+    
+          <script>
+            const logo = document.getElementById('invoiceLogo');
+            if (logo.complete) {
+              window.print();
+              window.close();
+            } else {
+              logo.onload = () => {
+                window.print();
+                window.close();
+              };
+            }
+          </script>
         </body>
       </html>
     `);
+    
+
     printWindow?.document.close();
     printWindow?.print();
   };

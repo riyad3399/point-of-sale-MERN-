@@ -10,6 +10,8 @@ import {
   Settings,
   CreditCard,
   Users,
+  ClipboardList,
+  ScrollText,
 } from "lucide-react";
 import { MdCategory } from "react-icons/md";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -101,12 +103,20 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title="Transactions"
           />
+
           <SidebarLink
             to="/customers"
             icon={<Users />}
             text="Customers"
             collapsed={collapsed}
             title="Customers"
+          />
+          <SidebarLink
+            to="/report"
+            icon={<ScrollText />}
+            text="Report"
+            collapsed={collapsed}
+            title="Report"
           />
           <SidebarLink
             to="/settings"
