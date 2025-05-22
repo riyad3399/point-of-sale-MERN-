@@ -94,7 +94,7 @@ export default function CustomerTabs() {
                     <ShowCustomerList
                       customer={customer}
                       setCustomers={setCustomers}
-                      key={customer.customreId}
+                      key={idx}
                       index={indexOfFirst + idx + 1} // serial number
                     />
                   ))}

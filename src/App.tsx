@@ -19,7 +19,8 @@ import CustomersPage from "./pages/CustomersPage";
 import RetailSalePage from "./pages/RetailSalePage";
 import WholeSalePage from "./pages/WholeSalePage";
 import InvoiceView from "./components/transaction/InvoiceView";
-import ReportPage from "./pages/ReportPage";
+import ReportStatementPage from "./pages/ReportStatementPage";
+import ShowReportStatement from "./components/report/ShowReportStatement";
 
 function App() {
   return (
@@ -41,7 +42,8 @@ function App() {
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="customers" element={<CustomersPage />} />
-          <Route path="report" element={<ReportPage />} />
+          <Route path="reportStatement" element={<ReportStatementPage />} />
+          <Route path="showReportStatement" element={<ShowReportStatement />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 

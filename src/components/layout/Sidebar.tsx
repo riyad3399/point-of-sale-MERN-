@@ -12,25 +12,32 @@ import {
   Users,
   ClipboardList,
   ScrollText,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { MdCategory } from "react-icons/md";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
-  const pathName = location.pathname
+  const pathName = location.pathname;
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [reportOpen, setReportOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setCollapsed(pathName === "/retailSale" || pathName === "/wholeSale");
+
+    // Auto open dropdown if under /report
+    if (pathName.startsWith("/report")) {
+      setReportOpen(true);
+    }
   }, [pathName]);
 
   return (
     <aside
       className={`hidden md:flex ${collapsed ? "w-20" : "w-64"} 
-      bg-primary-600 text-white flex-col h-screen sticky top-0 transition-all duration-300`}
+      bg-primary-600 text-white flex-col h-screen sticky top-0 transition-all duration-300 overflow-y-auto `}
     >
-      {/* Header with Toggle Button */}
+      {/* Header */}
       <div className="flex justify-between items-center px-4 py-6">
         {!collapsed && (
           <motion.div
@@ -103,7 +110,6 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title="Transactions"
           />
-
           <SidebarLink
             to="/customers"
             icon={<Users />}
@@ -111,13 +117,46 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title="Customers"
           />
-          <SidebarLink
-            to="/report"
-            icon={<ScrollText />}
-            text="Report"
-            collapsed={collapsed}
-            title="Report"
-          />
+
+          {/* Dropdown for Report */}
+          <button
+            onClick={() => setReportOpen(!reportOpen)}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors
+              ${
+                pathName.startsWith("/report")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+          >
+            <ScrollText />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">Report</span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: reportOpen ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </button>
+
+          {/* Dropdown Items */}
+          {reportOpen && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/reportStatement"
+                icon={<ClipboardList size={16} />}
+                text="Statement"
+                collapsed={collapsed}
+                title="Statement"
+              />
+            </motion.div>
+          )}
+
           <SidebarLink
             to="/settings"
             icon={<Settings />}
@@ -154,7 +193,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
   icon,
   text,
   collapsed,
-  title
+  title,
 }) => {
   return (
     <NavLink
