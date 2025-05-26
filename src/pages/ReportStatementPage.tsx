@@ -26,7 +26,9 @@ export default function ReportStatementPage() {
 
       if (res.data) {
         console.log(res.data);
-        navigate("/showReportStatement", { state: res.data });
+        navigate("/showReportStatement", {
+          state: { reportData: res.data, fromDate, toDate },
+        });
       }
     } catch (err) {
       console.error(err);
@@ -82,7 +84,7 @@ export default function ReportStatementPage() {
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.03 }}
           onClick={handleSearch}
-          className="bg-blue-600 hover:bg-blue-700 transition-all text-white font-medium px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow"
+          className="btn-primary transition-all text-white font-medium px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow"
         >
           🔍 Search Report
         </motion.button>

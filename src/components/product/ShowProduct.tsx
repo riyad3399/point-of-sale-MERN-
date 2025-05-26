@@ -94,7 +94,25 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
         </div>
       </td>
       <td className="px-4 py-3 border">{product.productCode}</td>
-      <td className="px-4 py-3 border">{product.productName}</td>
+      <td className="px-4 py-3 border flex flex-col">
+        {product.productName}{" "}
+        <span className="flex justify-between mt-1.5 text-sm">
+          <span>Size: {product.size}</span>
+          <span className="flex items-center">
+            <span>Color: </span>
+            {product.color && (
+              <span
+                title={product.color}
+                style={{
+                  height: 12,
+                  width: 12,
+                  backgroundColor: product.color,
+                }}
+              ></span>
+            )}
+          </span>
+        </span>
+      </td>
       <td className="px-4 py-3 border">{product.category}</td>
       <td className="px-4 py-3 border text-center">{product.quantity}</td>
       <td className="px-4 py-3 border">

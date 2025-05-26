@@ -23,6 +23,8 @@ interface ProductType {
   unit: string;
   tax: number;
   taxType: string;
+  size: string;
+  color: string;
   description: string;
 }
 
@@ -134,6 +136,8 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
         unit: product.unit || "",
         tax: product.tax || "",
         taxType: product.taxType || "",
+        size:product.size || "",
+        color:product.color || "",
         description: product.description || "",
       });
     }
@@ -142,7 +146,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
   // const filterCategory= categories.find(cat => cat.categoryId === reset.)
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl p-6">
       <motion.h2
         variants={fieldVariants}
         className="text-2xl font-semibold text-gray-800 mb-6"
@@ -198,15 +202,11 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
             </label>
             <select
               {...register("category")}
-              
               className="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select</option>
               {categories.map((cat) => (
-                <option
-                  key={cat.categoryId}
-                  value={cat.categoryName}
-                >
+                <option key={cat.categoryId} value={cat.categoryName}>
                   {cat.categoryName}
                 </option>
               ))}
@@ -356,6 +356,28 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
             </select>
           </div>
         </motion.div>
+        {/* color & size */}
+        <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Size</label>
+            <input
+              type="text"
+              {...register("size")}
+              placeholder="Product Size"
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">Color</label>
+            <input
+              type="text"
+              {...register("color")}
+              placeholder="Product Color"
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+        </motion.div>
 
         {/* Description */}
         <motion.div variants={fieldVariants}>
@@ -386,7 +408,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
             whileTap={{ scale: 0.96 }}
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl text-white font-semibold bg-blue-600 hover:bg-blue-700 transition duration-200"
+            className="w-full py-3 rounded-xl text-white font-semibold btn-primary transition duration-200"
           >
             {loading ? "Updating..." : "Update Product"}
           </motion.button>

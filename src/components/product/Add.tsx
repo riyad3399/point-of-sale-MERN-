@@ -89,7 +89,6 @@ const Add: React.FC = () => {
     axios
       .get("http://localhost:3000/category")
       .then((res) => {
-        console.log(res.data);
         setAllCategories(res.data);
       })
       .catch((err) => console.log(err));
@@ -115,7 +114,7 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Product Name
+              Product Name *
             </label>
             <input
               type="text"
@@ -150,7 +149,7 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Category
+              Category *
             </label>
             <select
               {...register("category", { required: "Category is required" })}
@@ -184,7 +183,7 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Purchase Price (ক্রয় মূল্য)
+              Purchase Price (ক্রয় মূল্য) *
             </label>
             <input
               type="number"
@@ -198,7 +197,7 @@ const Add: React.FC = () => {
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Retail Price (খুচরা মূল্য)
+              Retail Price (খুচরা মূল্য) *
             </label>
             <input
               type="number"
@@ -214,7 +213,7 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Wholesale Price (পাইকারি মূল্য)
+              Wholesale Price (পাইকারি মূল্য) *
             </label>
             <input
               type="number"
@@ -228,7 +227,7 @@ const Add: React.FC = () => {
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Quantity (পরিমাণ)
+              Quantity (পরিমাণ) *
             </label>
             <input
               type="number"
@@ -276,7 +275,7 @@ const Add: React.FC = () => {
             <input
               type="number"
               {...register("tax")}
-              placeholder="e.g. 15"
+              placeholder="tax %"
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -293,6 +292,32 @@ const Add: React.FC = () => {
               <option value="inclusive">Inclusive</option>
               <option value="exclusive">Exclusive</option>
             </select>
+          </div>
+        </motion.div>
+        {/* color & size */}
+        <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+             Size
+            </label>
+            <input
+              type="text"
+              {...register("size")}
+              placeholder="Product Size"
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Color
+            </label>
+            <input
+              type="text"
+              {...register("color")}
+              placeholder="Product Color"
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
           </div>
         </motion.div>
 

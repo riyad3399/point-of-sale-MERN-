@@ -29,6 +29,8 @@ const Sidebar: React.FC = () => {
     // Auto open dropdown if under /report
     if (pathName.startsWith("/report")) {
       setReportOpen(true);
+    } else {
+      setReportOpen(false)
     }
   }, [pathName]);
 
@@ -54,7 +56,7 @@ const Sidebar: React.FC = () => {
           onClick={() => setCollapsed(!collapsed)}
           className="text-white hover:text-gray-200 transition"
         >
-          {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
         </button>
       </div>
 
