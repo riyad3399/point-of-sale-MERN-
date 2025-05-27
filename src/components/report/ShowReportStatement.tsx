@@ -20,6 +20,7 @@ interface CustomerDetail {
 interface ReportStatementData {
   name: string;
   productId: string;
+  saleSystem: string;
   totalQuantity: number;
   totalAmount: number;
   customers: CustomerDetail[];
@@ -37,7 +38,7 @@ export default function ShowReportStatement() {
   const [selectedItem, setSelectedItem] = useState<ReportStatementData | null>(
     null
   );
-  const [companyInfo, setCompanyInfo]=useState({})
+  const [companyInfo, setCompanyInfo] = useState({});
   const [showModal, setShowModal] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -47,8 +48,7 @@ export default function ShowReportStatement() {
     const fetchSettingInfo = async () => {
       const res = await axios.get("http://localhost:3000/setting");
       const data = await res.data.data;
-      console.log(data.logo);
-      setCompanyInfo(data)
+      setCompanyInfo(data);
     };
 
     fetchSettingInfo();
@@ -234,62 +234,76 @@ export default function ShowReportStatement() {
         </div>
 
         {/* Data Table */}
-        <table className="w-full border border-gray-300 text-sm rounded-lg overflow-hidden shadow-sm">
-          <thead className="bg-gradient-to-r from-indigo-100 to-blue-100 text-gray-700 font-semibold uppercase">
-            <tr>
-              <th className="border px-3 py-2 text-left w-10">#</th>
-              <th className="border px-3 py-2 text-left">Item Name</th>
-              <th className="border px-3 py-2 text-center w-32">Quantity</th>
-              <th className="border px-3 py-2 text-right w-44">Amount (৳)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportData.map((item, index) => (
-              <tr
-                key={index}
-                className="border-b border-gray-200"
-                style={{
-                  animation: `fadeInUp 0.3s ease forwards`,
-                  animationDelay: `${index * 0.1}s`,
-                }}
-              >
-                <td className="border px-3 py-2">{index + 1}</td>
-                <td className="border px-3 py-2">{item.name}</td>
-                <td
-                  onClick={() => handleQuantityClick(item)}
-                  className="border px-3 py-2 text-center cursor-pointer"
-                >
-                  {item.totalQuantity}
-                </td>
-                <td className="border px-3 py-2 text-right text-green-700 font-semibold">
-                  ৳ {item.totalAmount}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <ReportQuantityDetailModal
-            isOpen={showModal}
-            onClose={() => setShowModal(false)}
-            itemName={selectedItem?.name || ""}
-            customers={selectedItem?.customers || []}
-          />
-        </table>
+        {reportData.length > 0 ? (
+          <div>
+            <table className="w-full border border-gray-300 text-sm rounded-lg overflow-hidden shadow-sm">
+              <thead className="bg-gradient-to-r from-indigo-100 to-blue-100 text-gray-700 font-semibold uppercase">
+                <tr>
+                  <th className="border px-3 py-2 text-left w-10">#</th>
+                  <th className="border px-3 py-2 text-left">Item Name</th>
+                  <th className="border px-3 py-2 text-center w-32">
+                    Quantity
+                  </th>
+                  <th className="border px-3 py-2 text-right w-44">
+                    Amount (৳)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200"
+                    style={{
+                      animation: `fadeInUp 0.3s ease forwards`,
+                      animationDelay: `${index * 0.1}s`,
+                    }}
+                  >
+                    <td className="border px-3 py-2">{index + 1}</td>
+                    <td className="border px-3 py-2">{item.name}</td>
+                    <td
+                      onClick={() => handleQuantityClick(item)}
+                      className="border px-3 py-2 text-center cursor-pointer"
+                    >
+                      {item.totalQuantity}
+                    </td>
+                    <td className="border px-3 py-2 text-right text-green-700 font-semibold">
+                      ৳ {item.totalAmount}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <ReportQuantityDetailModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                itemName={selectedItem?.name || ""}
+                customers={selectedItem?.customers || []}
+              />
+            </table>
 
-        {/* Footer */}
-        <div className="mt-10 flex flex-col md:flex-row justify-between items-center border-t border-gray-300 pt-4">
-          <p className="text-lg font-semibold text-gray-800">
-            Total Amount :
-            <span className="text-green-700 text-lg font-extrabold">
-              ৳ {totalAmount}
-            </span>
-          </p>
-          <div
-            className="mt-4 md:mt-0 text-center text-xs text-gray-600 border border-dashed border-gray-400 px-8 py-4 rounded-lg
+            {/* Footer */}
+            <div className="mt-10 flex flex-col md:flex-row justify-between items-center border-t border-gray-300 pt-4">
+              <p className="text-lg font-semibold text-gray-800">
+                Total Amount :
+                <span className="text-green-700 text-lg font-extrabold">
+                  ৳ {totalAmount}
+                </span>
+              </p>
+              <div
+                className="mt-4 md:mt-0 text-center text-xs text-gray-600 border border-dashed border-gray-400 px-8 py-4 rounded-lg
             select-none font-mono tracking-wide bg-gray-50"
-          >
-            <p className="border-t pt-2 font-semibold">অনুমোদিত কর্তৃপক্ষ</p>
+              >
+                <p className="border-t pt-2 font-semibold">
+                  অনুমোদিত কর্তৃপক্ষ
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex justify-center items-center font-bold text-lg text-red-500">
+            No data find this Date !
+          </div>
+        )}
       </div>
 
       {/* Custom CSS for fadeInUp */}

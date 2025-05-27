@@ -6,40 +6,25 @@ import axios from "axios";
 const Header: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
-  const [lowStockItems, setLowStockItems] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
  
-  useEffect(() => {
-    // Initial fetch
-    fetchProducts();
-
-    // Auto fetch every 10 seconds
-    const interval = setInterval(() => {
-      fetchProducts();
-    }, 10000); // 10000 ms = 10 seconds
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
-  }, []);
-  
-
-  const fetchProducts = async () => {
+  const fetchLowStockItems = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/product");
-      setProducts(res.data);
-    } catch (err) {
-      console.error("Error fetching products:", err);
+      const res = await axios.get("http://localhost:3000/product/low-stock");
+      const data = res.data;
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to fetch products", error);
     }
   };
 
-  // 2. Watch for low stock whenever products change
   useEffect(() => {
-    const lowStock = products.filter(
-      (item) => item.quantity <= item.alertQuantity
-    );
-    setLowStockItems(lowStock);
-  }, [products]);
+    fetchLowStockItems();
+    const interval = setInterval(fetchLowStockItems, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -62,9 +47,9 @@ const Header: React.FC = () => {
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell className="h-5 w-5" />
-              {lowStockItems.length > 0 && (
+              {products.length > 0 && (
                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-600 rounded-full text-white text-xs flex items-center justify-center">
-                  {lowStockItems.length}
+                  {products.length}
                 </span>
               )}
             </motion.button>
@@ -78,12 +63,12 @@ const Header: React.FC = () => {
                 exit={{ opacity: 0, y: -10 }}
               >
                 <div className="py-2">
-                  {lowStockItems.length === 0 ? (
+                  {products.length === 0 ? (
                     <p className="px-4 py-2 text-sm text-gray-500">
                       কোনো পণ্যের স্টক কম নয়।
                     </p>
                   ) : (
-                    lowStockItems.map((item, index) => (
+                    products.map((item, index) => (
                       <div
                         key={index}
                         className="px-4 py-2 text-sm text-red-700 hover:bg-red-50 border-b last:border-b-0"

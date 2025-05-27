@@ -21,6 +21,7 @@ import WholeSalePage from "./pages/WholeSalePage";
 import InvoiceView from "./components/transaction/InvoiceView";
 import ReportStatementPage from "./pages/ReportStatementPage";
 import ShowReportStatement from "./components/report/ShowReportStatement";
+import AlertItemsPage from "./pages/AlertItemsPage";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="customers" element={<CustomersPage />} />
           <Route path="reportStatement" element={<ReportStatementPage />} />
           <Route path="showReportStatement" element={<ShowReportStatement />} />
+          <Route path="alertItems" element={ <AlertItemsPage/>} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 

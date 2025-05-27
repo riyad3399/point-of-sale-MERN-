@@ -99,3 +99,17 @@ export interface InvoiceType {
     nextDueDate: string;
   }[];
 }
+
+// store information
+export interface FormValues  {
+  storeName: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  email: string;
+  taxRate: number;
+  currency: string;
+  logo: FileList;
+};

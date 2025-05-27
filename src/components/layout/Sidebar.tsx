@@ -14,6 +14,7 @@ import {
   ScrollText,
   ChevronLeft,
   ChevronRight,
+  AlertCircle,
 } from "lucide-react";
 import { MdCategory } from "react-icons/md";
 
@@ -31,6 +32,7 @@ const Sidebar: React.FC = () => {
       setReportOpen(true);
     } else {
       setReportOpen(false)
+      
     }
   }, [pathName]);
 
@@ -155,6 +157,13 @@ const Sidebar: React.FC = () => {
                 text="Statement"
                 collapsed={collapsed}
                 title="Statement"
+              />
+              <SidebarLink
+                to="/alertItems"
+                icon={<AlertCircle size={16} />}
+                text="Alert Items"
+                collapsed={collapsed}
+                title="Alert Items"
               />
             </motion.div>
           )}

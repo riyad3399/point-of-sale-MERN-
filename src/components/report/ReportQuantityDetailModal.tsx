@@ -9,6 +9,7 @@ interface CustomerDetail {
   transactionId: number;
   createdAt: string;
   paymentMethod: string;
+  saleSystem: string;
 }
 
 interface QuantityDetailModalProps {
@@ -50,8 +51,9 @@ export default function ReportQuantityDetailModal({
 
             {/* Title */}
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-indigo-600 tracking-wide">
-                {itemName} - Quantity Breakdown
+              <h2 className="text-xl font-bold text-gray-500 tracking-wide">
+                <span className="text-indigo-600">{itemName}</span> - Quantity
+                Breakdown
               </h2>
               <p className="text-sm text-gray-500">
                 Total {customers.length} transaction
@@ -71,6 +73,7 @@ export default function ReportQuantityDetailModal({
                     <th className="border px-3 py-2 text-center">Quantity</th>
                     <th className="border px-3 py-2 text-right">Amount (৳)</th>
                     <th className="border px-3 py-2 text-center">Date</th>
+                    <th className="border px-3 py-2 text-center">Readmark</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -86,7 +89,10 @@ export default function ReportQuantityDetailModal({
                         {idx + 1}
                       </td>
                       <td className="border px-3 py-2">{cust.transactionId}</td>
-                      <td className="border px-3 py-2">{cust.name}</td>
+                      <td className="border px-3 py-2">
+                        {cust.name.charAt(0).toUpperCase() +
+                          cust.name.slice(1).toLowerCase()}
+                      </td>
                       <td className="border px-3 py-2">{cust.phone}</td>
                       <td className="border px-3 py-2 text-center">
                         {cust.quantity}
@@ -100,6 +106,10 @@ export default function ReportQuantityDetailModal({
                           month: "short",
                           year: "numeric",
                         })}
+                      </td>
+                      <td className="border px-3 py-2 text-center">
+                        {cust.saleSystem.charAt(0).toUpperCase() +
+                          cust.saleSystem.slice(1).toLowerCase()}
                       </td>
                     </motion.tr>
                   ))}

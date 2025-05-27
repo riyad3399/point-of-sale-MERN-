@@ -24,8 +24,8 @@ export default function ReportStatementPage() {
         },
       });
 
+      console.log(res.data);
       if (res.data) {
-        console.log(res.data);
         navigate("/showReportStatement", {
           state: { reportData: res.data, fromDate, toDate },
         });
