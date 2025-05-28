@@ -39,7 +39,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       className={`hidden md:flex ${collapsed ? "w-20" : "w-64"} 
-      bg-primary-600 text-white flex-col h-screen sticky top-0 transition-all duration-300 overflow-y-auto `}
+      bg-primary-600 text-white flex-col h-screen sticky top-0 transition-all duration-300 overflow-y-hidden `}
     >
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-6">
@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 pt-4 px-2">
+      <nav className="flex-1 pt-4 px-2 ">
         <div className="space-y-1">
           <SidebarLink
             to="/"
@@ -74,7 +74,7 @@ const Sidebar: React.FC = () => {
           />
           <SidebarLink
             to="/categories"
-            icon={<MdCategory size={22} />}
+            icon={<MdCategory size={24} />}
             text="Categories"
             collapsed={collapsed}
             title="Categories"
@@ -100,13 +100,7 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title="Whole Sale"
           />
-          <SidebarLink
-            to="/inventory"
-            icon={<Package />}
-            text="Inventory"
-            collapsed={collapsed}
-            title="Inventory"
-          />
+         
           <SidebarLink
             to="/transactions"
             icon={<FileText />}

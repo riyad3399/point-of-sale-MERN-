@@ -1,73 +1,221 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { DollarSign, Layers, ArrowUpRight, ArrowDownRight, BarChart3, Users } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import axios from "axios";
+import { HiCurrencyBangladeshi } from "react-icons/hi";
+import SalesOverviewChart from "../components/dashboard/SalesOverviewChart";
+
+type SalesSummaryType = {
+  totalSales: number;
+  totalDue: number;
+  wholeSale: number;
+  retailSale: number;
+};
+
+type DueCustomerType = {
+  name: string;
+  phone: string;
+  totalDue: number;
+  totalPaid: number;
+  invoiceCount: number;
+  invoiceIds: number[];
+};
+
+export interface RecentTransactionType {
+  _id: string;
+  transactionId: number;
+  createdAt: string; // ISO date string
+  paymentMethod: string;
+  totals: {
+    total: number;
+  };
+}
 
 const DashboardPage: React.FC = () => {
+  const [todaySales, setTodaySales] = useState<SalesSummaryType>({
+    totalSales: 0,
+    totalDue: 0,
+    wholeSale: 0,
+    retailSale: 0,
+  });
+  const [totalSales, setTotalSales] = useState<SalesSummaryType>({
+    totalSales: 0,
+    totalDue: 0,
+    wholeSale: 0,
+    retailSale: 0,
+  });
+
+  
+  const [dueCustomers, setDueCustomers] = useState<DueCustomerType[]>([]);
+  
+  const [chartData, setChartData] = useState([]);
+  const [recentTransactions, setRecentTransactions] = useState<RecentTransactionType[]>([]);
+
+  const fetchTodaySales = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/invoice/today-sales");
+      const data = res.data;
+      setTodaySales(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchTotalSales = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/invoice/total-sales");
+      const data = res.data;
+      setTotalSales(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDueCustomers = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/invoice/due-customers"
+      );
+      const data = res.data;
+      setDueCustomers(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchOverviewData = async () => {
+    const res = await axios.get("http://localhost:3000/invoice/sales-7-days");
+    setChartData(res.data);
+  };
+
+  const fetchRecentTransactions = async () => {
+    const res = await axios.get(
+      "http://localhost:3000/invoice/recent-transactions"
+    );
+    const data = res.data;
+    console.log(data);
+    setRecentTransactions(data)
+  };
+
+  useEffect(() => {
+    fetchTodaySales();
+    fetchTotalSales();
+    fetchDueCustomers();
+    fetchOverviewData();
+    fetchRecentTransactions();
+  }, []);
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-      
+
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatsCard 
-          title="Today's Sales"
-          value="$1,452.25"
-          trend="up"
-          percentage="24%"
-          icon={<DollarSign className="h-5 w-5" />}
-          color="primary"
-        />
-        <StatsCard 
-          title="Total Orders"
-          value="42"
-          trend="up"
-          percentage="12%"
-          icon={<Layers className="h-5 w-5" />}
-          color="success"
-        />
-        <StatsCard 
-          title="Items Sold"
-          value="186"
-          trend="up"
-          percentage="18%"
-          icon={<BarChart3 className="h-5 w-5" />}
-          color="warning"
-        />
-        <StatsCard 
-          title="Customers"
-          value="14"
-          trend="down"
-          percentage="5%"
-          icon={<Users className="h-5 w-5" />}
-          color="danger"
-        />
+      <div className="mb-5">
+        <h2 className="mb-2.5 lg:text-xl text-lg font-semibold text-gray-500">
+          Today's Sales
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatsCard
+            title="Today's Sales"
+            value={todaySales?.totalSales}
+            trend="up"
+            percentage="24%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="primary"
+          />
+          <StatsCard
+            title="Today's WholeSale"
+            value={todaySales?.wholeSale}
+            trend="up"
+            percentage="12%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="success"
+          />
+          <StatsCard
+            title="Today's RetailSale"
+            value={todaySales?.retailSale}
+            trend="up"
+            percentage="18%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="warning"
+          />
+          <StatsCard
+            title="Today's Due"
+            value={todaySales?.totalDue}
+            trend="down"
+            percentage="5%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="danger"
+          />
+        </div>
       </div>
-      
+      <div className="">
+        <h2 className="mb-2.5 lg:text-xl text-lg font-semibold text-gray-500">
+          Total Sales
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatsCard
+            title="Total Sales"
+            value={totalSales?.totalSales}
+            trend="up"
+            percentage="24%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="primary"
+          />
+          <StatsCard
+            title="Total WholeSale"
+            value={totalSales?.wholeSale}
+            trend="up"
+            percentage="12%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="success"
+          />
+          <StatsCard
+            title="Total RetailSale"
+            value={totalSales?.retailSale}
+            trend="up"
+            percentage="18%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="warning"
+          />
+          <StatsCard
+            title="Total Due"
+            value={totalSales?.totalDue}
+            trend="down"
+            percentage="5%"
+            icon={<HiCurrencyBangladeshi className="h-5 w-5" />}
+            color="danger"
+          />
+        </div>
+      </div>
+
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="card p-6">
-          <h2 className="text-lg font-bold mb-4">Sales Overview</h2>
-          <div className="bg-gray-100 rounded-lg h-[250px] flex items-center justify-center">
+        <div className=" p-6">
+          <h2 className="text-lg font-bold mb-4">
+            {" "}
+            Sales Overview (Last 7 Days)
+          </h2>
+          <div className=" flex items-center justify-center">
             {/* Placeholder for chart */}
-            <p className="text-gray-500">Sales chart will be displayed here</p>
+            <SalesOverviewChart data={chartData} />
           </div>
         </div>
-        
+
         <div className="card p-6">
-          <h2 className="text-lg font-bold mb-4">Popular Items</h2>
-          <div className="space-y-3">
-            {['Cappuccino', 'Avocado Toast', 'Blueberry Muffin', 'Latte', 'Breakfast Sandwich'].map((item, index) => (
-              <div 
+          <h2 className="text-lg font-bold mb-4">Due Customers</h2>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {dueCustomers?.map((dueCustomer, index) => (
+              <div
                 key={index}
-                className="flex items-center p-3 bg-gray-50 rounded-lg"
+                className="flex items-center p-3 bg-gray-50 rounded-lg "
               >
                 <div className="h-10 w-10 bg-gray-200 rounded-md mr-3"></div>
                 <div className="flex-1">
-                  <h3 className="font-medium">{item}</h3>
-                  <p className="text-sm text-gray-500">{Math.floor(Math.random() * 100)} sold</p>
+                  <h3 className="font-medium">{dueCustomer.name}</h3>
+                  <p className="text-sm text-gray-500">{dueCustomer.phone}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">${(Math.random() * 10).toFixed(2)}</p>
+                  <p className="font-medium">${dueCustomer.totalDue}</p>
                   <p className="text-xs text-success-600">
                     +{Math.floor(Math.random() * 30)}%
                   </p>
@@ -77,7 +225,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Recent Transactions */}
       <div className="card p-6">
         <h2 className="text-lg font-bold mb-4">Recent Transactions</h2>
@@ -85,20 +233,46 @@ const DashboardPage: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Transaction ID</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Date</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Cashier</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">Total</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Transaction ID
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Date
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Payment
+                </th>
+                <th className="text-right py-3 px-4 font-medium text-gray-600">
+                  Total
+                </th>
+                <th className="text-right py-3 px-4 font-medium text-gray-600">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody>
-              {[...Array(5)].map((_, index) => (
-                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-800">#TRX-{Math.floor(Math.random() * 10000)}</td>
-                  <td className="py-3 px-4 text-gray-600">{new Date().toLocaleDateString()}</td>
-                  <td className="py-3 px-4">John Smith</td>
-                  <td className="py-3 px-4 text-right font-medium">${(Math.random() * 100).toFixed(2)}</td>
+              {recentTransactions?.map((transction) => (
+                <tr
+                  key={transction._id}
+                  className="border-b border-gray-100 hover:bg-gray-50"
+                >
+                  <td className="py-3 px-4 text-gray-800">
+                    #{transction.transactionId}
+                  </td>
+                  <td className="py-3 px-4 text-gray-600">
+                    {new Date(transction.createdAt).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )}
+                  </td>
+                  <td className="py-3 px-4 ">{transction.paymentMethod}</td>
+                  <td className="py-3 px-4 text-right font-medium">
+                    ${transction.totals.total}
+                  </td>
                   <td className="py-3 px-4 text-right">
                     <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-success-100 text-success-700">
                       Completed
@@ -116,23 +290,30 @@ const DashboardPage: React.FC = () => {
 
 interface StatsCardProps {
   title: string;
-  value: string;
-  trend: 'up' | 'down';
+  value: number;
+  trend: "up" | "down";
   percentage: string;
   icon: React.ReactNode;
-  color: 'primary' | 'success' | 'warning' | 'danger';
+  color: "primary" | "success" | "warning" | "danger";
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, trend, percentage, icon, color }) => {
+const StatsCard: React.FC<StatsCardProps> = ({
+  title,
+  value,
+  trend,
+  percentage,
+  icon,
+  color,
+}) => {
   const colorClasses = {
-    primary: 'bg-primary-50 text-primary-600',
-    success: 'bg-success-50 text-success-600',
-    warning: 'bg-warning-50 text-warning-600',
-    danger: 'bg-danger-50 text-danger-600',
+    primary: "bg-primary-50 text-primary-600",
+    success: "bg-success-50 text-success-600",
+    warning: "bg-warning-50 text-warning-600",
+    danger: "bg-danger-50 text-danger-600",
   };
-  
+
   return (
-    <motion.div 
+    <motion.div
       className="card p-5"
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -144,19 +325,19 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, trend, percentage, 
           <p className="text-gray-500 text-sm">{title}</p>
           <h3 className="text-2xl font-bold mt-1">{value}</h3>
         </div>
-        <div className={`p-2 rounded-full ${colorClasses[color]}`}>
-          {icon}
-        </div>
+        <div className={`p-2 rounded-full ${colorClasses[color]}`}>{icon}</div>
       </div>
       <div className="flex items-center mt-3">
-        {trend === 'up' ? (
+        {trend === "up" ? (
           <ArrowUpRight className="h-4 w-4 text-success-600 mr-1" />
         ) : (
           <ArrowDownRight className="h-4 w-4 text-danger-600 mr-1" />
         )}
-        <span className={`text-sm font-medium ${
-          trend === 'up' ? 'text-success-600' : 'text-danger-600'
-        }`}>
+        <span
+          className={`text-sm font-medium ${
+            trend === "up" ? "text-success-600" : "text-danger-600"
+          }`}
+        >
           {percentage}
         </span>
         <span className="text-gray-500 text-sm ml-1">vs last week</span>

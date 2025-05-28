@@ -45,7 +45,6 @@ const Invoice: React.FC<InvoiceProps> = ({
 }) => {
   const payable = totalAmount - discount;
   const balance = paidAmount - payable;
-  // console.log(products);
 
   // Prevent duplicate saving
   const invoicePostedRef = useRef(false);
