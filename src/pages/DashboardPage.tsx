@@ -4,6 +4,8 @@ import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import axios from "axios";
 import { HiCurrencyBangladeshi } from "react-icons/hi";
 import SalesOverviewChart from "../components/dashboard/SalesOverviewChart";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -45,11 +47,13 @@ const DashboardPage: React.FC = () => {
     retailSale: 0,
   });
 
-  
   const [dueCustomers, setDueCustomers] = useState<DueCustomerType[]>([]);
-  
+
   const [chartData, setChartData] = useState([]);
-  const [recentTransactions, setRecentTransactions] = useState<RecentTransactionType[]>([]);
+  const [recentTransactions, setRecentTransactions] = useState<
+    RecentTransactionType[]
+  >([]);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
   const fetchTodaySales = async () => {
     try {
@@ -93,7 +97,7 @@ const DashboardPage: React.FC = () => {
     );
     const data = res.data;
     console.log(data);
-    setRecentTransactions(data)
+    setRecentTransactions(data);
   };
 
   useEffect(() => {
@@ -103,6 +107,34 @@ const DashboardPage: React.FC = () => {
     fetchOverviewData();
     fetchRecentTransactions();
   }, []);
+
+  const sendSMS = async (
+    phone: string,
+    name: string,
+    due: number,
+    index: number
+  ) => {
+    const message = `প্রিয় ${name}, আপনার মোট বাকি আছে ৳${due}। অনুগ্রহ করে পরিশোধ করুন।`;
+
+    try {
+      setLoadingIndex(index);
+      await fetch("http://localhost:3000/sms/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: phone,
+          message: message,
+        }),
+      });
+      Swal.fire("Success", "SMS পাঠানো হয়েছে!", "success");
+    } catch (err) {
+      Swal.fire("Error", "SMS পাঠাতে ব্যার্থ!", "error");
+    } finally {
+      setLoadingIndex(null);
+    }
+  };
 
   return (
     <div>
@@ -209,16 +241,32 @@ const DashboardPage: React.FC = () => {
                 key={index}
                 className="flex items-center p-3 bg-gray-50 rounded-lg "
               >
-                <div className="h-10 w-10 bg-gray-200 rounded-md mr-3"></div>
+                {/* <div className="h-10 w-10 bg-gray-200 rounded-md mr-3"></div> */}
                 <div className="flex-1">
                   <h3 className="font-medium">{dueCustomer.name}</h3>
                   <p className="text-sm text-gray-500">{dueCustomer.phone}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">${dueCustomer.totalDue}</p>
-                  <p className="text-xs text-success-600">
-                    +{Math.floor(Math.random() * 30)}%
+                  <p className="font-medium flex items-center gap-0.5">
+                    <FaBangladeshiTakaSign size={13} />
+                    {dueCustomer.totalDue}
                   </p>
+                </div>
+                <div className="ml-4">
+                  <button
+                    className="btn-primary text-white text-sm px-3 py-1 rounded"
+                    onClick={() =>
+                      sendSMS(
+                        dueCustomer.phone,
+                        dueCustomer.name,
+                        dueCustomer.totalDue,
+                        index
+                      )
+                    }
+                    disabled={loadingIndex === index}
+                  >
+                    {loadingIndex === index ? "Sending..." : "Send SMS"}
+                  </button>
                 </div>
               </div>
             ))}
@@ -270,8 +318,9 @@ const DashboardPage: React.FC = () => {
                     )}
                   </td>
                   <td className="py-3 px-4 ">{transction.paymentMethod}</td>
-                  <td className="py-3 px-4 text-right font-medium">
-                    ${transction.totals.total}
+                  <td className="py-3 px-4 text-right font-medium flex items-center gap-0.5">
+                    <FaBangladeshiTakaSign size={13} />
+                    {transction.totals.total}
                   </td>
                   <td className="py-3 px-4 text-right">
                     <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-success-100 text-success-700">
