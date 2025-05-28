@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Loading from "../Loading";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import ReportQuantityDetailModal from "./ReportQuantityDetailModal";
 import axios from "axios";
 
@@ -153,28 +153,26 @@ export default function ShowReportStatement() {
   }
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
+    <div className="md:p-4 max-w-5xl mx-auto">
       {/* Print Button */}
       <div className="flex justify-between mb-6 print:hidden">
         <Link to="/reportStatement">
-          <button className="flex mb-4 items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition duration-200 shadow-sm">
+          <button className="flex mb-4 items-center gap-2 btn-outline">
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-medium">Back</span>
           </button>
         </Link>
 
-        <motion.button
+        <button
           onClick={handlePrint}
-          className="relative overflow-hidden rounded-md btn-primary text-white 
-            transition duration-300 ease-in-out "
-          whileTap={{ scale: 0.95 }}
+          className="flex mb-4 items-center gap-2 btn-primary"
         >
-          প্রিন্ট করুন
+          <Printer />
           <span
             aria-hidden="true"
             className="absolute inset-0 bg-white opacity-10 rounded-md pointer-events-none"
           ></span>
-        </motion.button>
+        </button>
       </div>
 
       {/* Printable Content */}
@@ -189,7 +187,7 @@ export default function ShowReportStatement() {
             <div className="w-24 h-24 md:w-28 md:h-28 print:w-20 print:h-20 mb-4 md:mb-0">
               <img
                 src={
-                  companyInfo.logo
+                  companyInfo?.logo
                     ? encodeURI(companyInfo.logo)
                     : "/fallback-logo.png"
                 }
@@ -235,8 +233,8 @@ export default function ShowReportStatement() {
 
         {/* Data Table */}
         {reportData.length > 0 ? (
-          <div>
-            <table className="w-full border border-gray-300 text-sm rounded-lg overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full border border-gray-300 text-sm rounded-lg md:overflow-hidden shadow-sm">
               <thead className="bg-gradient-to-r from-indigo-100 to-blue-100 text-gray-700 font-semibold uppercase">
                 <tr>
                   <th className="border px-3 py-2 text-left w-10">#</th>

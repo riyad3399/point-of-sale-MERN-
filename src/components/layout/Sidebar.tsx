@@ -56,9 +56,9 @@ const Sidebar: React.FC = () => {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="text-white hover:text-gray-200 transition"
+          className="text-white transition rounded-md bg-primary-700"
         >
-          {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
+          {collapsed ? <ChevronRight className="h-6 w-6" /> : <ChevronLeft className="w-6 h-6 " />}
         </button>
       </div>
 

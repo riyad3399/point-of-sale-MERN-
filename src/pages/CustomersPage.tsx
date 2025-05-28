@@ -76,9 +76,9 @@ export default function CustomerTabs() {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.3 }}
-              className="card overflow-hidden"
+              className="card md:overflow-hidden overflow-x-auto"
             >
-              <motion.table className="w-full border border-gray-300 text-left">
+              <motion.table className="w-full overflow-x-auto border border-gray-300 text-left">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="p-2 border">#</th>
@@ -89,7 +89,7 @@ export default function CustomerTabs() {
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody className="">
                   {currentCustomers.map((customer, idx) => (
                     <ShowCustomerList
                       customer={customer}

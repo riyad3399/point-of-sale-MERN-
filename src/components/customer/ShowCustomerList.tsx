@@ -80,29 +80,30 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
       <td className="p-3 border border-gray-300">{customer.phone}</td>
       <td className="p-3 border border-gray-300">{customer.address}</td>
       <td className="p-3 space-x-3 border border-gray-300">
-        <motion.button
-          variants={buttonVariants}
-          initial="initial"
-          whileHover="hover"
-          whileTap="tap"
-          className="text-gray-600 hover:text-green-500"
-          title="Edit"
-          onClick={() => setEditing(true)}
-        >
-          <FaRegEdit size={22} />
-        </motion.button>
-
-        <motion.button
-          variants={buttonVariants}
-          initial="initial"
-          whileHover="hover"
-          whileTap="tap"
-          className="text-gray-600 hover:text-red-500"
-          title="Delete"
-          onClick={() => handleDeleteCustomer(customer._id)}
-        >
-          <Trash size={22} />
-        </motion.button>
+        <div className="md:flex md:justify-start grid items-center justify-center gap-2">
+          <motion.button
+            variants={buttonVariants}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            className="text-gray-600 hover:text-green-500"
+            title="Edit"
+            onClick={() => setEditing(true)}
+          >
+            <FaRegEdit className="h-5 w-5"/>
+          </motion.button>
+          <motion.button
+            variants={buttonVariants}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            className="text-gray-600 hover:text-red-500"
+            title="Delete"
+            onClick={() => handleDeleteCustomer(customer._id)}
+          >
+            <Trash className="h-5 w-5" />
+          </motion.button>
+        </div>
         <div>
           {editing && (
             <UpdateCustomerModal

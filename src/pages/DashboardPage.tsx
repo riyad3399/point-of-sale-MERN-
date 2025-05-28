@@ -6,6 +6,7 @@ import { HiCurrencyBangladeshi } from "react-icons/hi";
 import SalesOverviewChart from "../components/dashboard/SalesOverviewChart";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import Swal from "sweetalert2";
+import DatePicker from "react-datepicker";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -23,15 +24,16 @@ type DueCustomerType = {
   invoiceIds: number[];
 };
 
-export interface RecentTransactionType {
+type RecentTransactionType = {
   _id: string;
   transactionId: number;
   createdAt: string; // ISO date string
   paymentMethod: string;
   totals: {
     total: number;
+    due: number;
   };
-}
+};
 
 const DashboardPage: React.FC = () => {
   const [todaySales, setTodaySales] = useState<SalesSummaryType>({
@@ -54,6 +56,8 @@ const DashboardPage: React.FC = () => {
     RecentTransactionType[]
   >([]);
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchTodaySales = async () => {
     try {
@@ -74,17 +78,17 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const fetchDueCustomers = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:3000/invoice/due-customers"
-      );
-      const data = res.data;
-      setDueCustomers(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const fetchDueCustomers = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       "http://localhost:3000/invoice/due-customers"
+  //     );
+  //     const data = res.data;
+  //     setDueCustomers(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const fetchOverviewData = async () => {
     const res = await axios.get("http://localhost:3000/invoice/sales-7-days");
@@ -96,17 +100,35 @@ const DashboardPage: React.FC = () => {
       "http://localhost:3000/invoice/recent-transactions"
     );
     const data = res.data;
-    console.log(data);
     setRecentTransactions(data);
   };
 
   useEffect(() => {
     fetchTodaySales();
     fetchTotalSales();
-    fetchDueCustomers();
+    // fetchDueCustomers();
     fetchOverviewData();
     fetchRecentTransactions();
   }, []);
+
+  useEffect(() => {
+    const fetchDefaultDueCustomers = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/invoice/due-customers"
+        );
+        setDueCustomers(response.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDefaultDueCustomers();
+  }, []);
+  
 
   const sendSMS = async (
     phone: string,
@@ -114,6 +136,7 @@ const DashboardPage: React.FC = () => {
     due: number,
     index: number
   ) => {
+    // const formatter = new Intl.NumberFormat("bn-BD");
     const message = `প্রিয় ${name}, আপনার মোট বাকি আছে ৳${due}। অনুগ্রহ করে পরিশোধ করুন।`;
 
     try {
@@ -135,6 +158,47 @@ const DashboardPage: React.FC = () => {
       setLoadingIndex(null);
     }
   };
+
+  const handleFetch = async () => {
+    setLoading(true);
+
+    try {
+      let response;
+
+      if (selectedDate) {
+        const formattedDate = formatDateToYYYYMMDD(selectedDate); // "YYYY-MM-DD"
+        response = await axios.get(
+          "http://localhost:3000/invoice/due-customers",
+          {
+            params: { dueDate: formattedDate },
+          }
+        );
+      } else {
+        response = await axios.get(
+          "http://localhost:3000/invoice/due-customers"
+        );
+      }
+
+      setDueCustomers(response.data);
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: "ডাটা আনতে সমস্যা হয়েছে",
+        icon: "error",
+        draggable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  function formatDateToYYYYMMDD(date: Date): string {
+    const year = date.getFullYear();
+    const month = `0${date.getMonth() + 1}`.slice(-2);
+    const day = `0${date.getDate()}`.slice(-2);
+    return `${year}-${month}-${day}`;
+  }
 
   return (
     <div>
@@ -228,15 +292,29 @@ const DashboardPage: React.FC = () => {
             Sales Overview (Last 7 Days)
           </h2>
           <div className=" flex items-center justify-center">
-            {/* Placeholder for chart */}
             <SalesOverviewChart data={chartData} />
           </div>
         </div>
 
         <div className="card p-6">
-          <h2 className="text-lg font-bold mb-4">Due Customers</h2>
+          <div className="flex md:justify-between items-center mb-4">
+            <h2 className="text-lg font-bold ">Due Customers</h2>
+            <div>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                onCalendarClose={handleFetch}
+                dateFormat="yyyy-MM-dd"
+                showYearDropdown
+                scrollableYearDropdown
+                yearDropdownItemNumber={50}
+                placeholderText="Select start date"
+                className="w-full input border rounded-lg"
+              />
+            </div>
+          </div>
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            {dueCustomers?.map((dueCustomer, index) => (
+            { dueCustomers?.map((dueCustomer, index) => (
               <div
                 key={index}
                 className="flex items-center p-3 bg-gray-50 rounded-lg "
@@ -282,7 +360,7 @@ const DashboardPage: React.FC = () => {
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 font-medium text-gray-600">
-                  Transaction ID
+                  Invoice ID
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-600">
                   Date
@@ -318,14 +396,22 @@ const DashboardPage: React.FC = () => {
                     )}
                   </td>
                   <td className="py-3 px-4 ">{transction.paymentMethod}</td>
-                  <td className="py-3 px-4 text-right font-medium flex items-center gap-0.5">
-                    <FaBangladeshiTakaSign size={13} />
-                    {transction.totals.total}
+                  <td className="py-3 px-4 font-medium flex justify-end items-center gap-0.5">
+                    <span>
+                      <FaBangladeshiTakaSign size={13} />
+                    </span>
+                    <span>{transction.totals.total}</span>
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-success-100 text-success-700">
-                      Completed
-                    </span>
+                    {transction.totals.due ? (
+                      <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-warning-100 text-warning-600">
+                        Partial
+                      </span>
+                    ) : (
+                      <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-success-100 text-success-600">
+                        Completed
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}

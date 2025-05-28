@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, Bell, MessageSquare } from "lucide-react";
 import axios from "axios";
+import MobileMenu from "./MobileMenu";
 
 type SmsBalanceType = {
   response_code: number;
@@ -13,6 +14,8 @@ const Header: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [smsBalance, setSmsBalance] = useState<SmsBalanceType>();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
 
   const fetchLowStockItems = async () => {
     try {
@@ -46,12 +49,19 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className="px-4 md:px-6 py-3 flex items-center justify-end">
+      <div className="px-4 md:px-6 py-3 flex items-center md:justify-end justify-between">
         {/* Mobile Menu */}
         <div className="md:hidden">
-          <button className="btn-outline btn-sm mr-2">
+          <button
+            className="btn-outline btn-sm mr-2"
+            onClick={() => setShowMobileMenu(true)}
+          >
             <Menu className="h-5 w-5" />
           </button>
+          <MobileMenu
+            isOpen={showMobileMenu}
+            onClose={() => setShowMobileMenu(false)}
+          />
         </div>
 
         {/* Right Section */}
