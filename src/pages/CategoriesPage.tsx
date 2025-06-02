@@ -3,14 +3,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import AddCategory from "../components/category/AddCategory";
 import axios from "axios";
 import ShowCategories from "../components/category/ShowCategories";
-import { Box } from "lucide-react";
+import { Box, Search } from "lucide-react";
 import Loading from "../components/Loading";
-import Pagination from "../components/Pagination"; // ✅ Make sure this path is correct
+import Pagination from "../components/Pagination";
 
 const CategoriesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("categories");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -26,14 +28,29 @@ const CategoriesPage: React.FC = () => {
     axios.get("http://localhost:3000/category").then((res) => {
       setCategories(res.data);
       setLoading(false);
-      setCurrentPage(1); // Reset page on tab change
+      setCurrentPage(1);
     });
   }, [activeTab]);
 
+  // ✅ Filter by search and status
+  const filteredCategories = categories.filter((cat: any) => {
+    const matchSearch =
+      cat.categoryName.toLowerCase().includes(search.toLowerCase()) ||
+      cat.categoryId.toString().includes(search.toLowerCase());
+
+    const matchStatus = statusFilter === "all" || cat.status === statusFilter;
+
+    return matchSearch && matchStatus;
+  });
+
+  // ✅ Pagination for filtered results
+  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const currentCategories = filteredCategories.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const nextPage = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
@@ -73,64 +90,97 @@ const CategoriesPage: React.FC = () => {
       <div className="relative min-h-screen">
         <AnimatePresence mode="wait">
           {activeTab === "categories" && (
-            <motion.div
-              key="categories"
-              variants={tabVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-              className="card overflow-hidden"
-            >
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="text-left py-3 px-4 font-medium text-gray-600">
-                        #
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600">
-                        Category
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600">
-                        Assign Item
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600">
-                        Status
-                      </th>
-                      <th className="text-center py-3 px-4 font-medium text-gray-600">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
-                      <tr>
-                        <td colSpan={5}>
-                          <Loading />
-                        </td>
-                      </tr>
-                    ) : (
-                      currentCategories.length > 0 &&
-                      currentCategories.map((product) => (
-                        <ShowCategories
-                          product={product}
-                          setCategories={setCategories}
-                          key={product._id}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
+            <div>
+              <div className="flex justify-between mb-4 mt-6 gap-4 flex-wrap">
+                {/* Search Box */}
+                <div className="relative w-full max-w-md">
+                  <Search
+                    className="absolute left-3 top-2.5 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search by name or ID"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 input bg-white"
+                  />
+                </div>
+
+                {/* Status Filter */}
+                <div className="flex items-center space-x-2">
+                  <label className="font-medium text-sm">Filter:</label>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg input"
+                  >
+                    <option value="all">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
               </div>
 
-              {!loading && categories.length === 0 && (
-                <div className="py-6 text-center text-gray-500">
-                  <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                  <p>No category found</p>
+              <motion.div
+                key="categories"
+                variants={tabVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.3 }}
+                className="card overflow-hidden"
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                          #
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                          Category
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                          Assign Item
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                          Status
+                        </th>
+                        <th className="text-center py-3 px-4 font-medium text-gray-600">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loading ? (
+                        <tr>
+                          <td colSpan={5}>
+                            <Loading />
+                          </td>
+                        </tr>
+                      ) : (
+                        currentCategories.length > 0 &&
+                        currentCategories.map((product) => (
+                          <ShowCategories
+                            product={product}
+                            setCategories={setCategories}
+                            key={product._id}
+                          />
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
-              )}
-            </motion.div>
+
+                {!loading && filteredCategories.length === 0 && (
+                  <div className="py-6 text-center text-gray-500">
+                    <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                    <p>No category found</p>
+                  </div>
+                )}
+              </motion.div>
+            </div>
           )}
 
           {activeTab === "add" && (
@@ -143,13 +193,13 @@ const CategoriesPage: React.FC = () => {
               transition={{ duration: 0.4 }}
               className="relative md:w-[70%] mx-auto bg-white rounded-2xl ring-2 ring-blue-500 md:p-6"
             >
-              
               <AddCategory />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {activeTab !== "add" && (
+        {/* Pagination */}
+        {activeTab !== "add" && filteredCategories.length > 0 && (
           <div className="flex justify-end">
             <Pagination
               page={currentPage}

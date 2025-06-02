@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { Loader } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 type FormValues = {
   categoryId: number;
@@ -13,7 +14,6 @@ const AddCategory: React.FC = () => {
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
-
 
   const handleGenerateNumber = () => {
     const number = Math.floor(Math.random() * 900000) + 100000;
@@ -68,6 +68,9 @@ const AddCategory: React.FC = () => {
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className=" rounded-2xl p-6 w-full mx-auto"
     >
+      <Helmet>
+        <title>Add Category | POS System</title>
+      </Helmet>
       <form onSubmit={handleSubmit(handleCategorySubmit)} className="space-y-5">
         <div className="grid gap-6">
           <div>
@@ -96,7 +99,6 @@ const AddCategory: React.FC = () => {
           </div>
         </div>
 
-       
         <motion.button
           whileTap={{ scale: 0.97 }}
           whileHover={{ scale: 1.02 }}

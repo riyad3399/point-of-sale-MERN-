@@ -7,6 +7,7 @@ import Pagination from "../Pagination";
 import { InvoiceType } from "../../types";
 import { useNavigate } from "react-router-dom";
 import InvoiceDuePaymentModal from "./InvoiceDuePaymentModal";
+import { Helmet } from "react-helmet-async";
 
 export default function AllTransactions() {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
@@ -112,12 +113,13 @@ export default function AllTransactions() {
     }
   };
 
+  const capitalized = (str: string) =>
+    str ? str[0].toUpperCase() + str.slice(1) : "";
+
   // Print Invoice
   const handlePrint = (id: string) => {
     const tx = transactions.find((tx) => tx._id === id);
     if (!tx) return;
-
-   
 
     const printWindow = window.open("", "", "width=800,height=600");
     printWindow?.document.write(`
@@ -198,6 +200,7 @@ export default function AllTransactions() {
                 <tr>
                   <th>Item</th>
                   <th>Quantity</th>
+                  <th>Status</th>
                   <th>Price (৳)</th>
                 </tr>
               </thead>
@@ -208,6 +211,7 @@ export default function AllTransactions() {
                     <tr>
                       <td>${item.name}</td>
                       <td>${item.quantity}</td>
+                      <td>${capitalized(item.status)}</td>
                       <td>৳${item.price.toFixed(2)}</td>
                     </tr>`
                   )
@@ -296,7 +300,6 @@ export default function AllTransactions() {
         </body>
       </html>
     `);
-    
 
     printWindow?.document.close();
     printWindow?.print();
@@ -304,6 +307,10 @@ export default function AllTransactions() {
 
   return (
     <div className="max-w-6xl mx-auto p-4">
+      <Helmet>
+        <title>All Transactions | POS System</title>
+      </Helmet>
+
       <div className="flex justify-between mb-4 gap-4 flex-wrap">
         {/* Search Box */}
         <div className="relative w-full max-w-md">
@@ -312,7 +319,7 @@ export default function AllTransactions() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, phone, or ID"
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg input bg-white"
           />
         </div>
 
@@ -324,7 +331,7 @@ export default function AllTransactions() {
             onChange={(e) =>
               setStatusFilter(e.target.value as "all" | "paid" | "due")
             }
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-3 py-2 border border-gray-300 rounded-lg input bg-white"
           >
             <option value="all">All</option>
             <option value="paid">Only Paid</option>

@@ -7,6 +7,7 @@ import SalesOverviewChart from "../components/dashboard/SalesOverviewChart";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
+import { Helmet } from "react-helmet-async";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -202,6 +203,11 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
+
+      <Helmet>
+        <title>Dashboard | POS System</title>
+      </Helmet>
+
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
       {/* Stats Grid */}

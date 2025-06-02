@@ -30,7 +30,7 @@ const Header: React.FC = () => {
   const fetchSmsBalance = async () => {
     try {
       const res = await axios.get(
-        " http://bulksmsbd.net/api/getBalanceApi?api_key=ElME4aE1aEqIie8cGz97"
+        "http://bulksmsbd.net/api/getBalanceApi?api_key=ElME4aE1aEqIie8cGz97"
       );
       const data = res.data;
       setSmsBalance(data);
@@ -43,6 +43,7 @@ const Header: React.FC = () => {
     fetchLowStockItems();
     fetchSmsBalance();
     const interval = setInterval(fetchLowStockItems, 10000);
+
 
     return () => clearInterval(interval);
   }, []);
@@ -71,7 +72,7 @@ const Header: React.FC = () => {
               <MessageSquare className="h-5 w-5" />
             </span>{" "}
             <span className="absolute -top-2 -left-5 h-5 w-8 bg-primary-500 rounded-full text-white text-xs flex items-center justify-center">
-              {smsBalance?.balance ? smsBalance.balance : 0}
+              {smsBalance?.balance ? smsBalance.balance.toFixed(1) : 0}
             </span>
           </div>
 

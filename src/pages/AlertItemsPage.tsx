@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import AlertItemsShow from "../components/report/AlertItemsShow";
+import { Helmet } from "react-helmet-async";
 
 export default function AlertItemsPage() {
   const [products, setProducts] = useState([]);
@@ -24,6 +25,9 @@ export default function AlertItemsPage() {
 
   return (
     <div>
+      <Helmet>
+                    <title>Alert Items | POS System</title>
+                  </Helmet>
       <AlertItemsShow products={products} />
     </div>
   );

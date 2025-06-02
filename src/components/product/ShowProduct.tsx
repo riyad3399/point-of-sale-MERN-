@@ -7,6 +7,7 @@ import Modal from "../Modal";
 import axios from "axios";
 import Swal from "sweetalert2";
 import UpdateProduct from "./UpdateProduct";
+import { Helmet } from "react-helmet-async";
 
 const buttonVariants = {
   initial: { scale: 1 },
@@ -81,6 +82,9 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="hover:bg-gray-50 transition-colors"
     >
+      <Helmet>
+        <title>Show Product | POS System</title>
+      </Helmet>
       <td className="px-4 py-3 border">
         <div className="w-12 h-12 rounded-md overflow-hidden">
           <motion.img

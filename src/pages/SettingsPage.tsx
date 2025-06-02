@@ -1,34 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import {
-  Save,
   Store,
   Receipt,
-  CreditCard,
-  Users,
-  BellRing,
   Upload,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import Swal from "sweetalert2";
-import { FormValues } from "../types";
 import StoreInformation from "../components/setting/StoreInformation";
 import UploadCsvFile from "../components/setting/UploadCsvFile";
-
-
+import { Helmet } from "react-helmet-async";
 
 const SettingsPage: React.FC = () => {
-
   const [activeTab, setActiveTab] = React.useState("store");
-
-
-  
-
- 
 
   return (
     <div>
+      <Helmet>
+        <title>Settings | POS System</title>
+      </Helmet>
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -73,9 +61,6 @@ const SettingsPage: React.FC = () => {
     </div>
   );
 };
-
-
-
 
 interface SettingNavItemProps {
   icon: React.ReactNode;

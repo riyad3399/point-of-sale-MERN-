@@ -4,6 +4,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 export default function ReportStatementPage() {
   const [fromDate, setFromDate] = useState<Date | null>(null);
@@ -43,6 +44,10 @@ export default function ReportStatementPage() {
       transition={{ duration: 0.5 }}
       className="max-w-7xl mx-auto mt-10 px-6 py-8 bg-white rounded-2xl shadow-md"
     >
+      <Helmet>
+        <title>Report Statement | POS System</title>
+      </Helmet>
+
       <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
         📊 <span className="text-gray-800">Smart Report Statement</span>
       </h2>

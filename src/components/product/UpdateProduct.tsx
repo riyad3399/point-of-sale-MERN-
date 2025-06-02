@@ -146,7 +146,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
   // const filterCategory= categories.find(cat => cat.categoryId === reset.)
 
   return (
-    <div className="max-w-3xl p-6">
+    <div className="max-w-5xl p-6">
       <motion.h2
         variants={fieldVariants}
         className="text-2xl font-semibold text-gray-800 mb-6"

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import CategoryUpdateModal from "./CategoryUpdateModal";
+import { Helmet } from "react-helmet-async";
 
 interface Category {
   categoryId: number;
@@ -82,6 +83,12 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="hover:bg-gray-100 transition-colors"
     >
+      <Helmet>
+        <title>Show Category | POS System</title>
+      </Helmet>
+
+      
+
       <td className="px-4 py-2 border text-left">{product?.categoryId}</td>
       <td className="px-4 py-2 border text-left">{product?.categoryName}</td>
       <td className="px-4 py-2 border text-left">{asignItem.length}</td>

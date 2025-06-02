@@ -8,6 +8,7 @@ interface Product {
   name: string;
   quantity: number;
   price: number;
+  status: string;
 }
 
 interface Customer {
@@ -46,6 +47,8 @@ const Invoice: React.FC<InvoiceProps> = ({
   const payable = totalAmount - discount;
   const balance = paidAmount - payable;
 
+  console.log(products);
+
   // Prevent duplicate saving
   const invoicePostedRef = useRef(false);
 
@@ -74,6 +77,7 @@ const Invoice: React.FC<InvoiceProps> = ({
             quantity: item.quantity,
             price: item.price,
             total: item.quantity * item.price,
+            status:item.status
           })),
           totals: {
             total: totalAmount,
@@ -137,6 +141,7 @@ const Invoice: React.FC<InvoiceProps> = ({
                 <span>
                   {item.name} × {item.quantity}
                 </span>
+                <span className="">{item.status}</span>
                 <span>৳ {(item.quantity * item.price).toFixed(2)}</span>
               </li>
             ))}

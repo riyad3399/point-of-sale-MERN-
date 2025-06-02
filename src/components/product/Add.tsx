@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { Helmet } from "react-helmet-async";
 
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -96,6 +97,9 @@ const Add: React.FC = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Add Product | POS System</title>
+      </Helmet>
       <motion.h2
         variants={fieldVariants}
         className="text-2xl font-semibold text-gray-800 mb-6"
@@ -297,9 +301,7 @@ const Add: React.FC = () => {
         {/* color & size */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
-            <label className="text-sm font-medium text-gray-700">
-             Size
-            </label>
+            <label className="text-sm font-medium text-gray-700">Size</label>
             <input
               type="text"
               {...register("size")}
@@ -309,9 +311,7 @@ const Add: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">
-              Color
-            </label>
+            <label className="text-sm font-medium text-gray-700">Color</label>
             <input
               type="text"
               {...register("color")}

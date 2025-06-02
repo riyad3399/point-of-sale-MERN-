@@ -14,7 +14,13 @@ interface InvoiceType {
     paymentMethod: string;
     saleSystem: string;
     transactionId: number;
-    items: { name: string; quantity: number; price: number; total: number }[];
+    items: {
+      name: string;
+      quantity: number;
+      price: number;
+      total: number;
+      status: string;
+    }[];
     totals: {
       total: number;
       discount: number;
@@ -62,7 +68,7 @@ export default function InvoiceView() {
           onClick={() => handlePaymentDetailsView(invoice.transactionId)}
           className="btn-primary mb-3 flex items-center gap-2"
         >
-          <View/> Details
+          <View /> Details
         </button>
       </div>
       <motion.div
@@ -146,13 +152,18 @@ export default function InvoiceView() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.05 * index }}
-                className="flex justify-between items-center bg-gray-100 hover:bg-gray-200 transition-colors p-2 rounded-lg shadow-sm"
+                className={`flex justify-between items-center bg-gray-100 hover:bg-gray-200 transition-colors p-2 rounded-lg shadow-sm ${
+                  item.status === "sale" ? "bg-success-400" : "bg-danger-400"
+                }`}
               >
-                <div>
-                  <p className="font-medium text-gray-800">{item.name}</p>
-                  <p className="text-sm text-gray-600">
-                    Qty: {item.quantity} × ৳{item.price}
-                  </p>
+                <div className={`flex gap-5 `}>
+                  <div>
+                    <p className="font-medium text-gray-800">{item.name}</p>
+                    <p className="text-sm text-gray-600">
+                      Qty: {item.quantity} × ৳{item.price}
+                    </p>
+                  </div>
+                  <p>{item.status}</p>
                 </div>
                 <div className="text-right text-lg font-semibold text-gray-800">
                   ৳{item.total}

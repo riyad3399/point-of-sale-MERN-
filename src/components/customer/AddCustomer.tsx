@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 
 interface Customer {
   customerName: string;
@@ -69,6 +70,9 @@ export default function AddCustomer() {
       transition={{ delay: 0.1, duration: 0.4 }}
       className="space-y-6 ring-2 ring-blue-500 p-6 rounded-2xl  max-w-2xl mx-auto"
     >
+      <Helmet>
+                    <title>Add Customer | POS System</title>
+                  </Helmet>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Name */}
         <div>

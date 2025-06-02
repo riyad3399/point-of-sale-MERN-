@@ -22,7 +22,7 @@ const Index: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="w-full mx-auto bg-white p-8 rounded-2xl shadow-2xl max-w-4xl"
+      className="w-full mx-auto bg-white p-8 rounded-2xl shadow-2xl max-w-5xl"
     >
       <Add/>
     </motion.div>

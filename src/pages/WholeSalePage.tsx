@@ -7,6 +7,7 @@ import { Product } from "../types";
 import { TbCurrencyTaka } from "react-icons/tb";
 import CheckoutModal from "../components/checkout/CheckoutModal";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 
 type OptionType = {
   value: string;
@@ -27,6 +28,7 @@ export default function WholeSalePage() {
   const [customers, setCustomers] = useState<OptionType[]>([]);
   const [selectWalking, setSelectWalking] = useState<OptionType | null>(null);
   const [addedCustomer, setAddedCustomer] = useState<OptionType | null>(null);
+  const [selectValues, setSelectValues] = useState<{[productId: string]: string;}>({});
 
   const addToCart = (id: string) => {
     setCart((prev) => {
@@ -89,6 +91,13 @@ export default function WholeSalePage() {
     product: Product,
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
+
+    const value = e.target.value;
+    setSelectValues((prev) => ({
+      ...prev,
+      [product._id]: value,
+    }));
+
     const returnSale = e.target.value === "return";
     if (returnSale) {
       setSelectReturnSale(product.wholesalePrice);
@@ -124,6 +133,7 @@ export default function WholeSalePage() {
         name: fullProduct.productName,
         quantity: item.quantity,
         price: fullProduct.wholesalePrice,
+        status: selectValues[fullProduct._id] || "sale",
       };
     })
     .filter(Boolean);
@@ -162,6 +172,9 @@ export default function WholeSalePage() {
 
   return (
     <div className="">
+      <Helmet>
+        <title>Whole Sale | POS System</title>
+      </Helmet>
       <div className="my-2">
         <SearchableDropdown
           customers={customers}
@@ -306,7 +319,7 @@ export default function WholeSalePage() {
                           {product.productName}
                         </p>
                         <select
-                          className={`text-xs absolute right-12 top-6  px-1 py-0.5 rounded-md ring-1 ring-blue-400 focus:outline-none`}
+                          className={`text-xs absolute lg:right-8 md:right-9 right-8 top-6  px-1 py-0.5 rounded-md ring-1 ring-primary-400 focus:outline-none`}
                           onChange={(e) => handleReturnSale(product, e)}
                         >
                           <option value="sale">Sale</option>

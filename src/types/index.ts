@@ -82,7 +82,7 @@ export interface InvoiceType {
   customer: { name: string; phone: string };
   paymentMethod: string;
   saleSystem: string;
-  items: { name: string; quantity: number; price: number }[];
+  items: { name: string; quantity: number; price: number; status:string }[];
   totals: {
     total: number;
     discount: number;

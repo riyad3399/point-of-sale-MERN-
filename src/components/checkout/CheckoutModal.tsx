@@ -39,8 +39,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   saleSystemValue,
   customers,
   addedCustomer,
+
 }) => {
-  // console.log(products);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -64,7 +64,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     if (value !== "walking") {
       return true;
     }
-    
+
     try {
       const res = await axios.post("http://localhost:3000/customer", {
         customerName,
@@ -104,7 +104,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setIsProcessing(false);
       setIsComplete(true);
     }, 1500);
-   
   };
 
   const handleFullCheckout = async () => {
@@ -114,11 +113,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       // Customer add হয় নাই, মানে conflict হয়েছে — checkout e যাওয়া যাবে না
       return;
     }
-   
 
     handleCheckout(); // এখন checkout শুরু করো
-
-    
   };
 
   const inputBase =

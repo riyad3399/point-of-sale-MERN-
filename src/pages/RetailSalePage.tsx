@@ -7,6 +7,7 @@ import { Product } from "../types";
 import { TbCurrencyTaka } from "react-icons/tb";
 import CheckoutModal from "../components/checkout/CheckoutModal";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 
 type OptionType = {
   value: string;
@@ -27,6 +28,7 @@ export default function RetailSalePage() {
   const [customers, setCustomers] = useState<OptionType[]>([]);
   const [selectWalking, setSelectWalking] = useState<OptionType | null>(null);
   const [addedCustomer, setAddedCustomer] = useState<OptionType | null>(null);
+   const [selectValues, setSelectValues] = useState<{[productId: string]: string;}>({});
 
   const addToCart = (id: string) => {
     setCart((prev) => {
@@ -89,6 +91,13 @@ export default function RetailSalePage() {
     product: Product,
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
+
+    const value = e.target.value;
+    setSelectValues((prev) => ({
+      ...prev,
+      [product._id]: value,
+    }));
+
     const returnSale = e.target.value === "return";
     if (returnSale) {
       setSelectReturnSale(product.retailPrice);
@@ -120,11 +129,12 @@ export default function RetailSalePage() {
       const fullProduct = allProduct.find((p) => p._id === item.id);
       if (!fullProduct) return null;
       return {
-        productId: fullProduct._id, // ✅ ঠিক spelling
+        productId: fullProduct._id,
         name: fullProduct.productName,
         quantity: item.quantity,
-        price: fullProduct.retailPrice,
-      };      
+        price: fullProduct.wholesalePrice,
+        status: selectValues[fullProduct._id] || "sale",
+      };
     })
     .filter(Boolean);
 
@@ -162,6 +172,9 @@ export default function RetailSalePage() {
 
   return (
     <div className="">
+      <Helmet>
+        <title>Retail Sale | POS System</title>
+      </Helmet>
       <div className="my-2">
         <SearchableDropdown
           customers={customers}
