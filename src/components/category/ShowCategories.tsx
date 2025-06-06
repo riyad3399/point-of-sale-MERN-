@@ -87,8 +87,6 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
         <title>Show Category | POS System</title>
       </Helmet>
 
-      
-
       <td className="px-4 py-2 border text-left">{product?.categoryId}</td>
       <td className="px-4 py-2 border text-left">{product?.categoryName}</td>
       <td className="px-4 py-2 border text-left">{asignItem.length}</td>

@@ -36,6 +36,8 @@ export default function WholeSaleTab() {
       })
       .catch((err) => {
         setError("Data load করতে সমস্যা হয়েছে");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [transactions]);
@@ -112,7 +114,6 @@ export default function WholeSaleTab() {
       console.error("Update error:", err);
     }
   };
-
 
   const capitalized = (str: string) =>
     str ? str[0].toUpperCase() + str.slice(1) : "";
@@ -504,7 +505,7 @@ export default function WholeSaleTab() {
       />
 
       {/* Pagination */}
-      <div className="flex justify-end">
+      {transactions.length >= 10 && <div className="flex justify-end">
         <Pagination
           page={page}
           setPage={setPage}
@@ -514,7 +515,7 @@ export default function WholeSaleTab() {
           prevPage={prevPage}
           nextPage={nextPage}
         />
-      </div>
+      </div>}
     </div>
   );
 }

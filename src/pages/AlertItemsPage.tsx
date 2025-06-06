@@ -26,8 +26,8 @@ export default function AlertItemsPage() {
   return (
     <div>
       <Helmet>
-                    <title>Alert Items | POS System</title>
-                  </Helmet>
+        <title>Alert Items | POS System</title>
+      </Helmet>
       <AlertItemsShow products={products} />
     </div>
   );

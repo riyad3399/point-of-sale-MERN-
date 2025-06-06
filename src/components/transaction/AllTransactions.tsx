@@ -36,6 +36,8 @@ export default function AllTransactions() {
       })
       .catch((err) => {
         setError("Data load করতে সমস্যা হয়েছে");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [transactions]);
@@ -505,17 +507,19 @@ export default function AllTransactions() {
       />
 
       {/* Pagination */}
-      <div className="flex justify-end">
-        <Pagination
-          page={page}
-          setPage={setPage}
-          totalPages={Math.ceil(transactions.length / pageSize)}
-          pageSize={pageSize}
-          currentTransactions={currentTransactions}
-          prevPage={prevPage}
-          nextPage={nextPage}
-        />
-      </div>
+      {transactions.length >= 10 && (
+        <div className="flex justify-end">
+          <Pagination
+            page={page}
+            setPage={setPage}
+            totalPages={Math.ceil(transactions.length / pageSize)}
+            pageSize={pageSize}
+            currentTransactions={currentTransactions}
+            prevPage={prevPage}
+            nextPage={nextPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

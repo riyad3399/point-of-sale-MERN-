@@ -30,13 +30,13 @@ const ProductesPage: React.FC = () => {
       .get("http://localhost:3000/product")
       .then((res) => {
         setAllProduct(res.data);
-        setLoading(false);
         setCurrentPage(1);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
-        setLoading(false);
-      });
+      }).finally(() => {
+        setLoading(false)
+      })
   }, [activeTab]);
 
   useEffect(() => {
@@ -177,7 +177,7 @@ const ProductesPage: React.FC = () => {
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-6">
+                          <td colSpan={6} className="text-center h-60">
                             <Loading />
                           </td>
                         </tr>

@@ -25,14 +25,22 @@ const CategoriesPage: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get("http://localhost:3000/category").then((res) => {
-      setCategories(res.data);
-      setLoading(false);
-      setCurrentPage(1);
-    });
+    axios
+      .get("http://localhost:3000/category")
+      .then((res) => {
+        setCategories(res.data);
+        setCurrentPage(1);
+      })
+      .catch((err) => {
+        console.error("Failed to load categories", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [activeTab]);
+  
 
-  // ✅ Filter by search and status
+
   const filteredCategories = categories.filter((cat: any) => {
     const matchSearch =
       cat.categoryName.toLowerCase().includes(search.toLowerCase()) ||
@@ -155,7 +163,7 @@ const CategoriesPage: React.FC = () => {
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan={5}>
+                          <td colSpan={5} className="h-60">
                             <Loading />
                           </td>
                         </tr>

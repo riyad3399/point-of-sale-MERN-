@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, Trash, ShoppingCart } from "lucide-react";
+import { Plus, Minus, Trash, ShoppingCart, Notebook } from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
 import { Product } from "../types";
@@ -433,7 +433,7 @@ export default function WholeSalePage() {
                 onClick={handleInsertQuotation}
                 className="text-xs md:text-sm btn-sm md:btn-md btn-success flex items-center font-semibold"
               >
-                <Trash size={16} className="mr-1" /> Quotation
+                <Notebook size={16} className="mr-1" /> Quotation
               </motion.button>
               <div>
                 <motion.button
