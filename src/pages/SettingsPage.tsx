@@ -38,7 +38,7 @@ const SettingsPage: React.FC = () => {
               />
               <SettingNavItem
                 icon={<Upload />}
-                title="Upload Settings"
+                title="Upload Products"
                 isActive={activeTab === "upload"}
                 onClick={() => setActiveTab("upload")}
               />

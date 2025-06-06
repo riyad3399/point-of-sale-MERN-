@@ -58,7 +58,7 @@ export default function CustomerTabs() {
   };
 
   return (
-    <div className="w-full mx-auto mt-10 bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="w-full mx-auto mt-10 bg-white rounded-2xl overflow-hidden">
       {/* Tab Header */}
       <div className="flex justify-center border-b bg-gray-50">
         {["list", "add"].map((tab) => (

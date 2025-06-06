@@ -28,7 +28,9 @@ export default function WholeSalePage() {
   const [customers, setCustomers] = useState<OptionType[]>([]);
   const [selectWalking, setSelectWalking] = useState<OptionType | null>(null);
   const [addedCustomer, setAddedCustomer] = useState<OptionType | null>(null);
-  const [selectValues, setSelectValues] = useState<{[productId: string]: string;}>({});
+  const [selectValues, setSelectValues] = useState<{
+    [productId: string]: string;
+  }>({});
 
   const addToCart = (id: string) => {
     setCart((prev) => {
@@ -91,7 +93,6 @@ export default function WholeSalePage() {
     product: Product,
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-
     const value = e.target.value;
     setSelectValues((prev) => ({
       ...prev,
@@ -139,6 +140,39 @@ export default function WholeSalePage() {
     .filter(Boolean);
 
   const totalAmount = total + shippingCost - selectReturnSale;
+
+  const quotationProduct = [...productsInCart];
+  const retailSale = "wholeSale";
+
+  const newQuotationProduct = quotationProduct.map(
+    ({ status: s, ...rest }) => rest
+  );
+  const quotation = [
+    [...newQuotationProduct],
+    selectWalking,
+    { saleType: retailSale },
+  ];
+  const handleInsertQuotation = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/quotations/add",
+        quotation
+      );
+      if (response.status === 201) {
+        Swal.fire({
+          icon: "success",
+          iconColor: "#093",
+          title: "Quotation Add Successful!",
+        });
+      }
+      console.log(response);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Quotation Error",
+      });
+    }
+  };
 
   useEffect(() => {
     const handleGetProduct = async () => {
@@ -393,6 +427,13 @@ export default function WholeSalePage() {
                 className="text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
               >
                 <Trash size={16} className="mr-1" /> Clear Cart
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleInsertQuotation}
+                className="text-xs md:text-sm btn-sm md:btn-md btn-success flex items-center font-semibold"
+              >
+                <Trash size={16} className="mr-1" /> Quotation
               </motion.button>
               <div>
                 <motion.button

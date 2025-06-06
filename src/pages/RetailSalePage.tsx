@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, Trash, ShoppingCart } from "lucide-react";
+import { Plus, Minus, Trash, ShoppingCart, icons } from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
 import { Product } from "../types";
@@ -28,7 +28,9 @@ export default function RetailSalePage() {
   const [customers, setCustomers] = useState<OptionType[]>([]);
   const [selectWalking, setSelectWalking] = useState<OptionType | null>(null);
   const [addedCustomer, setAddedCustomer] = useState<OptionType | null>(null);
-   const [selectValues, setSelectValues] = useState<{[productId: string]: string;}>({});
+  const [selectValues, setSelectValues] = useState<{
+    [productId: string]: string;
+  }>({});
 
   const addToCart = (id: string) => {
     setCart((prev) => {
@@ -91,7 +93,6 @@ export default function RetailSalePage() {
     product: Product,
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-
     const value = e.target.value;
     setSelectValues((prev) => ({
       ...prev,
@@ -139,6 +140,35 @@ export default function RetailSalePage() {
     .filter(Boolean);
 
   const totalAmount = total + shippingCost - selectReturnSale;
+  const quotationProduct = [...productsInCart];
+  const retailSale = "retailSale";
+
+  const newQuotationProduct = quotationProduct.map(
+    ({ status: s, ...rest }) => rest
+  );
+  const quotation = [
+    [...newQuotationProduct],
+    selectWalking,
+    { saleType: retailSale},
+  ];
+  const handleInsertQuotation = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/quotations/add", quotation);
+      if (response.status === 201) {
+        Swal.fire({
+          icon: "success",
+          iconColor: "#093",
+          title:"Quotation Add Successful!"
+        })
+      }
+      console.log(response);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Quotation Error",
+      });
+    }
+  }
 
   useEffect(() => {
     const handleGetProduct = async () => {
@@ -386,19 +416,26 @@ export default function RetailSalePage() {
                 {(total + shippingCost - selectReturnSale).toFixed(2)}
               </span>
             </div>
-            <div className="flex justify-between items-center mt-3">
+            <div className="flex gap-0.5 justify-between items-center mt-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={clearCart}
-                className="text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
+                className="text-xs md:text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
               >
                 <Trash size={16} className="mr-1" /> Clear Cart
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleInsertQuotation}
+                className="text-xs md:text-sm btn-sm md:btn-md btn-success flex items-center font-semibold"
+              >
+                <Trash size={16} className="mr-1" /> Quotation
               </motion.button>
               <div>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn-primary text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                  className="btn-primary text-white btn-sm md:btn-md rounded-lg text-xs md:text-sm flex items-center gap-2"
                   onClick={handleCheckoutModalOpen}
                 >
                   <ShoppingCart size={18} /> Checkout

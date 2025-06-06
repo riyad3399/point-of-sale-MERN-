@@ -5,7 +5,6 @@ import { BiLogoProductHunt } from "react-icons/bi";
 import {
   LayoutDashboard,
   ShoppingCart,
-  Package,
   FileText,
   Settings,
   CreditCard,
@@ -15,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
+  Notebook,
 } from "lucide-react";
 import { MdCategory } from "react-icons/md";
 
@@ -58,7 +58,11 @@ const Sidebar: React.FC = () => {
           onClick={() => setCollapsed(!collapsed)}
           className="text-white transition rounded-md bg-primary-700"
         >
-          {collapsed ? <ChevronRight className="h-6 w-6" /> : <ChevronLeft className="w-6 h-6 " />}
+          {collapsed ? (
+            <ChevronRight className="h-6 w-6" />
+          ) : (
+            <ChevronLeft className="w-6 h-6 " />
+          )}
         </button>
       </div>
 
@@ -100,7 +104,14 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title="Whole Sale"
           />
-         
+          <SidebarLink
+            to="/quotation"
+            icon={<Notebook/>}
+            text="Quotations"
+            collapsed={collapsed}
+            title="Quotations"
+          />
+
           <SidebarLink
             to="/transactions"
             icon={<FileText />}

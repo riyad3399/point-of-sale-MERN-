@@ -191,7 +191,7 @@ const CategoriesPage: React.FC = () => {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.4 }}
-              className="relative md:w-[70%] mx-auto bg-white rounded-2xl ring-2 ring-blue-500 md:p-6"
+              className="relative  bg-white rounded-2xl md:p-6"
             >
               <AddCategory />
             </motion.div>

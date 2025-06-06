@@ -154,22 +154,22 @@ const ProductesPage: React.FC = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50">
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
                           Photo
                         </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
                           Product ID
                         </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
                           Product Name
                         </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
                           Category
                         </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
+                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
                           Quantity
                         </th>
-                        <th className="py-3 px-4 font-medium text-gray-600">
+                        <th className="py-3 border px-4 font-medium text-gray-600">
                           Actions
                         </th>
                       </tr>

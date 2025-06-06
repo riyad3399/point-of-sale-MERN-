@@ -66,7 +66,7 @@ const AddCategory: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className=" rounded-2xl p-6 w-full mx-auto"
+      className=" rounded-2xl p-6 md:w-[50%] mx-auto shadow-md"
     >
       <Helmet>
         <title>Add Category | POS System</title>
@@ -82,7 +82,7 @@ const AddCategory: React.FC = () => {
               readOnly
               {...register("categoryId")}
               value={randomNumber}
-              className="mt-2 w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300"
+              className="mt-2 w-full p-3 input transition duration-300"
             />
           </div>
 
@@ -94,7 +94,7 @@ const AddCategory: React.FC = () => {
               type="text"
               placeholder="Category Name"
               {...register("categoryName", { required: true })}
-              className="mt-2 w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300"
+              className="mt-2 w-full input transition duration-300"
             />
           </div>
         </div>
@@ -104,7 +104,7 @@ const AddCategory: React.FC = () => {
           whileHover={{ scale: 1.02 }}
           type="submit"
           disabled={loading}
-          className={`w-full py-3  transition-all duration-300 ${
+          className={`w-full py-2.5  transition-all duration-300 ${
             loading ? "bg-blue-500 cursor-not-allowed" : "btn-primary"
           }`}
         >

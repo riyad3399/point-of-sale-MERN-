@@ -26,7 +26,7 @@ export default function InvoiceDuePaymentModal({
   const [discount, setDiscount] = useState<number | string>("");
   const [nextDueAmount, setNextDueAmount] = useState<number | string>("");
   const [nextDueDate, setNextDueDate] = useState(invoice.nextDueDate || "");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -44,41 +44,71 @@ export default function InvoiceDuePaymentModal({
   const handleSave = async () => {
     const paidValue = Number(nextDueAmount || 0);
     const discountValue = Number(discount || 0);
+    const dueAmount = invoice.totals.due;
 
+    // ✅ VALIDATIONS
     if (paidValue < 0 || discountValue < 0) {
-      Swal.fire("Error", "Negative values are not allowed.", "error");
-      return;
+      return Swal.fire("Error", "Negative values are not allowed.", "error");
     }
 
-    if (paidValue + discountValue > invoice.totals.due) {
-      Swal.fire(
+    if (discountValue > dueAmount) {
+      return Swal.fire("Error", "Discount can't exceed due amount.", "error");
+    }
+
+    if (paidValue > dueAmount) {
+      return Swal.fire(
         "Error",
-        "Total (Paid + Discount) can't exceed due amount.",
+        "Paid amount can't exceed due amount.",
         "error"
       );
-      return;
     }
 
+    if (paidValue + discountValue > dueAmount) {
+      return Swal.fire(
+        "Error",
+        "Total (Paid + Discount) can't exceed due.",
+        "error"
+      );
+    }
+
+    const remainingDue = dueAmount - discountValue - paidValue;
+
+    if (remainingDue > 0) {
+      if (!nextDueDate) {
+        return Swal.fire("Error", "Please provide a next due date.", "error");
+      }
+
+      const selectedDate = new Date(nextDueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (selectedDate <= today) {
+        return Swal.fire(
+          "Error",
+          "Next due date must be in the future.",
+          "error"
+        );
+      }
+    }
+
+    // SAVE
     try {
       setLoading(true);
       await onSave({
         paid: paidValue,
         discount: discountValue,
-        nextDueDate: currentNextDueAmount > 0 ? nextDueDate : undefined,
-        nextDueAmount: currentNextDueAmount,
+        nextDueDate: remainingDue > 0 ? nextDueDate : undefined,
+        nextDueAmount: remainingDue,
       });
 
       Swal.fire("Success", "Payment updated successfully!", "success");
       onClose();
     } catch (err) {
-      Swal.fire("Error", "Failed to update payment!", err);
+      Swal.fire("Error", "Failed to update payment!", "error");
     } finally {
       setLoading(false);
     }
   };
-
- 
-  
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4 max-h-screen">
@@ -126,15 +156,15 @@ export default function InvoiceDuePaymentModal({
 
           <div className="text-gray-700 font-medium">Previous Paid:</div>
           <div className="text-right font-semibold">৳{invoice.totals.paid}</div>
+
           <div className="font-medium text-red-700">Previous Due:</div>
           <div className="text-right font-semibold text-red-700">
             ৳{invoice.totals.due}
           </div>
         </div>
 
-        {/* Editable Inputs */}
+        {/* Inputs */}
         <div className="grid grid-cols-2 gap-4 mt-4">
-          {/* Discount */}
           <label className="block text-sm text-gray-700 mb-1">
             Discount (৳)
           </label>
@@ -151,7 +181,6 @@ export default function InvoiceDuePaymentModal({
             }}
           />
 
-          {/* Paid Now */}
           <label className="block text-sm text-gray-700 mb-1">
             Paid Now (৳)
           </label>

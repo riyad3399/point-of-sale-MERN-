@@ -65,7 +65,7 @@ export default function ReportStatementPage() {
             scrollableYearDropdown
             yearDropdownItemNumber={50}
             placeholderText="Select start date"
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            className="w-full input transition"
           />
         </div>
 
@@ -81,7 +81,7 @@ export default function ReportStatementPage() {
             scrollableYearDropdown
             yearDropdownItemNumber={50}
             placeholderText="Select end date"
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            className="w-full input transition"
           />
         </div>
 
@@ -89,7 +89,7 @@ export default function ReportStatementPage() {
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.03 }}
           onClick={handleSearch}
-          className="btn-primary transition-all text-white font-medium px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow"
+          className="btn-primary transition-all text-white font-medium px-5 py-2 rounded-lg flex items-center justify-center gap-2 shadow"
         >
           🔍 Search Report
         </motion.button>

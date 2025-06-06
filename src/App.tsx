@@ -23,6 +23,7 @@ import ReportStatementPage from "./pages/ReportStatementPage";
 import ShowReportStatement from "./components/report/ShowReportStatement";
 import AlertItemsPage from "./pages/AlertItemsPage";
 import { HelmetProvider } from "react-helmet-async";
+import QuotationPage from "./pages/QuotationPage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
             <Route path="customers" element={<CustomersPage />} />
+            <Route path="quotation" element={<QuotationPage />} />
             <Route path="reportStatement" element={<ReportStatementPage />} />
             <Route
               path="showReportStatement"

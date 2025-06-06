@@ -68,11 +68,11 @@ export default function AddCustomer() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.4 }}
-      className="space-y-6 ring-2 ring-blue-500 p-6 rounded-2xl  max-w-2xl mx-auto"
+      className="space-y-6 shadow-md p-6 rounded-2xl  max-w-2xl mx-auto"
     >
       <Helmet>
-                    <title>Add Customer | POS System</title>
-                  </Helmet>
+        <title>Add Customer | POS System</title>
+      </Helmet>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Name */}
         <div>
@@ -81,7 +81,7 @@ export default function AddCustomer() {
           </label>
           <input
             {...register("customerName", { required: "Name is required" })}
-            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full input"
             placeholder="John Doe"
           />
           {errors.customerName && (
@@ -99,7 +99,7 @@ export default function AddCustomer() {
           <input
             type="number"
             {...register("phone", { required: "Phone is required" })}
-            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full input"
             placeholder="+880 1234-567890"
           />
           {errors.phone && (
@@ -115,7 +115,8 @@ export default function AddCustomer() {
         </label>
         <textarea
           {...register("address")}
-          className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 w-full px-4 py-3 border border-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0
+           disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
           placeholder="123 Street Name, City"
           rows={3}
         />
@@ -127,7 +128,7 @@ export default function AddCustomer() {
         whileHover={{ scale: 1.02 }}
         type="submit"
         disabled={loading}
-        className={`w-full py-3  transition-all duration-300 ${
+        className={`w-full py-2.5  transition-all duration-300 ${
           loading ? "bg-blue-500 cursor-not-allowed" : "btn-primary"
         }`}
       >
