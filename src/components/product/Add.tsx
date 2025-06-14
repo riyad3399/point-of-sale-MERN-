@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+
 
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -95,6 +97,8 @@ const Add: React.FC = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <div>
       <Helmet>
@@ -104,7 +108,7 @@ const Add: React.FC = () => {
         variants={fieldVariants}
         className="text-2xl font-semibold text-gray-800 mb-6"
       >
-        Add New Product
+        {t("addProduct.formTitle")}
       </motion.h2>
 
       <motion.form
@@ -118,14 +122,14 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Product Name *
+              {t("addProduct.productName.label")} *
             </label>
             <input
               type="text"
               {...register("productName", {
                 required: "Product Name is required",
               })}
-              placeholder="e.g. Apple iPhone 15"
+              placeholder={t("addProduct.productName.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
             {errors.productName && (
@@ -137,7 +141,7 @@ const Add: React.FC = () => {
 
           <div>
             <label className="text-sm font-medium text-gray-700 flex justify-between">
-              Product Code / SKU
+              {t("addProduct.productCode.label")}
             </label>
             <input
               type="text"
@@ -153,7 +157,7 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Category *
+              {t("addProduct.category.label")} *
             </label>
             <select
               {...register("category", { required: "Category is required" })}
@@ -173,11 +177,13 @@ const Add: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Brand</label>
+            <label className="text-sm font-medium text-gray-700">
+              {t("addProduct.brand.label")}
+            </label>
             <input
               type="text"
               {...register("brand")}
-              placeholder="e.g. Apple"
+              placeholder={t("addProduct.brand.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -187,28 +193,28 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Purchase Price (ক্রয় মূল্য) *
+              {t("addProduct.purchasePrice.label")} *
             </label>
             <input
               type="number"
               {...register("purchasePrice", {
                 required: "Purchase Price is required",
               })}
-              placeholder="e.g. 999.99"
+              placeholder={t("addProduct.purchasePrice.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Retail Price (খুচরা মূল্য) *
+              {t("addProduct.retailPrice.label")} *
             </label>
             <input
               type="number"
               {...register("retailPrice", {
                 required: "Retail Price is required",
               })}
-              placeholder="e.g. 1099.99"
+              placeholder={t("addProduct.retailPrice.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -217,26 +223,26 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Wholesale Price (পাইকারি মূল্য) *
+              {t("addProduct.wholesalePrice.label")} *
             </label>
             <input
               type="number"
               {...register("wholesalePrice", {
                 required: "Wholesale Price is required",
               })}
-              placeholder="e.g. 950.00"
+              placeholder={t("addProduct.wholesalePrice.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Quantity (পরিমাণ) *
+              {t("addProduct.quantity.label")} *
             </label>
             <input
               type="number"
               {...register("quantity", { required: "Quantity is required" })}
-              placeholder="e.g. 100"
+              placeholder={t("addProduct.quantity.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -246,25 +252,25 @@ const Add: React.FC = () => {
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Alert Quantity (সতর্কীকরণ)
+              {t("addProduct.alertQuantity.label")}
             </label>
             <input
               type="number"
               {...register("alertQuantity")}
-              placeholder="e.g. 10"
+              placeholder={t("addProduct.alertQuantity.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Unit (একক)
+              {t("addProduct.unit.label")}
             </label>
             <select
               {...register("unit")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-              <option value="">Select</option>
+              <option value="">{t("addProduct.unit.placeholder")}</option>
               <option value="pcs">Pcs</option>
               <option value="kg">Kg</option>
               <option value="ltr">Ltr</option>
@@ -275,47 +281,57 @@ const Add: React.FC = () => {
         {/* Tax and Tax Type */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
-            <label className="text-sm font-medium text-gray-700">Tax (%)</label>
+            <label className="text-sm font-medium text-gray-700">
+              {t("addProduct.tax.label")}
+            </label>
             <input
               type="number"
               {...register("tax")}
-              placeholder="tax %"
+              placeholder={t("addProduct.tax.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Tax Type
+              {t("addProduct.taxType.label")}
             </label>
             <select
               {...register("taxType")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-              <option value="">Select</option>
-              <option value="inclusive">Inclusive</option>
-              <option value="exclusive">Exclusive</option>
+              <option value=""> {t("addProduct.taxType.placeholder")}</option>
+              <option value="inclusive">
+                {t("addProduct.taxType.inclusive")}
+              </option>
+              <option value="exclusive">
+                {t("addProduct.taxType.exclusive")}
+              </option>
             </select>
           </div>
         </motion.div>
         {/* color & size */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
-            <label className="text-sm font-medium text-gray-700">Size</label>
+            <label className="text-sm font-medium text-gray-700">
+              {t("addProduct.size.label")}
+            </label>
             <input
               type="text"
               {...register("size")}
-              placeholder="Product Size"
+              placeholder={t("addProduct.size.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Color</label>
+            <label className="text-sm font-medium text-gray-700">
+              {t("addProduct.color.label")}
+            </label>
             <input
               type="text"
               {...register("color")}
-              placeholder="Product Color"
+              placeholder={t("addProduct.color.placeholder")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -324,11 +340,11 @@ const Add: React.FC = () => {
         {/* Description */}
         <motion.div variants={fieldVariants}>
           <label className="text-sm font-medium text-gray-700">
-            Description
+            {t("addProduct.description.label")}
           </label>
           <textarea
             {...register("description")}
-            placeholder="Write a short product description..."
+            placeholder={t("addProduct.description.placeholder")}
             rows={3}
             className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
@@ -336,7 +352,9 @@ const Add: React.FC = () => {
 
         {/* Photo Upload */}
         <motion.div variants={fieldVariants}>
-          <label className="text-sm font-medium text-gray-700">Photo</label>
+          <label className="text-sm font-medium text-gray-700">
+            {t("addProduct.photo.label")}
+          </label>
           <input
             type="file"
             {...register("photo")}
@@ -352,7 +370,7 @@ const Add: React.FC = () => {
             type="submit"
             className="w-full  text-white py-3 rounded-xl font-semibold btn-primary transition duration-200"
           >
-            Add Product
+            {t("addProduct.submitButton")}
           </motion.button>
         </motion.div>
       </motion.form>

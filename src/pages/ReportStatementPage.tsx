@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -44,15 +44,11 @@ export default function ReportStatementPage() {
       transition={{ duration: 0.5 }}
       className="max-w-7xl mx-auto mt-10 px-6 py-8 bg-white rounded-2xl shadow-md"
     >
-      <Helmet>
-        <title>Report Statement | POS System</title>
-      </Helmet>
-
-      <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-        📊 <span className="text-gray-800">Smart Report Statement</span>
+      <h2 className="lg:text-2xl md:text-xl text-sm  font-semibold mb-6 flex items-center gap-2">
+        📊 <span className="text-gray-800">Sales Statement</span>
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600 mb-1">
             From Date
@@ -89,9 +85,9 @@ export default function ReportStatementPage() {
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.03 }}
           onClick={handleSearch}
-          className="btn-primary transition-all text-white font-medium px-5 py-2 rounded-lg flex items-center justify-center gap-2 shadow"
+          className="btn-primary text-xs btn-sm md:py-3"
         >
-          🔍 Search Report
+          🔍 Report
         </motion.button>
       </div>
     </motion.div>

@@ -113,3 +113,60 @@ export interface FormValues  {
   currency: string;
   logo: FileList;
 };
+
+export interface QuotationType {
+  _id: string;
+  quotationId: number;
+  customer: {
+    customerName: string;
+    phone: string;
+    label?: string;
+    value?: number; 
+  };
+  items: {
+    name: string;
+    price: number;
+    productId: string; // ObjectId as string
+    quantity: number;
+  }[];
+  saleType: "retailSale" | "wholeSale";
+  shippingCost?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+// Company Type
+export interface CompanyType {
+  _id: string;
+  storeName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  currency: string;
+  logo: string;
+  taxRate: number | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+
+// --- Interfaces and Types ---
+export interface Purchase {
+  _id: string;
+  supplier: string;
+  total: number;
+  paid: number;
+  due: number;
+  paymentMethod: string;
+  date: string;
+  items: {
+    product: string;
+    quantity: number;
+    purchasePrice: number;
+  }[];
+}

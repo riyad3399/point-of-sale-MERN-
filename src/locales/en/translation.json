@@ -1,0 +1,183 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "categories": "Categories",
+    "products": "Products",
+    "retailSale": "Retail Sale",
+    "wholeSale": "Whole Sale",
+    "quotations": "Quotations",
+    "transactions": "Transactions",
+    "customers": "Customers",
+    "report": "Report",
+    "settings": "Settings",
+    "version": "Version",
+    "expense": "Expense",
+    "appName": "Sale Mate"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "todaySales": "Today's Sales",
+    "todayWholeSale": "Today's WholeSale",
+    "todayRetailSale": "Today's RetailSale",
+    "todayDue": "Today's Due",
+    "totalSales": "Total Sales",
+    "totalWholeSale": "Total WholeSale",
+    "totalRetailSale": "Total RetailSale",
+    "totalDue": "Total Due",
+    "vsLastWeek": "vs last week",
+    "salesOverview": "Sales Overview (Last 7 Days)",
+    "totalSale": "Total Sale",
+    "totalDueLabel": "Total Due",
+    "wholesale": "Wholesale",
+    "retail": "Retail",
+    "dueCustomers": "Due Customers",
+    "selectDate": "Select start date",
+    "sendSms": "Send SMS",
+    "sending": "Sending...",
+    "recentTransactions": "Recent Transactions",
+    "invoiceId": "Invoice ID",
+    "date": "Date",
+    "payment": "Payment",
+    "total": "Total",
+    "status": "Status",
+    "completed": "Completed",
+    "partial": "Partial"
+  },
+  "category": {
+    "title": "Categories",
+    "add": "Add Category",
+    "search_placeholder": "Search by name or ID",
+    "id": "#",
+    "name": "Category",
+    "assign_item": "Assign Item",
+    "status": "Status",
+    "actions": "Actions",
+    "filter": "Filter",
+    "all": "All",
+    "active": "Active",
+    "pending": "Pending",
+    "inactive": "Inactive",
+    "id_label": "Category ID",
+    "name_label": "Category Name",
+    "submit": "Add Category",
+    "no_data": "No category found",
+    "processing": "Processing..."
+  },
+  "product": {
+    "productList": "Products",
+    "addProduct": "Add Product",
+    "searchPlaceholder": "Search by name or ID",
+    "category": "Category",
+    "all": "All",
+    "photo": "Photo",
+    "productId": "Product ID",
+    "productName": "Product Name",
+    "quantity": "Quantity",
+    "actions": "Actions",
+    "filter": "Filter"
+  },
+  "addProduct": {
+    "formTitle": "Add New Product",
+    "submitButton": "Add Product",
+    "productName": {
+      "label": "Product Name",
+      "placeholder": "e.g. Apple iPhone 15"
+    },
+    "productCode": {
+      "label": "Product Code / SKU"
+    },
+    "brand": {
+      "label": "Brand",
+      "placeholder": "e.g. Apple"
+    },
+    "category": {
+      "label": "Category"
+    },
+    "purchasePrice": {
+      "label": "Purchase Price",
+      "placeholder": "e.g. 999.99"
+    },
+    "retailPrice": {
+      "label": "Retail Price",
+      "placeholder": "e.g. 1099.99"
+    },
+    "wholesalePrice": {
+      "label": "Wholesale Price",
+      "placeholder": "e.g. 950.00"
+    },
+    "quantity": {
+      "label": "Quantity",
+      "placeholder": "e.g. 100"
+    },
+    "alertQuantity": {
+      "label": "Alert Quantity",
+      "placeholder": "e.g. 10"
+    },
+    "tax": {
+      "label": "Tax (%)",
+      "placeholder": "tax %"
+    },
+    "unit": {
+      "label": "Unit",
+      "placeholder": "Select"
+    },
+    "taxType": {
+      "label": "Tax Type",
+      "placeholder": "Select",
+      "inclusive": "Inclusive",
+      "exclusive": "Exclusive"
+    },
+    "size": {
+      "label": "Size",
+      "placeholder": "Product Size"
+    },
+    "color": {
+      "label": "Color",
+      "placeholder": "Product Color"
+    },
+    "description": {
+      "label": "Description",
+      "placeholder": "Write a short product description..."
+    },
+    "photo": {
+      "label": "Photo"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "all": "All Transactions",
+    "wholesale": "Wholesale Sale",
+    "retail": "Retail Sale",
+    "invoiceId": "Invoice ID",
+    "customer": "Customer",
+    "date": "Date",
+    "paid": "Paid",
+    "due": "Due",
+    "method": "Method",
+    "actions": "Actions",
+    "filter": "Filter",
+    "searchPlaceholder": "Search by name, phone, or Invoice ID",
+    "cash": "Cash",
+    "edit": "Edit",
+    "delete": "Delete",
+    "onlyPaid": "Only Paid",
+    "onlyDue": "Only Due",
+    "allSelect": "All",
+    "noFound": "No transactions found."
+  },
+  "customers": {
+    "title": "Customers",
+    "addCustomer": "Add Customer",
+    "name": "Name",
+    "phone": "Phone",
+    "address": "Address",
+    "action": "Action",
+    "searchPlaceholder": "Search by name, phone, or ID",
+    "placeholderName": "John Doe",
+    "placeholderPhone": "+880 1234-567890",
+    "placeholderAddress": "123 Street Name, City",
+    "edit": "Edit",
+    "delete": "Delete",
+    "noCustomers": "No customers found."
+  }
+}

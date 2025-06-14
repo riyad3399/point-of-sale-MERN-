@@ -10,6 +10,8 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
+import { useTranslation } from "react-i18next";
+
 
 interface SalesDataPoint {
   date: string;
@@ -24,6 +26,9 @@ interface Props {
 }
 
 const SalesOverviewChart: React.FC<Props> = ({ data }) => {
+
+  const {t} = useTranslation()
+
   return (
     <div className="bg-white rounded-lg shadow-md p-5 w-full h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -60,28 +65,28 @@ const SalesOverviewChart: React.FC<Props> = ({ data }) => {
             dataKey="totalSale"
             stroke="#4f46e5"
             fill="url(#colorTotal)"
-            name="Total Sale"
+            name={t("Dashboard.totalSale")}
           />
           <Area
             type="monotone"
             dataKey="totalDue"
             stroke="#f59e0b"
             fill="url(#colorDue)"
-            name="Total Due"
+            name={t("Dashboard.totalDueLabel")}
           />
           <Area
             type="monotone"
             dataKey="totalWholesale"
             stroke="#10b981"
             fill="url(#colorWholesale)"
-            name="Wholesale"
+            name={t("Dashboard.wholesale")}
           />
           <Area
             type="monotone"
             dataKey="totalRetail"
             stroke="#ec4899"
             fill="url(#colorRetail)"
-            name="Retail"
+            name={t("Dashboard.retail")}
           />
         </AreaChart>
       </ResponsiveContainer>

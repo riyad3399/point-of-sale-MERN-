@@ -1,18 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Loader } from "lucide-react";
 
 const Loading: React.FC = () => {
   return (
-    <div className="flex items-center justify-center max-h-screen">
+    <div className="flex items-center justify-center min-h-screen bg-slate-100">
       <motion.div
-        className="w-16 h-16 border-8 border-gray-300 border-t-blue-500 rounded-full"
         animate={{ rotate: 360 }}
-        transition={{
-          repeat: Infinity,
-          duration: 2,
-          ease: "easeInOut",
-        }}
-      />
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      >
+        <Loader className="w-12 h-12 text-indigo-500" />
+      </motion.div>
     </div>
   );
 };

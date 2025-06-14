@@ -8,6 +8,8 @@ import { TbCurrencyTaka } from "react-icons/tb";
 import CheckoutModal from "../components/checkout/CheckoutModal";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
+import { clearCart } from "../utils/clearCart";
 
 type OptionType = {
   value: string;
@@ -32,17 +34,31 @@ export default function WholeSalePage() {
     [productId: string]: string;
   }>({});
 
-  const addToCart = (id: string) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        );
+  const location = useLocation();
+  const editQuotation = location.state;
+
+  useEffect(() => {
+    if (editQuotation) {
+      const cartItems = editQuotation.items.map((item) => ({
+        id: item.productId, // depends on your structure
+        quantity: item.quantity,
+      }));
+      setCart(cartItems); // এই cart UI তে render হবে
+
+      if (editQuotation.customer) {
+        const selected = {
+          value: editQuotation.customer.value || "",
+          label: `${editQuotation.customer.customerName} | ${editQuotation.customer.phone}`,
+          customerName: editQuotation.customer.customerName.toLowerCase(),
+          phone: editQuotation.customer.phone,
+        };
+        setSelectWalking(selected);
+        setAddedCustomer(selected);
       }
-      return [...prev, { id, quantity: 1 }];
-    });
-  };
+
+      setShippingCost(editQuotation.shippingCost);
+    }
+  }, [editQuotation]);
 
   const deleteSelectedItems = () => {
     setCart((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
@@ -55,22 +71,74 @@ export default function WholeSalePage() {
     );
   };
 
-  const updateQuantity = (id: string, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === id
-            ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  };
+  const getProductById = (id: string) => allProduct.find((p) => p._id === id);
 
-  const clearCart = () => {
-    setCart([]);
-    setSelectReturnSale(0);
-    setShippingCost(0);
+  const addToCart = (id: string) => {
+    const product = getProductById(id);
+    if (!product) return;
+
+    if (product.quantity === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Stock Out!",
+        text: "এই পণ্যটি স্টকে নেই।",
+      });
+      return;
+    }
+
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === id);
+      const currentQty = existing?.quantity || 0;
+
+      if (currentQty >= product.quantity) {
+        Swal.fire({
+          icon: "warning",
+          title: "স্টকে পণ্য নেই",
+          text: `সর্বোচ্চ ${product.quantity}টি পণ্য স্টকে আছে!`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        return prev;
+      }
+
+      if (existing) {
+        return prev.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+
+      return [...prev, { id, quantity: 1 }];
+    });
+  };
+  const updateQuantity = (id: string, delta: number) => {
+    const product = getProductById(id);
+    if (!product) return;
+
+    setCart(
+      (prev) =>
+        prev
+          .map((item) => {
+            if (item.id !== id) return item;
+
+            const newQty = item.quantity + delta;
+
+            if (newQty > product.quantity) {
+              Swal.fire({
+                icon: "warning",
+                title: "স্টকে অতিরিক্ত পণ্য নেই",
+                text: `সর্বোচ্চ ${product.quantity}টি নেওয়া যাবে`,
+                timer: 1500,
+                showConfirmButton: false,
+              });
+              return item;
+            }
+
+            if (newQty <= 0) return null;
+
+            return { ...item, quantity: newQty };
+          })
+          .filter(Boolean) // remove nulls
+    );
   };
 
   const total = cart.reduce((acc, item) => {
@@ -125,6 +193,7 @@ export default function WholeSalePage() {
     }
   };
 
+
   const productsInCart = cart
     .map((item) => {
       const fullProduct = allProduct.find((p) => p._id === item.id);
@@ -142,16 +211,19 @@ export default function WholeSalePage() {
   const totalAmount = total + shippingCost - selectReturnSale;
 
   const quotationProduct = [...productsInCart];
-  const retailSale = "wholeSale";
+  const retailSale = "retailSale";
 
   const newQuotationProduct = quotationProduct.map(
     ({ status: s, ...rest }) => rest
   );
-  const quotation = [
-    [...newQuotationProduct],
-    selectWalking,
-    { saleType: retailSale },
-  ];
+
+  const quotation = {
+    items: newQuotationProduct,
+    customer: selectWalking,
+    saleType: retailSale,
+    shippingCost: shippingCost,
+  };
+
   const handleInsertQuotation = async () => {
     try {
       const response = await axios.post(
@@ -162,25 +234,18 @@ export default function WholeSalePage() {
         Swal.fire({
           icon: "success",
           iconColor: "#093",
-          title: "Quotation Add Successful!",
+          title: response.data?.message || "Quotation Add Successful!",
         });
       }
-      console.log(response);
     } catch (err) {
       Swal.fire({
         icon: "error",
-        title: "Quotation Error",
+        title: err.response?.data?.message || "Quotation Error",
       });
     }
   };
 
   useEffect(() => {
-    const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/product");
-      const data = await res.data;
-      setAllProduct(data);
-    };
-
     axios.get("http://localhost:3000/customer").then((res) => {
       const options = res.data.map((customer: any) => ({
         value: customer.customerId,
@@ -200,7 +265,14 @@ export default function WholeSalePage() {
       ];
       setCustomers(optionsWithWalkingCustomer);
     });
+  }, []);
 
+  useEffect(() => {
+    const handleGetProduct = async () => {
+      const res = await axios.get("http://localhost:3000/product");
+      const data = await res.data;
+      setAllProduct(data);
+    };
     handleGetProduct();
   }, []);
 
@@ -265,30 +337,47 @@ export default function WholeSalePage() {
                 filteredProducts.map((product) => (
                   <motion.div
                     key={product._id}
-                    className="bg-white rounded-xl shadow-md hover:shadow-xl cursor-pointer transform transition-all duration-300 hover:scale-105 w-full"
+                    className={` bg-white rounded-xl shadow-md w-full transform transition-all duration-300 `}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    onClick={() => addToCart(product._id)}
+                    onClick={() =>
+                      product.quantity > 0 && addToCart(product._id)
+                    }
                   >
-                    <div className="overflow-hidden inline-block w-full h-28">
+                    {/* ✅ Stock Out Badge */}
+
+                    <div className="relative overflow-hidden inline-block w-full h-28">
                       <img
                         src={`http://localhost:3000/product/image/${product._id}`}
                         alt={product.productName}
-                        className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md "
+                        className={`hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md`}
                       />
+                      {product.quantity === 0 && (
+                        <div
+                          className={`absolute top-0 left-0 bg-primary-900 text-sm px-2 py-1 rounded z-0 font-bold w-full h-full flex items-center justify-center ${
+                            product.quantity === 0 && "opacity-80"
+                          }`}
+                        >
+                          <span className="text-white">Stock Out</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="p-2">
-                      <h2 className="font-semibold text-sm  text-gray-800">
+
+                    <div className="p-2 space-y-1">
+                      <h2 className="font-semibold text-sm text-gray-800">
                         {product.productName}
                       </h2>
-                      <p className="text-blue-600 font-bold text-sm mt-2 flex items-center gap-1">
-                        <span>
-                          {" "}
-                          <TbCurrencyTaka size={20} />
+                      <p className="text-sm text-gray-800 font-semibold">
+                        Stock:{" "}
+                        <span className="text-blue-600">
+                          {product.quantity}
                         </span>
-                        {product.wholesalePrice.toFixed(2)}
                       </p>
+                      <strong className="text-blue-600 text-sm flex items-center gap-1">
+                        <TbCurrencyTaka size={20} />
+                        {product.wholesalePrice.toFixed(2)}
+                      </strong>
                     </div>
                   </motion.div>
                 ))
@@ -423,7 +512,9 @@ export default function WholeSalePage() {
             <div className="flex justify-between items-center mt-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={clearCart}
+                onClick={() =>
+                  clearCart(setCart, setSelectReturnSale, setShippingCost)
+                }
                 className="text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
               >
                 <Trash size={16} className="mr-1" /> Clear Cart

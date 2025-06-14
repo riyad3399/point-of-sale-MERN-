@@ -8,6 +8,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import UpdateProduct from "./UpdateProduct";
 import { Helmet } from "react-helmet-async";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
 const buttonVariants = {
   initial: { scale: 1 },
@@ -99,7 +100,8 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
       </td>
       <td className="px-4 py-3 border">{product.productCode}</td>
       <td className="px-4 py-3 border">
-        {product.productName}
+        
+        {capitalizeFirstLetter(product.productName)}
         {(product.size || product.color) && (
           <div className="text-xs mt-1 flex justify-between">
             {product.size && (

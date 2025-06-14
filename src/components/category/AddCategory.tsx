@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { Loader } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+
 
 type FormValues = {
   categoryId: number;
@@ -60,6 +62,8 @@ const AddCategory: React.FC = () => {
     }
   };
 
+  const {t} = useTranslation()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -75,7 +79,7 @@ const AddCategory: React.FC = () => {
         <div className="grid gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Category ID
+              {t("category.id_label")}
             </label>
             <input
               type="number"
@@ -88,11 +92,11 @@ const AddCategory: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Category Name
+              {t("category.name_label")}
             </label>
             <input
               type="text"
-              placeholder="Category Name"
+              placeholder={t("category.name_label")}
               {...register("categoryName", { required: true })}
               className="mt-2 w-full input transition duration-300"
             />
@@ -111,10 +115,10 @@ const AddCategory: React.FC = () => {
           {loading ? (
             <span className="flex justify-center items-center gap-2">
               <Loader className="animate-spin h-5 w-5" />
-              Processing...
+              {t("category.processing")}
             </span>
           ) : (
-            "Add Category"
+            t("category.submit")
           )}
         </motion.button>
       </form>

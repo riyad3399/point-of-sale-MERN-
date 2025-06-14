@@ -19,11 +19,14 @@ import CustomersPage from "./pages/CustomersPage";
 import RetailSalePage from "./pages/RetailSalePage";
 import WholeSalePage from "./pages/WholeSalePage";
 import InvoiceView from "./components/transaction/InvoiceView";
-import ReportStatementPage from "./pages/ReportStatementPage";
 import ShowReportStatement from "./components/report/ShowReportStatement";
 import AlertItemsPage from "./pages/AlertItemsPage";
 import { HelmetProvider } from "react-helmet-async";
 import QuotationPage from "./pages/QuotationPage";
+import ReportPage from "./pages/ReportPage";
+import ProfitSummary from "./components/report/ProfitSummary";
+import ExpensePage from "./pages/ExpensePage";
+import PurchasePage from "./pages/PurchasePage";
 
 function App() {
   return (
@@ -37,6 +40,7 @@ function App() {
           <Route path="/" element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
 
+            <Route path="report" element={<ReportPage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="productes" element={<ProductesPage />} />
             <Route path="showProduct" element={<ShowProduct />} />
@@ -47,7 +51,11 @@ function App() {
             <Route path="transactions" element={<TransactionsPage />} />
             <Route path="customers" element={<CustomersPage />} />
             <Route path="quotation" element={<QuotationPage />} />
-            <Route path="reportStatement" element={<ReportStatementPage />} />
+            <Route path="profitSummary" element={<ProfitSummary />} />
+            <Route path="expense" element={<ExpensePage />} />
+            <Route path="purchase" element={<PurchasePage />} />
+            {/* <Route path="expense" element={<ExpensePage />} />
+            <Route path="reportStatement" element={<ReportStatementPage />} /> */}
             <Route
               path="showReportStatement"
               element={<ShowReportStatement />}

@@ -50,6 +50,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [dueAmount, setDueAmount] = useState<number>(0);
   const [dueDate, setDueDate] = useState<string>("");
 
+  console.log(products, "checkout modal");
   useEffect(() => {
     const paid = typeof paidAmount === "number" ? paidAmount : 0;
     const disc = typeof discount === "number" ? discount : 0;

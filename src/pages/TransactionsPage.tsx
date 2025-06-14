@@ -1,34 +1,45 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import WholeSaleTab from "../components/transaction/WholeSaleTab";
 import RetailSaleTab from "../components/transaction/RetailSaleTab";
 import AllTransactions from "../components/transaction/AllTransactions";
+import { useTranslation } from "react-i18next";
 
-const tabs = [
-  { id: "all", label: "All Transactions" },
-  { id: "wholesale", label: "Wholesale Sale" },
-  { id: "retail", label: "Retail Sale" },
-];
+
 
 export default function TransactionsPage() {
   const [activeTab, setActiveTab] = useState("all");
 
+  function capitalizeFirstLetter(string: string) {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+ 
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "all":
-        return <AllTransactions/>;
+        return (
+          <AllTransactions capitalizeFirstLetter={capitalizeFirstLetter} />
+        );
       case "wholesale":
-        return <WholeSaleTab />;
+        return <WholeSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />;
       case "retail":
-        return <RetailSaleTab />;
+        return <RetailSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />;
 
       default:
         return null;
     }
   };
 
- 
-
+  const { t } = useTranslation();
+  
+  const tabs = [
+    { id: "all", label: t("transactions.all") },
+    { id: "wholesale", label: t("transactions.wholesale") },
+    { id: "retail", label: t("transactions.retail") },
+  ];
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <div className="flex gap-4 border-b pb-2">

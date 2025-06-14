@@ -1,13 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  Store,
-  Receipt,
-  Upload,
-} from "lucide-react";
+import { Store, Receipt, Upload } from "lucide-react";
 import StoreInformation from "../components/setting/StoreInformation";
 import UploadCsvFile from "../components/setting/UploadCsvFile";
 import { Helmet } from "react-helmet-async";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState("store");
@@ -17,7 +14,12 @@ const SettingsPage: React.FC = () => {
       <Helmet>
         <title>Settings | POS System</title>
       </Helmet>
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+      <div className="flex lg:justify-between">
+        <h1 className="text-2xl font-bold mb-6">Settings</h1>
+        <div>
+          <LanguageSwitcher />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar Navigation */}

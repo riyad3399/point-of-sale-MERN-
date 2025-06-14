@@ -1,0 +1,183 @@
+{
+  "sidebar": {
+    "dashboard": "ড্যাশবোর্ড",
+    "categories": "বিভাগসমূহ",
+    "products": "পণ্যসমূহ",
+    "retailSale": "খুচরা বিক্রি",
+    "wholeSale": "পাইকারি বিক্রি",
+    "quotations": "কোটেশনসমূহ",
+    "transactions": "লেনদেনসমূহ",
+    "customers": "গ্রাহকগণ",
+    "report": "রিপোর্ট",
+    "settings": "সেটিংস",
+    "version": "সংস্করণ",
+    "expense": "খরচ",
+    "appName": "সেল মেট"
+  },
+  "Dashboard": {
+    "title": "ড্যাশবোর্ড",
+    "todaySales": "আজকের বিক্রি",
+    "todayWholeSale": "আজকের পাইকারি বিক্রি",
+    "todayRetailSale": "আজকের খুচরা বিক্রি",
+    "todayDue": "আজকের বাকি",
+    "totalSales": "মোট বিক্রি",
+    "totalWholeSale": "মোট পাইকারি বিক্রি",
+    "totalRetailSale": "মোট খুচরা বিক্রি",
+    "totalDue": "মোট বাকি",
+    "vsLastWeek": "গত সপ্তাহের তুলনায়",
+    "salesOverview": "বিক্রির সারাংশ (শেষ ৭ দিন)",
+    "totalSale": "মোট বিক্রি",
+    "totalDueLabel": "মোট বাকি",
+    "wholesale": "পাইকারি",
+    "retail": "খুচরা",
+    "dueCustomers": "বাকি গ্রাহক",
+    "selectDate": "তারিখ নির্বাচন করুন",
+    "sendSms": "SMS পাঠান",
+    "sending": "পাঠানো হচ্ছে...",
+    "recentTransactions": "সাম্প্রতিক লেনদেন",
+    "invoiceId": "ইনভয়েস নম্বর",
+    "date": "তারিখ",
+    "payment": "পেমেন্ট",
+    "total": "মোট",
+    "status": "অবস্থা",
+    "completed": "সম্পন্ন",
+    "partial": "আংশিক"
+  },
+  "category": {
+    "title": "বিভাগসমূহ",
+    "add": "নতুন বিভাগ যোগ করুন",
+    "search_placeholder": "নাম বা আইডি দিয়ে খুঁজুন",
+    "id": "#",
+    "name": "বিভাগ",
+    "assign_item": "আইটেম বরাদ্দ",
+    "status": "স্ট্যাটাস",
+    "actions": "অ্যাকশন",
+    "filter": "ফিল্টার",
+    "all": "সব",
+    "active": "সক্রিয়",
+    "pending": "বিচারাধীন",
+    "inactive": "নিষ্ক্রিয়",
+    "id_label": "বিভাগ আইডি",
+    "name_label": "বিভাগের নাম",
+    "submit": "বিভাগ যোগ করুন",
+    "no_data": "কোনো বিভাগ পাওয়া যায়নি",
+    "processing": "প্রসেসিং হচ্ছে..."
+  },
+  "product": {
+    "productList": "পণ্যসমূহ",
+    "addProduct": "পণ্য যোগ করুন",
+    "searchPlaceholder": "নাম বা আইডি দিয়ে অনুসন্ধান করুন",
+    "category": "বিভাগ",
+    "all": "সব",
+    "photo": "ছবি",
+    "productId": "পণ্যের আইডি",
+    "productName": "পণ্যের নাম",
+    "quantity": "পরিমাণ",
+    "actions": "কার্যকলাপ",
+    "filter": "ফিল্টার"
+  },
+  "addProduct": {
+    "formTitle": "নতুন পণ্য যোগ করুন",
+    "submitButton": "পণ্য যোগ করুন",
+    "productName": {
+      "label": "পণ্যের নাম",
+      "placeholder": "যেমন: অ্যাপল আইফোন ১৫"
+    },
+    "productCode": {
+      "label": "পণ্যের কোড / SKU"
+    },
+    "brand": {
+      "label": "ব্র্যান্ড",
+      "placeholder": "যেমন: অ্যাপল"
+    },
+    "category": {
+      "label": "বিভাগ"
+    },
+    "purchasePrice": {
+      "label": "ক্রয় মূল্য",
+      "placeholder": "যেমন: ৯৯৯.৯৯"
+    },
+    "retailPrice": {
+      "label": "খুচরা মূল্য",
+      "placeholder": "যেমন: ১০৯৯.৯৯"
+    },
+    "wholesalePrice": {
+      "label": "পাইকারি মূল্য",
+      "placeholder": "যেমন: ৯৫০.০০"
+    },
+    "quantity": {
+      "label": "পরিমাণ",
+      "placeholder": "যেমন: ১০০"
+    },
+    "alertQuantity": {
+      "label": "সতর্কীকরণ",
+      "placeholder": "যেমন: ১০"
+    },
+    "tax": {
+      "label": "কর (%)",
+      "placeholder": "কর %"
+    },
+    "unit": {
+      "label": "একক",
+      "placeholder": "বেছে নিন"
+    },
+    "taxType": {
+      "label": "করের ধরণ",
+      "placeholder": "বেছে নিন",
+      "inclusive": "সমন্বিত (Inclusive)",
+      "exclusive": "অপৃথক (Exclusive)"
+    },
+    "size": {
+      "label": "আকার",
+      "placeholder": "পণ্যের আকার"
+    },
+    "color": {
+      "label": "রং",
+      "placeholder": "পণ্যের রং"
+    },
+    "description": {
+      "label": "বর্ণনা",
+      "placeholder": "পণ্যের সংক্ষিপ্ত বিবরণ লিখুন..."
+    },
+    "photo": {
+      "label": "ছবি"
+    }
+  },
+  "transactions": {
+    "title": "লেনদেনসমূহ",
+    "all": "সকল লেনদেন",
+    "wholesale": "পাইকারি বিক্রয়",
+    "retail": "খুচরা বিক্রয়",
+    "invoiceId": "চালান নম্বর",
+    "customer": "গ্রাহক",
+    "date": "তারিখ",
+    "paid": "পরিশোধিত",
+    "due": "বাকি",
+    "method": "পদ্ধতি",
+    "actions": "ক্রিয়াসমূহ",
+    "filter": "ফিল্টার",
+    "searchPlaceholder": "নাম, ফোন বা চালান নম্বর দ্বারা খুঁজুন",
+    "cash": "নগদ",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "onlyPaid": "শুধু পরিশোধিত",
+    "onlyDue": "শুধু বাকি",
+    "allSelect": "সকল",
+    "noFound": "কোনো লেনদেন পাওয়া যায়নি।"
+  },
+  "customers": {
+    "title": "গ্রাহকসমূহ",
+    "addCustomer": "নতুন গ্রাহক যোগ করুন",
+    "name": "নাম",
+    "phone": "ফোন",
+    "address": "ঠিকানা",
+    "action": "ক্রিয়াসমূহ",
+    "searchPlaceholder": "নাম, ফোন বা আইডি দিয়ে খুঁজুন",
+    "placeholderName": "জন ডো",
+    "placeholderPhone": "+৮৮০ ১২৩৪-৫৬৭৮৯০",
+    "placeholderAddress": "১২৩ রাস্তার নাম, শহর",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "noCustomers": "কোনো গ্রাহক পাওয়া যায়নি।"
+  }
+}

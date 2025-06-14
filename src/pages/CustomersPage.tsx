@@ -5,6 +5,8 @@ import ShowCustomerList from "../components/customer/ShowCustomerList";
 import axios from "axios";
 import { Box, Search } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useTranslation } from "react-i18next";
+
 
 interface Customer {
   customerId: number;
@@ -57,6 +59,9 @@ export default function CustomerTabs() {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
+
+  const { t} = useTranslation();
+
   return (
     <div className="w-full mx-auto mt-10 bg-white rounded-2xl overflow-hidden">
       {/* Tab Header */}
@@ -71,7 +76,7 @@ export default function CustomerTabs() {
                 : "text-gray-500 hover:text-blue-600"
             }`}
           >
-            {tab === "list" ? "🧾 Customers" : "➕ Add Customer"}
+            {tab === "list" ? t("customers.title") : t("customers.addCustomer")}
           </button>
         ))}
       </div>
@@ -90,7 +95,7 @@ export default function CustomerTabs() {
                   <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search by name, phone, or ID"
+                    placeholder={t("customers.searchPlaceholder")}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg input bg-white"
                   />
                 </div>
@@ -107,10 +112,10 @@ export default function CustomerTabs() {
                     <thead className="bg-gray-100">
                       <tr>
                         <th className="p-2 border">#</th>
-                        <th className="p-2 border">Name</th>
-                        <th className="p-2 border">Phone</th>
-                        <th className="p-2 border">Address</th>
-                        <th className="p-2 border">Action</th>
+                        <th className="p-2 border">{t("customers.name")}</th>
+                        <th className="p-2 border">{t("customers.phone")}</th>
+                        <th className="p-2 border">{t("customers.address")}</th>
+                        <th className="p-2 border">{t("customers.action")}</th>
                       </tr>
                     </thead>
 
@@ -130,7 +135,7 @@ export default function CustomerTabs() {
                     {filteredCustomers.length === 0 && (
                       <div className="py-6 text-center text-gray-500">
                         <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                        <p>No customer found</p>
+                        <p>{t("customers.noCustomers")}</p>
                       </div>
                     )}
                   </div>

@@ -6,6 +6,8 @@ import ShowCategories from "../components/category/ShowCategories";
 import { Box, Search } from "lucide-react";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
+import { useTranslation } from "react-i18next";
+
 
 const CategoriesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("categories");
@@ -68,6 +70,8 @@ const CategoriesPage: React.FC = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
+  const {t} = useTranslation()
+
   return (
     <div className="mx-auto p-4">
       {/* Tab Headers */}
@@ -80,7 +84,7 @@ const CategoriesPage: React.FC = () => {
               : "text-gray-600 hover:text-blue-600"
           }`}
         >
-          Categories
+          {t("category.title")}
         </button>
         <button
           onClick={() => setActiveTab("add")}
@@ -90,7 +94,7 @@ const CategoriesPage: React.FC = () => {
               : "text-gray-600 hover:text-blue-600"
           }`}
         >
-          Add Category
+          {t("category.add")}
         </button>
       </div>
 
@@ -109,23 +113,25 @@ const CategoriesPage: React.FC = () => {
                   <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search by name or ID"
+                    placeholder={t("category.search_placeholder")}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 input bg-white"
                   />
                 </div>
 
                 {/* Status Filter */}
                 <div className="flex items-center space-x-2">
-                  <label className="font-medium text-sm">Filter:</label>
+                  <label className="font-medium text-sm">
+                    {t("category.filter")}:
+                  </label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                     className="px-3 py-2 bg-white border border-gray-300 rounded-lg input"
                   >
-                    <option value="all">All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="all">{t("category.all")}</option>
+                    <option value="Pending">{t("category.pending")}</option>
+                    <option value="Active">{t("category.active")}</option>
+                    <option value="Inactive">{t("category.inactive")}</option>
                   </select>
                 </div>
               </div>
@@ -144,19 +150,19 @@ const CategoriesPage: React.FC = () => {
                     <thead>
                       <tr className="bg-gray-50">
                         <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          #
+                          {t("category.id")}
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          Category
+                          {t("category.name")}
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          Assign Item
+                          {t("category.assign_item")}
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          Status
+                          {t("category.status")}
                         </th>
                         <th className="text-center py-3 px-4 font-medium text-gray-600">
-                          Actions
+                          {t("category.actions")}
                         </th>
                       </tr>
                     </thead>
@@ -184,7 +190,7 @@ const CategoriesPage: React.FC = () => {
                 {!loading && filteredCategories.length === 0 && (
                   <div className="py-6 text-center text-gray-500">
                     <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                    <p>No category found</p>
+                    <p>{t("category.no_data")}</p>
                   </div>
                 )}
               </motion.div>

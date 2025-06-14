@@ -7,39 +7,34 @@ import {
   ShoppingCart,
   FileText,
   Settings,
-  CreditCard,
   Users,
-  ClipboardList,
   ScrollText,
   ChevronLeft,
   ChevronRight,
   AlertCircle,
   Notebook,
+  Coins,
+  ShoppingBag,
 } from "lucide-react";
 import { MdCategory } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const pathName = location.pathname;
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [reportOpen, setReportOpen] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setCollapsed(pathName === "/retailSale" || pathName === "/wholeSale");
-
-    // Auto open dropdown if under /report
-    if (pathName.startsWith("/report")) {
-      setReportOpen(true);
-    } else {
-      setReportOpen(false)
-      
-    }
+    setReportOpen(pathName.startsWith("/report"));
   }, [pathName]);
 
   return (
     <aside
       className={`hidden md:flex ${collapsed ? "w-20" : "w-64"} 
-      bg-primary-600 text-white flex-col h-screen sticky top-0 transition-all duration-300 overflow-y-hidden `}
+      bg-primary-600 text-white flex-col h-screen sticky top-0 transition-all duration-300 overflow-y-auto custom-scroll`}
     >
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-6">
@@ -50,8 +45,7 @@ const Sidebar: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <CreditCard className="h-6 w-6" />
-            <span>ModernPOS</span>
+            <img src={"/photo/logo.png"} alt="Logo" className=" w-[85%]" />
           </motion.div>
         )}
         <button
@@ -61,94 +55,110 @@ const Sidebar: React.FC = () => {
           {collapsed ? (
             <ChevronRight className="h-6 w-6" />
           ) : (
-            <ChevronLeft className="w-6 h-6 " />
+            <ChevronLeft className="w-6 h-6" />
           )}
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 pt-4 px-2 ">
+      <nav className="flex-1 pt-4 px-2">
         <div className="space-y-1">
           <SidebarLink
             to="/"
             icon={<LayoutDashboard />}
-            text="Dashboard"
+            text={t("sidebar.dashboard")}
             collapsed={collapsed}
-            title="Dashboard"
+            title={t("sidebar.dashboard")}
           />
           <SidebarLink
             to="/categories"
             icon={<MdCategory size={24} />}
-            text="Categories"
+            text={t("sidebar.categories")}
             collapsed={collapsed}
-            title="Categories"
+            title={t("sidebar.categories")}
           />
           <SidebarLink
             to="/productes"
             icon={<BiLogoProductHunt size={22} />}
-            text="Productes"
+            text={t("sidebar.products")}
             collapsed={collapsed}
-            title="Productes"
+            title={t("sidebar.products")}
           />
           <SidebarLink
             to="/retailSale"
             icon={<ShoppingCart />}
-            text="Retail Sale"
+            text={t("sidebar.retailSale")}
             collapsed={collapsed}
-            title="Retail Sale"
+            title={t("sidebar.retailSale")}
           />
           <SidebarLink
             to="/wholeSale"
             icon={<ShoppingCart />}
-            text="Whole Sale"
+            text={t("sidebar.wholeSale")}
             collapsed={collapsed}
-            title="Whole Sale"
+            title={t("sidebar.wholeSale")}
           />
           <SidebarLink
             to="/quotation"
-            icon={<Notebook/>}
-            text="Quotations"
+            icon={<Notebook />}
+            text={t("sidebar.quotations")}
             collapsed={collapsed}
-            title="Quotations"
+            title={t("sidebar.quotations")}
           />
-
           <SidebarLink
             to="/transactions"
             icon={<FileText />}
-            text="Transactions"
+            text={t("sidebar.transactions")}
             collapsed={collapsed}
-            title="Transactions"
+            title={t("sidebar.transactions")}
           />
           <SidebarLink
             to="/customers"
             icon={<Users />}
-            text="Customers"
+            text={t("sidebar.customers")}
             collapsed={collapsed}
-            title="Customers"
+            title={t("sidebar.customers")}
+          />
+          <SidebarLink
+            to="/expense"
+            icon={<Coins />}
+            text={t("sidebar.expense")}
+            collapsed={collapsed}
+            title={t("sidebar.expense")}
+          />
+          <SidebarLink
+            to="/purchase"
+            icon={<ShoppingBag />}
+            text={"Purchase"}
+            collapsed={collapsed}
+            title={"Purchase"}
           />
 
-          {/* Dropdown for Report */}
-          <button
+          {/* Report Dropdown */}
+          <NavLink
+            to="/report"
             onClick={() => setReportOpen(!reportOpen)}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors
-              ${
+            className={({ isActive }) =>
+              `w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                 pathName.startsWith("/report")
                   ? "bg-primary-700 text-white"
                   : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-              }`}
+              }`
+            }
           >
             <ScrollText />
             {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">Report</span>
+              <span className="flex-1 text-left whitespace-nowrap">
+                {t("sidebar.report")}
+              </span>
             )}
             {!collapsed && (
               <motion.div animate={{ rotate: reportOpen ? 90 : 0 }}>
                 <ChevronRight size={16} />
               </motion.div>
             )}
-          </button>
+          </NavLink>
 
-          {/* Dropdown Items */}
           {reportOpen && !collapsed && (
             <motion.div
               className="ml-8 mt-1 space-y-1"
@@ -157,18 +167,11 @@ const Sidebar: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <SidebarLink
-                to="/reportStatement"
-                icon={<ClipboardList size={16} />}
-                text="Statement"
-                collapsed={collapsed}
-                title="Statement"
-              />
-              <SidebarLink
                 to="/alertItems"
                 icon={<AlertCircle size={16} />}
-                text="Alert Items"
+                text={t("sidebar.alertItems")}
                 collapsed={collapsed}
-                title="Alert Items"
+                title={t("sidebar.alertItems")}
               />
             </motion.div>
           )}
@@ -176,9 +179,9 @@ const Sidebar: React.FC = () => {
           <SidebarLink
             to="/settings"
             icon={<Settings />}
-            text="Settings"
+            text={t("sidebar.settings")}
             collapsed={collapsed}
-            title="Settings"
+            title={t("sidebar.settings")}
           />
         </div>
       </nav>
@@ -187,8 +190,8 @@ const Sidebar: React.FC = () => {
       <div className="p-4 border-t border-primary-700 mt-auto">
         {!collapsed && (
           <div className="text-sm text-primary-200">
-            <p>ModernPOS System</p>
-            <p>Version 1.0.0</p>
+            <p>{t("sidebar.appName")}</p>
+            <p>{t("sidebar.version")} 1.0.0</p>
           </div>
         )}
       </div>
@@ -216,12 +219,11 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
       to={to}
       title={title}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-3 py-2 rounded-md transition-colors
-         ${
-           isActive
-             ? "bg-primary-700 text-white"
-             : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-         }`
+        `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+          isActive
+            ? "bg-primary-700 text-white"
+            : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+        }`
       }
     >
       <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>

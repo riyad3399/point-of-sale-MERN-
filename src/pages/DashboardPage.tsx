@@ -8,6 +8,8 @@ import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -59,6 +61,8 @@ const DashboardPage: React.FC = () => {
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   const fetchTodaySales = async () => {
     try {
@@ -129,7 +133,6 @@ const DashboardPage: React.FC = () => {
 
     fetchDefaultDueCustomers();
   }, []);
-  
 
   const sendSMS = async (
     phone: string,
@@ -142,7 +145,7 @@ const DashboardPage: React.FC = () => {
 
     try {
       setLoadingIndex(index);
-      await fetch("http://localhost:3000/sms/send", {
+      const res = await fetch("http://localhost:3000/sms/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,6 +155,7 @@ const DashboardPage: React.FC = () => {
           message: message,
         }),
       });
+      console.log(res);
       Swal.fire("Success", "SMS পাঠানো হয়েছে!", "success");
     } catch (err) {
       Swal.fire("Error", "SMS পাঠাতে ব্যার্থ!", "error");
@@ -192,7 +196,6 @@ const DashboardPage: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   function formatDateToYYYYMMDD(date: Date): string {
     const year = date.getFullYear();
@@ -203,21 +206,20 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
-
       <Helmet>
         <title>Dashboard | POS System</title>
       </Helmet>
 
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("Dashboard.title")}</h1>
 
       {/* Stats Grid */}
       <div className="mb-5">
         <h2 className="mb-2.5 lg:text-xl text-lg font-semibold text-gray-500">
-          Today's Sales
+          {t("Dashboard.todaySales")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatsCard
-            title="Today's Sales"
+            title={t("Dashboard.todaySales")}
             value={todaySales?.totalSales}
             trend="up"
             percentage="24%"
@@ -225,7 +227,7 @@ const DashboardPage: React.FC = () => {
             color="primary"
           />
           <StatsCard
-            title="Today's WholeSale"
+            title={t("Dashboard.todayWholeSale")}
             value={todaySales?.wholeSale}
             trend="up"
             percentage="12%"
@@ -233,7 +235,7 @@ const DashboardPage: React.FC = () => {
             color="success"
           />
           <StatsCard
-            title="Today's RetailSale"
+            title={t("Dashboard.todayRetailSale")}
             value={todaySales?.retailSale}
             trend="up"
             percentage="18%"
@@ -241,7 +243,7 @@ const DashboardPage: React.FC = () => {
             color="warning"
           />
           <StatsCard
-            title="Today's Due"
+            title={t("Dashboard.todayDue")}
             value={todaySales?.totalDue}
             trend="down"
             percentage="5%"
@@ -252,11 +254,11 @@ const DashboardPage: React.FC = () => {
       </div>
       <div className="">
         <h2 className="mb-2.5 lg:text-xl text-lg font-semibold text-gray-500">
-          Total Sales
+          {t("Dashboard.totalSales")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatsCard
-            title="Total Sales"
+            title={t("Dashboard.totalSales")}
             value={totalSales?.totalSales}
             trend="up"
             percentage="24%"
@@ -264,7 +266,7 @@ const DashboardPage: React.FC = () => {
             color="primary"
           />
           <StatsCard
-            title="Total WholeSale"
+            title={t("Dashboard.totalWholeSale")}
             value={totalSales?.wholeSale}
             trend="up"
             percentage="12%"
@@ -272,7 +274,7 @@ const DashboardPage: React.FC = () => {
             color="success"
           />
           <StatsCard
-            title="Total RetailSale"
+            title={t("Dashboard.totalRetailSale")}
             value={totalSales?.retailSale}
             trend="up"
             percentage="18%"
@@ -280,7 +282,7 @@ const DashboardPage: React.FC = () => {
             color="warning"
           />
           <StatsCard
-            title="Total Due"
+            title={t("Dashboard.totalDue")}
             value={totalSales?.totalDue}
             trend="down"
             percentage="5%"
@@ -294,8 +296,7 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className=" p-6">
           <h2 className="text-lg font-bold mb-4">
-            {" "}
-            Sales Overview (Last 7 Days)
+            {t("Dashboard.salesOverview")}
           </h2>
           <div className=" flex items-center justify-center">
             <SalesOverviewChart data={chartData} />
@@ -304,7 +305,9 @@ const DashboardPage: React.FC = () => {
 
         <div className="card p-6">
           <div className="flex md:justify-between items-center mb-4">
-            <h2 className="text-lg font-bold ">Due Customers</h2>
+            <h2 className="text-lg font-bold ">
+              {t("Dashboard.dueCustomers")}
+            </h2>
             <div>
               <DatePicker
                 selected={selectedDate}
@@ -314,20 +317,22 @@ const DashboardPage: React.FC = () => {
                 showYearDropdown
                 scrollableYearDropdown
                 yearDropdownItemNumber={50}
-                placeholderText="Select start date"
+                placeholderText={t("Dashboard.selectDate")}
                 className="w-full input border rounded-lg"
               />
             </div>
           </div>
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            { dueCustomers?.map((dueCustomer, index) => (
+            {dueCustomers?.map((dueCustomer, index) => (
               <div
                 key={index}
                 className="flex items-center p-3 bg-gray-50 rounded-lg "
               >
                 {/* <div className="h-10 w-10 bg-gray-200 rounded-md mr-3"></div> */}
                 <div className="flex-1">
-                  <h3 className="font-medium">{dueCustomer.name}</h3>
+                  <h3 className="font-medium">
+                    {capitalizeFirstLetter(dueCustomer.name)}
+                  </h3>
                   <p className="text-sm text-gray-500">{dueCustomer.phone}</p>
                 </div>
                 <div className="text-right">
@@ -349,7 +354,9 @@ const DashboardPage: React.FC = () => {
                     }
                     disabled={loadingIndex === index}
                   >
-                    {loadingIndex === index ? "Sending..." : "Send SMS"}
+                    {loadingIndex === index
+                      ? t("Dashboard.sending")
+                      : t("Dashboard.sendSms")}
                   </button>
                 </div>
               </div>
@@ -360,25 +367,27 @@ const DashboardPage: React.FC = () => {
 
       {/* Recent Transactions */}
       <div className="card p-6">
-        <h2 className="text-lg font-bold mb-4">Recent Transactions</h2>
+        <h2 className="text-lg font-bold mb-4">
+          {t("Dashboard.recentTransactions")}
+        </h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 font-medium text-gray-600">
-                  Invoice ID
+                  {t("Dashboard.invoiceId")}
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-600">
-                  Date
+                  {t("Dashboard.date")}
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-600">
-                  Payment
+                  {t("Dashboard.payment")}
                 </th>
                 <th className="text-right py-3 px-4 font-medium text-gray-600">
-                  Total
+                  {t("Dashboard.total")}
                 </th>
                 <th className="text-right py-3 px-4 font-medium text-gray-600">
-                  Status
+                  {t("Dashboard.status")}
                 </th>
               </tr>
             </thead>
@@ -401,7 +410,9 @@ const DashboardPage: React.FC = () => {
                       }
                     )}
                   </td>
-                  <td className="py-3 px-4 ">{transction.paymentMethod}</td>
+                  <td className="py-3 px-4 ">
+                    {capitalizeFirstLetter(transction.paymentMethod)}
+                  </td>
                   <td className="py-3 px-4 font-medium flex justify-end items-center gap-0.5">
                     <span>
                       <FaBangladeshiTakaSign size={13} />
@@ -411,11 +422,11 @@ const DashboardPage: React.FC = () => {
                   <td className="py-3 px-4 text-right">
                     {transction.totals.due ? (
                       <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-warning-100 text-warning-600">
-                        Partial
+                        {t("Dashboard.partial")}
                       </span>
                     ) : (
                       <span className="inline-block px-2 py-1 rounded text-xs font-medium bg-success-100 text-success-600">
-                        Completed
+                        {t("Dashboard.completed")}
                       </span>
                     )}
                   </td>

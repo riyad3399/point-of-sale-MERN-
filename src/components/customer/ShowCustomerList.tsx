@@ -6,6 +6,7 @@ import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import UpdateCustomerModal from "./UpdateCustomerModal";
 import { Helmet } from "react-helmet-async";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
 interface Customer {
   _id: string;
@@ -53,19 +54,23 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
 
         Swal.fire({
           title: "Deleted!",
-          text: "Your category has been deleted.",
+          text: "Your Customer has been deleted.",
           icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
         });
       } catch (err) {
         console.log(err);
         Swal.fire({
           title: "Error!",
-          text: "Failed to delete the category.",
+          text: "Failed to delete the Customer.",
           icon: "error",
         });
       }
     }
   };
+
+  
 
   return (
     <motion.tr
@@ -80,7 +85,7 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
      
       <td className="p-3 border border-gray-300">{customer.customerId}</td>
       <td className="p-3 border border-gray-300 font-medium">
-        {customer.customerName}
+        {capitalizeFirstLetter(customer.customerName)}
       </td>
       <td className="p-3 border border-gray-300">{customer.phone}</td>
       <td className="p-3 border border-gray-300">{customer.address}</td>

@@ -6,6 +6,8 @@ import ShowProduct from "../components/product/ShowProduct";
 import Loading from "../components/Loading";
 import { Box, Search } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useTranslation } from "react-i18next";
+
 
 const ProductesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("productes");
@@ -72,6 +74,8 @@ const ProductesPage: React.FC = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto p-4">
       {/* Tab Buttons */}
@@ -84,7 +88,7 @@ const ProductesPage: React.FC = () => {
               : "text-gray-600 hover:text-blue-600"
           }`}
         >
-          Productes
+          {t("product.productList")}
         </button>
         <button
           onClick={() => setActiveTab("add")}
@@ -94,7 +98,7 @@ const ProductesPage: React.FC = () => {
               : "text-gray-600 hover:text-blue-600"
           }`}
         >
-          Add Product
+          {t("product.addProduct")}
         </button>
       </div>
 
@@ -115,14 +119,16 @@ const ProductesPage: React.FC = () => {
                       setSearch(e.target.value);
                       setCurrentPage(1);
                     }}
-                    placeholder="Search by name or ID"
+                    placeholder={t("product.searchPlaceholder")}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 input bg-white"
                   />
                 </div>
 
                 {/* Category Filter */}
                 <div className="flex items-center space-x-2">
-                  <label className="font-medium text-sm">Category:</label>
+                  <label className="font-medium text-sm">
+                    {t("product.filter")}:
+                  </label>
                   <select
                     value={categoryFilter}
                     onChange={(e) => {
@@ -131,7 +137,7 @@ const ProductesPage: React.FC = () => {
                     }}
                     className="px-3 py-2 border border-gray-300 rounded-lg input bg-white"
                   >
-                    <option value="all">All</option>
+                    <option value="all">{t("product.all")}</option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat.categoryName}>
                         {cat.categoryName}
@@ -155,22 +161,22 @@ const ProductesPage: React.FC = () => {
                     <thead>
                       <tr className="bg-gray-50">
                         <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          Photo
+                          {t("product.photo")}
                         </th>
                         <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          Product ID
+                          {t("product.productId")}
                         </th>
                         <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          Product Name
+                          {t("product.productName")}
                         </th>
                         <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          Category
+                          {t("product.category")}
                         </th>
                         <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          Quantity
+                          {t("product.quantity")}
                         </th>
                         <th className="py-3 border px-4 font-medium text-gray-600">
-                          Actions
+                          {t("product.actions")}
                         </th>
                       </tr>
                     </thead>
@@ -196,7 +202,7 @@ const ProductesPage: React.FC = () => {
                             className="text-center py-6 text-gray-500"
                           >
                             <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                            <p>No products found</p>
+                            <p>{t("category.no_data")}</p>
                           </td>
                         </tr>
                       )}

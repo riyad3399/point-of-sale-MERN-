@@ -8,8 +8,10 @@ import { useNavigate } from "react-router-dom";
 import InvoiceDuePaymentModal from "./InvoiceDuePaymentModal";
 import { InvoiceType } from "../../types";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-export default function WholeSaleTab() {
+
+export default function WholeSaleTab({ capitalizeFirstLetter }) {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -36,10 +38,10 @@ export default function WholeSaleTab() {
       })
       .catch((err) => {
         setError("Data load করতে সমস্যা হয়েছে");
-        
-      }).finally(() => {
-        setLoading(false);
       })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [transactions]);
 
   // Pagination logic
@@ -306,6 +308,8 @@ export default function WholeSaleTab() {
     printWindow?.print();
   };
 
+  const {t } = useTranslation();
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <Helmet>
@@ -318,14 +322,16 @@ export default function WholeSaleTab() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, phone, or ID"
+            placeholder={t("transactions.searchPlaceholder")}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg input bg-white"
           />
         </div>
 
         {/* Paid / Due Filter */}
         <div className="flex items-center space-x-2">
-          <label className="font-medium text-sm">Filter:</label>
+          <label className="font-medium text-sm">
+            {t("transactions.filter")}:
+          </label>
           <select
             value={statusFilter}
             onChange={(e) =>
@@ -333,9 +339,9 @@ export default function WholeSaleTab() {
             }
             className="px-3 py-2 border border-gray-300 rounded-lg input bg-white"
           >
-            <option value="all">All</option>
-            <option value="paid">Only Paid</option>
-            <option value="due">Only Due</option>
+            <option value="all">{t("transactions.allSelect")}</option>
+            <option value="paid">{t("transactions.onlyPaid")}</option>
+            <option value="due">{t("transactions.onlyDue")}</option>
           </select>
         </div>
       </div>
@@ -354,20 +360,35 @@ export default function WholeSaleTab() {
           <table className="min-w-full bg-white shadow-md border border-gray-200 rounded-lg text-sm">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="px-4 py-2 text-left">ID</th>
-                <th className="px-4 py-2 text-left">Customer</th>
-                <th className="px-4 py-2 text-left">Date</th>
-                <th className="px-4 py-2 text-center">Paid</th>
-                <th className="px-4 py-2 text-center">Due</th>
-                <th className="px-4 py-2 text-center">Method</th>
-                <th className="px-4 py-2 text-center">Actions</th>
+                <th className="px-4 py-2 text-left">
+                  {t("transactions.invoiceId")}
+                </th>
+                <th className="px-4 py-2 text-left">
+                  {" "}
+                  {t("transactions.customer")}
+                </th>
+                <th className="px-4 py-2 text-left">
+                  {t("transactions.date")}
+                </th>
+                <th className="px-4 py-2 text-center">
+                  {t("transactions.paid")}
+                </th>
+                <th className="px-4 py-2 text-center">
+                  {t("transactions.due")}
+                </th>
+                <th className="px-4 py-2 text-center">
+                  {t("transactions.method")}
+                </th>
+                <th className="px-4 py-2 text-center">
+                  {t("transactions.actions")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-6 text-gray-400">
-                    No transactions found.
+                    {t("transactions.noFound")}
                   </td>
                 </tr>
               ) : (
@@ -384,7 +405,7 @@ export default function WholeSaleTab() {
                       >
                         <td className="px-4 py-2">{tx.transactionId}</td>
                         <td className="px-4 py-2">
-                          {tx.customer.name}
+                          {capitalizeFirstLetter(tx.customer.name)}
                           <br />
                           <span className="text-gray-500 text-xs">
                             {tx.customer.phone}

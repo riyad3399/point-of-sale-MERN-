@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Menu, Bell, MessageSquare } from "lucide-react";
 import axios from "axios";
 import MobileMenu from "./MobileMenu";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 type SmsBalanceType = {
   response_code: number;
@@ -33,6 +34,7 @@ const Header: React.FC = () => {
         "http://bulksmsbd.net/api/getBalanceApi?api_key=ElME4aE1aEqIie8cGz97"
       );
       const data = res.data;
+
       setSmsBalance(data);
     } catch (err) {
       console.log(err);
@@ -51,6 +53,9 @@ const Header: React.FC = () => {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
       <div className="px-4 md:px-6 py-3 flex items-center md:justify-end justify-between">
+        <div className="mr-10">
+          <LanguageSwitcher />
+        </div>
         {/* Mobile Menu */}
         <div className="md:hidden">
           <button
@@ -72,7 +77,7 @@ const Header: React.FC = () => {
               <MessageSquare className="h-5 w-5" />
             </span>{" "}
             <span className="absolute -top-2 -left-5 h-5 w-8 bg-primary-500 rounded-full text-white text-xs flex items-center justify-center">
-              {smsBalance?.balance ? smsBalance.balance.toFixed(1) : 0}
+              {smsBalance?.balance ? (smsBalance.balance / 0.35).toFixed(0) : 0}
             </span>
           </div>
 

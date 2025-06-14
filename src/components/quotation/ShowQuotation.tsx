@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User2,
-  FileText,
   CalendarDays,
   ShoppingBag,
   MoreVertical,
@@ -12,26 +11,14 @@ import {
   ChevronUp,
   Search,
 } from "lucide-react";
+import { QuotationType } from "../../types";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
-type QuotationType = {
-  quotationId: number;
-  customer: {
-    customerName: string;
-    phone: string;
-  };
-  items: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-  saleType: string;
-  createdAt: string;
-};
 
 const ShowQuotation: React.FC<{
   quotations: QuotationType[];
-  onEdit?: (quotation: QuotationType) => void;
-  onDelete?: (quotationId: number) => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }> = ({ quotations, onEdit, onDelete }) => {
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -45,6 +32,7 @@ const ShowQuotation: React.FC<{
   const toggleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
+
 
   const filteredQuotations = useMemo(() => {
     return quotations.filter((q) => {
@@ -131,14 +119,14 @@ const ShowQuotation: React.FC<{
                   >
                     <button
                       className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-100"
-                      onClick={() => onEdit?.(quote)}
+                      onClick={() => onEdit?.(quote._id)}
                     >
                       <Pencil size={14} />
                       Edit
                     </button>
                     <button
                       className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50"
-                      onClick={() => onDelete?.(quote.quotationId)}
+                      onClick={() => onDelete?.(quote._id)}
                     >
                       <Trash2 size={14} />
                       Delete
@@ -148,14 +136,13 @@ const ShowQuotation: React.FC<{
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-blue-600 font-bold text-lg mb-3">
-              <FileText size={18} />#{quote.quotationId}
-            </div>
-
             <div className="mb-3">
               <div className="flex items-center gap-2 text-gray-700 mb-1">
                 <User2 size={16} />
-                <span>{quote.customer.customerName}</span>
+                <span>
+                  {capitalizeFirstLetter(quote.customer?.customerName)}
+                </span>
+                |<p>{quote.quotationId}</p>
               </div>
               <p className="text-sm text-gray-500 ml-6">
                 {quote.customer.phone}
@@ -219,7 +206,7 @@ const ShowQuotation: React.FC<{
                 {quote.saleType}
               </span>
               <span className="text-lg font-semibold text-green-600">
-                ৳{getTotal(quote.items)}
+                ৳{getTotal(quote.items) + quote.shippingCost}
               </span>
             </div>
           </motion.div>

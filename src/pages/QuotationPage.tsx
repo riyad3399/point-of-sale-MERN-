@@ -3,15 +3,19 @@ import { useEffect, useState } from "react";
 import ShowQuotation from "../components/quotation/ShowQuotation";
 import Loading from "../components/Loading";
 import { Helmet } from "react-helmet-async";
+import { QuotationType } from "../types";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function QuotationPage() {
+  const [quotation, setQuotation] = useState<QuotationType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const [quotation, setQuotation] = useState([])
-  const [loading, setLoading]= useState<boolean>(false)
 
+  const navigate = useNavigate();
 
   const fetchAllQuotations = async () => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const res = await axios.get("http://localhost:3000/quotations");
       const data = res.data;
@@ -19,29 +23,73 @@ export default function QuotationPage() {
     } catch (err) {
       console.error("Failed to fetch quotations:", err);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchAllQuotations();
   }, []);
 
-    return (
-      <div>
+  const handleEditQuotation = (id: string) => {
+    const selected = quotation.find((q) => q._id === id);
+    if (!selected) return;
 
-        <Helmet>
-          <title>Quotation | POS System</title>
-        </Helmet>
 
-        {loading ? (
-          <div className="flex items-center justify-center h-60">
-            <Loading />
-          </div>
-        ) : (
-          <ShowQuotation quotations={quotation} />
-        )}
-      </div>
-    );
+    if (selected.saleType === "retailSale") {
+      navigate("/retailSale", {state: selected});
+    } else if (selected.saleType === "wholeSale") {
+      navigate("/wholeSale", { state: selected });
+    }
+  };
+
+
+  const handleDeleteQuotation = async (id: string) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e3342f",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const res = await axios.delete(`http://localhost:3000/quotations/${id}`);
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: res.data.message || "Quotation deleted successfully!",
+       
+      });
+
+      setQuotation((prev) => prev.filter((q) => q._id !== id));
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message || "Failed to delete quotation.",
+      });
+    }
+  };
+
+  return (
+    <div>
+      <Helmet>
+        <title>Quotation | POS System</title>
+      </Helmet>
+
+      {loading ? (
+        <div className="flex items-center justify-center h-60">
+          <Loading />
+        </div>
+      ) : (
+        <ShowQuotation quotations={quotation} onEdit={handleEditQuotation} onDelete={handleDeleteQuotation} />
+      )}
+    </div>
+  );
 }

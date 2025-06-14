@@ -17,9 +17,10 @@ export default function SearchableDropdown({
   customers,
   setAddedCustomer,
 }) {
-  const [walkingName, setWalkingName] = useState("");
-  const [walkingPhone, setWalkingPhone] = useState("");
-  const [walkingAddress, setWalkingAddress] = useState("");
+  const [walkingName, setWalkingName] = useState<string>("");
+  const [walkingPhone, setWalkingPhone] = useState<string>("");
+  const [walkingAddress, setWalkingAddress] = useState<string>("");
+  const [phoneError, setPhoneError] = useState<string>("");
 
   const handleChange = (selected: OptionType | null) => {
     setAddedCustomer(selected);
@@ -53,6 +54,11 @@ export default function SearchableDropdown({
     }
   }, [walkingName, walkingPhone, walkingAddress]);
 
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${yyyy}-${mm}-${dd}`;
 
   return (
     <motion.div
@@ -67,6 +73,7 @@ export default function SearchableDropdown({
             required
             options={customers}
             onChange={handleChange}
+            value={selectWalking}
             isSearchable
             placeholder="🔍 Search Customer by name or phone"
             filterOption={customFilter}
@@ -75,6 +82,7 @@ export default function SearchableDropdown({
         </div>
         <input
           type="date"
+          value={formattedDate}
           className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-blue-500 shadow-sm"
         />
       </div>
@@ -96,16 +104,32 @@ export default function SearchableDropdown({
               onChange={(e) => setWalkingName(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 shadow-sm bg-white">
-            <Phone size={16} className="text-gray-500" />
-            <input
-              type="number"
-              className="w-full text-sm outline-none"
-              placeholder="Customer Mobile"
-              value={walkingPhone}
-              onChange={(e) => setWalkingPhone(e.target.value)}
-            />
+          <div className="flex flex-col gap-1 relative">
+            <div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 shadow-sm bg-white">
+              <Phone size={16} className="text-gray-500" />
+              <input
+                type="text"
+                className="w-full text-sm outline-none"
+                placeholder="Customer Mobile"
+                value={walkingPhone}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setWalkingPhone(value);
+                  if (value === "") {
+                    setPhoneError("Phone is required");
+                  } else if (!/^01[3-9]\d{8}$/.test(value)) {
+                    setPhoneError("Invalid Bangladeshi phone number");
+                  } else {
+                    setPhoneError("");
+                  }
+                }}
+              />
+            </div>
+            {phoneError && (
+              <p className="absolute -bottom-5 text-xs text-red-500 px-1">{phoneError}</p>
+            )}
           </div>
+
           <div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 shadow-sm bg-white">
             <MapPin size={16} className="text-gray-500" />
             <input

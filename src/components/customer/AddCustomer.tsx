@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Loader } from "lucide-react";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+
 
 interface Customer {
   customerName: string;
@@ -62,6 +64,8 @@ export default function AddCustomer() {
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <motion.form
       onSubmit={handleSubmit(onSubmit)}
@@ -77,12 +81,12 @@ export default function AddCustomer() {
         {/* Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Name
+            {t("customers.name")}
           </label>
           <input
             {...register("customerName", { required: "Name is required" })}
             className="mt-1 w-full input"
-            placeholder="John Doe"
+            placeholder={t("customers.placeholderName")}
           />
           {errors.customerName && (
             <p className="text-red-500 text-xs mt-1">
@@ -94,13 +98,19 @@ export default function AddCustomer() {
         {/* Phone */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Phone
+            {t("customers.phone")}
           </label>
           <input
-            type="number"
-            {...register("phone", { required: "Phone is required" })}
+            type="text"
+            {...register("phone", {
+              required: "Phone is required",
+              pattern: {
+                value: /^01[3-9]\d{8}$/,
+                message: "Invalid Bangladeshi phone number",
+              },
+            })}
             className="mt-1 w-full input"
-            placeholder="+880 1234-567890"
+            placeholder={t("customers.placeholderPhone")}
           />
           {errors.phone && (
             <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
@@ -111,13 +121,13 @@ export default function AddCustomer() {
       {/* Address */}
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Address
+          {t("customers.address")}
         </label>
         <textarea
           {...register("address")}
           className="mt-1 w-full px-4 py-3 border border-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0
            disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
-          placeholder="123 Street Name, City"
+          placeholder={t("customers.placeholderAddress")}
           rows={3}
         />
       </div>
@@ -138,7 +148,7 @@ export default function AddCustomer() {
             Processing...
           </span>
         ) : (
-          "Add Customer"
+          t("customers.addCustomer")
         )}
       </motion.button>
     </motion.form>
