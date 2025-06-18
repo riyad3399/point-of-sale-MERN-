@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 
 const Card: React.FC = ({ product }) => {
-  console.log(product);
   return (
     <motion.div
       whileHover={{ scale: 1.03 }}

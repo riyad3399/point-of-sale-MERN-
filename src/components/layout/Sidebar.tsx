@@ -15,6 +15,7 @@ import {
   Notebook,
   Coins,
   ShoppingBag,
+  Truck,
 } from "lucide-react";
 import { MdCategory } from "react-icons/md";
 import { useTranslation } from "react-i18next";
@@ -133,6 +134,13 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title={"Purchase"}
           />
+          <SidebarLink
+            to="/supplier"
+            icon={<Truck />}
+            text={"Supplier"}
+            collapsed={collapsed}
+            title={"Supplier"}
+          />
 
           {/* Report Dropdown */}
           <NavLink
@@ -169,7 +177,7 @@ const Sidebar: React.FC = () => {
               <SidebarLink
                 to="/alertItems"
                 icon={<AlertCircle size={16} />}
-                text={t("sidebar.alertItems")}
+                text={"Alert Items"}
                 collapsed={collapsed}
                 title={t("sidebar.alertItems")}
               />

@@ -50,7 +50,7 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
 
         {/* Supplier & Date */}
         <h3 className="text-xl font-bold text-slate-800 mb-1 pr-16">
-          {purchase.supplier}
+          {purchase.supplier.name}
         </h3>
         <div className="flex items-center gap-3 text-sm text-slate-500 mb-4">
           <div className="flex items-center gap-1">

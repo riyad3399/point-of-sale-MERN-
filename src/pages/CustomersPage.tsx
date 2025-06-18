@@ -156,9 +156,8 @@ export default function CustomerTabs() {
             )}
           </AnimatePresence>
         </div>
-
         <div className="flex justify-end">
-          {filteredCustomers.length > 0 && activeTab === "list" && (
+          {filteredCustomers.length > itemsPerPage && activeTab === "list" && (
             <Pagination
               page={currentPage}
               totalPages={totalPages}

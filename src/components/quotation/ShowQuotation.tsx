@@ -206,7 +206,7 @@ const ShowQuotation: React.FC<{
                 {quote.saleType}
               </span>
               <span className="text-lg font-semibold text-green-600">
-                ৳{getTotal(quote.items) + quote.shippingCost}
+                ৳{getTotal(quote.items) + quote?.shippingCost}
               </span>
             </div>
           </motion.div>

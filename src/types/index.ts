@@ -2,38 +2,25 @@
 export interface Product {
   _id: string;
   productName: string;
-  productCode: number;
   description: string;
-  brand: string;
+  productCode: number;
   category: string;
-  unit: string;
+  brand: string;
+  purchasePrice: number;
+  retailPrice: number;
+  wholesalePrice: number;
   quantity: number;
   alertQuantity: number;
-  purchasePrice: number;
-  wholesalePrice: number;
-  retailPrice: number;
-  tax: number;
-  taxType: "inclusive" | "exclusive";
+  unit: string;
+  tax: number | null;
+  taxType: "inclusive" | "exclusive" | string;
+  Description: string;
+  subType: string;
+  size?: string;
+  color?: string;
+  createdAt: string; 
+  updatedAt: string;
 }
-
-// export interface Product {
-//   _id?: string; // Optional, if using MongoDB ObjectId
-//   productName: string;
-//   category: "electronics" | "clothing" | "groceries";
-//   brand?: string;
-//   purchasePrice: number;
-//   retailPrice: number;
-//   wholesalePrice: number;
-//   quantity: number;
-//   alertQuantity?: number;
-//   unit: "pcs" | "kg" | "ltr";
-//   tax?: number;
-//   taxType?: "inclusive" | "exclusive";
-//   description?: string;
-//   photo?: string;
-//   productCode?: number; // Will be auto-generated
-//   __v?: number; // Mongoose version key
-// }
 
 // Cart types
 
@@ -114,19 +101,21 @@ export interface FormValues  {
   logo: FileList;
 };
 
+export type OptionType = {
+  value: number;
+  label: string;
+  customerName: string;
+  phone: string;
+};
+
 export interface QuotationType {
   _id: string;
   quotationId: number;
-  customer: {
-    customerName: string;
-    phone: string;
-    label?: string;
-    value?: number; 
-  };
+  customer: OptionType;
   items: {
     name: string;
     price: number;
-    productId: string; // ObjectId as string
+    productId: string; 
     quantity: number;
   }[];
   saleType: "retailSale" | "wholeSale";
@@ -158,15 +147,53 @@ export interface CompanyType {
 // --- Interfaces and Types ---
 export interface Purchase {
   _id: string;
-  supplier: string;
+  supplier: {
+    _id: string;
+    name: string;
+    phone?: string;
+  };
   total: number;
   paid: number;
   due: number;
   paymentMethod: string;
   date: string;
   items: {
-    product: string;
-    quantity: number;
-    purchasePrice: number;
+    product: {
+      _id: string;
+      productId: string;
+      quantity: number;
+      purchasePrice: number;
+    };
   }[];
+}
+
+// supplier
+export interface Supplier {
+  _id: string;
+  supplierId: number;
+  name: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+// Expense
+export interface Item {
+  category?: string;
+  remarks?: string;
+  unitPrice: number;
+  quantity: number;
+}
+
+export interface Expense {
+  _id: string;
+  date: string;
+  method?: "CASH" | "BKASH" | "BANK";
+  items: Item[];
+  totalAmount: number;
+  createdAt?: string;
+  updatedAt?: string;
 }

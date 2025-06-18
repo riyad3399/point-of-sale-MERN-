@@ -4,7 +4,6 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 
 export default function ReportStatementPage() {
   const [fromDate, setFromDate] = useState<Date | null>(null);
@@ -25,7 +24,6 @@ export default function ReportStatementPage() {
         },
       });
 
-      console.log(res.data);
       if (res.data) {
         navigate("/showReportStatement", {
           state: { reportData: res.data, fromDate, toDate },

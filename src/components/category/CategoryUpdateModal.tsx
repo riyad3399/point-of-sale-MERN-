@@ -47,7 +47,6 @@ export default function CategoryUpdateModal({
             icon: "success",
             draggable: true,
           });
-          console.log(res.data);
           onClose();
           reset();
         });

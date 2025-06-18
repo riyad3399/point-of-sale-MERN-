@@ -9,6 +9,14 @@ import Swal from "sweetalert2";
 import UpdateProduct from "./UpdateProduct";
 import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { Product } from "../../types";
+
+
+
+interface ShowProductProps {
+  product: Product;
+  setAllProduct: React.Dispatch<React.SetStateAction<Product[]>>;
+}
 
 const buttonVariants = {
   initial: { scale: 1 },
@@ -16,28 +24,30 @@ const buttonVariants = {
   tap: { scale: 0.9 },
 };
 
-const ShowProduct: React.FC = ({ product, setAllProduct }) => {
+const ShowProduct: React.FC<ShowProductProps> = ({
+  product,
+  setAllProduct,
+}) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const handleViewProduct = (singleProduct) => {
+  const handleViewProduct = (singleProduct: Product) => {
     navigate("/showProduct", { state: { singleProduct, loading } });
   };
 
   const handleSingleProduct = async (id: string) => {
-    setLoading(true);
-    await axios
-      .get(`http://localhost:3000/product/${id}`)
-      .then((res) => {
-        handleViewProduct(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:3000/product/${id}`);
+      handleViewProduct(res.data);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to fetch product details", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -54,9 +64,7 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
     if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:3000/product/${id}`);
-
-        // Update UI after successful delete
-        setAllProduct((prev) => prev.filter((product) => product._id !== id));
+        setAllProduct((prev) => prev.filter((p) => p._id !== id));
 
         Swal.fire({
           title: "Deleted!",
@@ -67,102 +75,103 @@ const ShowProduct: React.FC = ({ product, setAllProduct }) => {
         });
       } catch (err) {
         console.error(err);
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "Failed to delete the product.",
-        });
+        Swal.fire("Error!", "Failed to delete the product.", "error");
       }
     }
   };
 
   return (
-    <motion.tr
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="hover:bg-gray-50 transition-colors"
-    >
+    <>
       <Helmet>
         <title>Show Product | POS System</title>
       </Helmet>
-      <td className="px-4 py-3 border">
-        <div className="w-12 h-12 rounded-md overflow-hidden">
-          <motion.img
-            whileHover={{ scale: 1.1 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            loading="lazy"
-            src={`http://localhost:3000/product/image/${product._id}`}
-            alt={product.productName}
-            className="object-cover w-full h-full"
-          />
-        </div>
-      </td>
-      <td className="px-4 py-3 border">{product.productCode}</td>
-      <td className="px-4 py-3 border">
-        
-        {capitalizeFirstLetter(product.productName)}
-        {(product.size || product.color) && (
-          <div className="text-xs mt-1 flex justify-between">
-            {product.size && (
-              <span className="inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full mr-2">
-                Size: {product.size}
-              </span>
-            )}
-            {product.color && (
-              <span className="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                Color: {product.color}
-              </span>
-            )}
-          </div>
-        )}
-      </td>
 
-      <td className="px-4 py-3 border">{product.category}</td>
-      <td className="px-4 py-3 border text-center">{product.quantity}</td>
-      <td className="px-4 py-3 border">
-        <div className="flex items-center gap-4 justify-center">
-          <div className="z-40">
-            <Modal isOpen={open} onClose={() => setOpen(false)} title="">
-              <UpdateProduct product={product} />
-            </Modal>
+      <motion.tr
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="hover:bg-gray-50 transition-colors"
+      >
+        <td className="px-4 py-3 border">
+          <div className="w-12 h-12 rounded-md overflow-hidden">
+            <motion.img
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              loading="lazy"
+              src={`http://localhost:3000/product/image/${product._id}`}
+              alt={product.productName}
+              className="object-cover w-full h-full"
+            />
           </div>
-          <motion.button
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="text-gray-600 hover:text-green-500"
-            title="Edit"
-            onClick={() => setOpen(true)}
-          >
-            <FaRegEdit size={22} />
-          </motion.button>
-          <motion.button
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="text-gray-600 hover:text-blue-500"
-            title="View"
-          >
-            <View size={22} onClick={() => handleSingleProduct(product._id)} />
-          </motion.button>
+        </td>
+        <td className="px-4 py-3 border">{product.productCode}</td>
+        <td className="px-4 py-3 border">
+          {capitalizeFirstLetter(product.productName)}
+          {(product.size || product.color) && (
+            <div className="text-xs mt-1 flex flex-wrap gap-1">
+              {product.size && (
+                <span className="inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  Size: {product.size}
+                </span>
+              )}
+              {product.color && (
+                <span className="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                  Color: {product.color}
+                </span>
+              )}
+            </div>
+          )}
+        </td>
+        <td className="px-4 py-3 border">{product.category}</td>
+        <td className="px-4 py-3 border text-center">{product.quantity}</td>
+        <td className="px-4 py-3 border">
+          <div className="flex items-center gap-4 justify-center">
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-green-500 transition-transform"
+              title="Edit"
+              onClick={() => setOpen(true)}
+            >
+              <FaRegEdit size={22} />
+            </motion.button>
 
-          <motion.button
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="text-gray-600 hover:text-red-500"
-            title="Delete"
-            onClick={() => handleDeleteProduct(product._id)}
-          >
-            <Trash size={22} />
-          </motion.button>
-        </div>
-      </td>
-    </motion.tr>
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-blue-500 transition-transform"
+              title="View"
+              onClick={() => handleSingleProduct(product._id)}
+            >
+              <View size={22} />
+            </motion.button>
+
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-red-500 transition-transform"
+              title="Delete"
+              onClick={() => handleDeleteProduct(product._id)}
+            >
+              <Trash size={22} />
+            </motion.button>
+          </div>
+        </td>
+      </motion.tr>
+
+      {/* Modal render outside of <tr> */}
+      {open && (
+        <Modal isOpen={open} onClose={() => setOpen(false)} title="Update Product">
+          <UpdateProduct product={product} />
+        </Modal>
+      )}
+    </>
   );
 };
 

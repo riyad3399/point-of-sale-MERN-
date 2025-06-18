@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, Trash, ShoppingCart, Notebook } from "lucide-react";
+import {
+  Plus,
+  Minus,
+  Trash,
+  ShoppingCart,
+  icons,
+  Notebook,
+} from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
-import { Product } from "../types";
+import { OptionType, Product, QuotationType } from "../types";
 import { TbCurrencyTaka } from "react-icons/tb";
 import CheckoutModal from "../components/checkout/CheckoutModal";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { clearCart } from "../utils/clearCart";
-
-type OptionType = {
-  value: string;
-  label: string;
-  customerName: string;
-  phone: string;
-};
+import { handleInsertAndUpdateQuotation } from "../utils/handleInsertAndUpdateQuotation";
+import { addToCart } from "../utils/cartUtils";
 
 export default function WholeSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -44,7 +46,6 @@ export default function WholeSalePage() {
         quantity: item.quantity,
       }));
       setCart(cartItems); // এই cart UI তে render হবে
-
       if (editQuotation.customer) {
         const selected = {
           value: editQuotation.customer.value || "",
@@ -71,45 +72,14 @@ export default function WholeSalePage() {
     );
   };
 
-  const getProductById = (id: string) => allProduct.find((p) => p._id === id);
-
-  const addToCart = (id: string) => {
-    const product = getProductById(id);
-    if (!product) return;
-
-    if (product.quantity === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Stock Out!",
-        text: "এই পণ্যটি স্টকে নেই।",
-      });
-      return;
-    }
-
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === id);
-      const currentQty = existing?.quantity || 0;
-
-      if (currentQty >= product.quantity) {
-        Swal.fire({
-          icon: "warning",
-          title: "স্টকে পণ্য নেই",
-          text: `সর্বোচ্চ ${product.quantity}টি পণ্য স্টকে আছে!`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        return prev;
-      }
-
-      if (existing) {
-        return prev.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-
-      return [...prev, { id, quantity: 1 }];
-    });
+  const getProductById = (id: string) => {
+    return allProduct.find((p) => p._id === id);
   };
+
+  const handleAddToCart = (id: string) => {
+    addToCart(id, getProductById, setCart, cart);
+  };
+
   const updateQuantity = (id: string, delta: number) => {
     const product = getProductById(id);
     if (!product) return;
@@ -193,7 +163,6 @@ export default function WholeSalePage() {
     }
   };
 
-
   const productsInCart = cart
     .map((item) => {
       const fullProduct = allProduct.find((p) => p._id === item.id);
@@ -203,6 +172,7 @@ export default function WholeSalePage() {
         name: fullProduct.productName,
         quantity: item.quantity,
         price: fullProduct.wholesalePrice,
+        purchasePrice: fullProduct.purchasePrice,
         status: selectValues[fullProduct._id] || "sale",
       };
     })
@@ -210,42 +180,13 @@ export default function WholeSalePage() {
 
   const totalAmount = total + shippingCost - selectReturnSale;
 
-  const quotationProduct = [...productsInCart];
-  const retailSale = "retailSale";
-
-  const newQuotationProduct = quotationProduct.map(
-    ({ status: s, ...rest }) => rest
-  );
-
-  const quotation = {
-    items: newQuotationProduct,
-    customer: selectWalking,
-    saleType: retailSale,
-    shippingCost: shippingCost,
-  };
-
-  const handleInsertQuotation = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/quotations/add",
-        quotation
-      );
-      if (response.status === 201) {
-        Swal.fire({
-          icon: "success",
-          iconColor: "#093",
-          title: response.data?.message || "Quotation Add Successful!",
-        });
-      }
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: err.response?.data?.message || "Quotation Error",
-      });
-    }
-  };
-
   useEffect(() => {
+    const handleGetProduct = async () => {
+      const res = await axios.get("http://localhost:3000/product");
+      const data = await res.data;
+      setAllProduct(data);
+    };
+
     axios.get("http://localhost:3000/customer").then((res) => {
       const options = res.data.map((customer: any) => ({
         value: customer.customerId,
@@ -265,16 +206,23 @@ export default function WholeSalePage() {
       ];
       setCustomers(optionsWithWalkingCustomer);
     });
-  }, []);
 
-  useEffect(() => {
-    const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/product");
-      const data = await res.data;
-      setAllProduct(data);
-    };
     handleGetProduct();
   }, []);
+
+  const quotationProduct = [...productsInCart];
+  const wholeSale = "wholeSale";
+
+  const newQuotationProduct = quotationProduct.map(
+    ({ status: s, ...rest }) => rest
+  );
+
+  const quotation: QuotationType = {
+    items: newQuotationProduct,
+    customer: selectWalking,
+    saleType: wholeSale,
+    shippingCost: shippingCost,
+  };
 
   return (
     <div className="">
@@ -292,7 +240,7 @@ export default function WholeSalePage() {
 
       <div className="flex flex-col lg:flex-row gap-6 mt-4 p-4 shadow-sm rounded-md">
         {/* Product List */}
-        <div className=" flex-1 ">
+        <div className="flex-1">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <input
               type="text"
@@ -342,7 +290,7 @@ export default function WholeSalePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                     onClick={() =>
-                      product.quantity > 0 && addToCart(product._id)
+                      product.quantity > 0 && handleAddToCart(product._id)
                     }
                   >
                     {/* ✅ Stock Out Badge */}
@@ -368,7 +316,7 @@ export default function WholeSalePage() {
                       <h2 className="font-semibold text-sm text-gray-800">
                         {product.productName}
                       </h2>
-                      <p className="text-sm text-gray-800 font-semibold">
+                      <p className="text-sm font-semibold text-gray-800">
                         Stock:{" "}
                         <span className="text-blue-600">
                           {product.quantity}
@@ -406,7 +354,7 @@ export default function WholeSalePage() {
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1 space-y-4 py-2 ">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-4 py-2">
             <AnimatePresence>
               {cart.map(({ id, quantity }) => {
                 const product = allProduct.find((p) => p._id === id);
@@ -442,7 +390,7 @@ export default function WholeSalePage() {
                           {product.productName}
                         </p>
                         <select
-                          className={`text-xs absolute lg:right-8 md:right-9 right-8 top-6  px-1 py-0.5 rounded-md ring-1 ring-primary-400 focus:outline-none`}
+                          className={`text-xs absolute right-12 top-6  px-1 py-0.5 rounded-md ring-1 ring-blue-400 focus:outline-none`}
                           onChange={(e) => handleReturnSale(product, e)}
                         >
                           <option value="sale">Sale</option>
@@ -509,19 +457,19 @@ export default function WholeSalePage() {
                 {(total + shippingCost - selectReturnSale).toFixed(2)}
               </span>
             </div>
-            <div className="flex justify-between items-center mt-3">
+            <div className="flex gap-0.5 justify-between items-center mt-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() =>
                   clearCart(setCart, setSelectReturnSale, setShippingCost)
                 }
-                className="text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
+                className="text-xs md:text-sm text-gray-500 hover:text-red-500 flex items-center font-semibold"
               >
                 <Trash size={16} className="mr-1" /> Clear Cart
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={handleInsertQuotation}
+                onClick={() => handleInsertAndUpdateQuotation(quotation)}
                 className="text-xs md:text-sm btn-sm md:btn-md btn-success flex items-center font-semibold"
               >
                 <Notebook size={16} className="mr-1" /> Quotation
@@ -530,7 +478,7 @@ export default function WholeSalePage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn-primary text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                  className="btn-primary text-white btn-sm md:btn-md rounded-lg text-xs md:text-sm flex items-center gap-2"
                   onClick={handleCheckoutModalOpen}
                 >
                   <ShoppingCart size={18} /> Checkout

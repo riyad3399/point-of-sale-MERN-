@@ -20,8 +20,6 @@ import FilterDropdown from "../helper/FilterDropdown";
 import { Purchase } from "../../types";
 import PurchaseCard from "../helper/PurchaseCard";
 
-
-
 type PaymentStatus = "all" | "paid" | "due";
 type DateFilter = "all" | "today" | "week" | "month" | "custom";
 
@@ -59,7 +57,6 @@ export default function PurchaseList() {
     fetchPurchases();
   }, []);
 
-
   // Get unique payment methods for the filter dropdown
   const paymentMethods = useMemo(() => {
     const methods = new Set(purchases.map((p) => p.paymentMethod));
@@ -69,12 +66,12 @@ export default function PurchaseList() {
   // Core filtering logic
   const filteredPurchases = useMemo(() => {
     return purchases.filter((purchase) => {
-      // 1. Search filter (supplier or product name)
+      // 1. Search filter (supplier.name or product id string)
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch =
-        purchase.supplier.toLowerCase().includes(searchLower) ||
+        purchase.supplier?.name?.toLowerCase().includes(searchLower) ||
         purchase.items.some((item) =>
-          item.product.toLowerCase().includes(searchLower)
+          item.product?.toString().toLowerCase().includes(searchLower)
         );
 
       // 2. Payment status filter
@@ -91,7 +88,7 @@ export default function PurchaseList() {
       // 4. Date filter
       const purchaseDate = new Date(purchase.date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+      today.setHours(0, 0, 0, 0);
       let matchesDate = true;
 
       switch (dateFilter) {
@@ -140,6 +137,8 @@ export default function PurchaseList() {
     dateFilter,
     customDateRange,
   ]);
+  
+  
 
   // Calculate statistics based on FILTERED purchases
   const stats = useMemo(() => {
@@ -180,40 +179,14 @@ export default function PurchaseList() {
     paymentMethodFilter !== "all",
   ].filter(Boolean).length;
 
-  // --- Animation Variants ---
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 150,
-        damping: 20,
-      },
-    },
-  };
-
   // --- Loading State ---
   if (loading) {
-    return (
-     <Loading/>
-    );
+    return <Loading />;
   }
 
   // --- Render ---
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen font-sans">
+    <div className=" min-h-screen font-sans">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -416,7 +389,7 @@ export default function PurchaseList() {
           animate="visible"
           className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
         >
-          {filteredPurchases.map((purchase) => (
+          {filteredPurchases.slice(0, 10).map((purchase) => (
             <PurchaseCard
               key={purchase._id}
               purchase={purchase}
@@ -457,8 +430,26 @@ export default function PurchaseList() {
   );
 }
 
+// --- Animation Variants ---
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
 
-
-
-
-
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 150,
+      damping: 20,
+    },
+  },
+};

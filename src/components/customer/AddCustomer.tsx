@@ -23,7 +23,6 @@ export default function AddCustomer() {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: Customer) => {
-    console.log(data);
     setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/customer", {

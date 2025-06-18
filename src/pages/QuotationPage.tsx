@@ -49,6 +49,7 @@ export default function QuotationPage() {
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
+      
       showCancelButton: true,
       confirmButtonColor: "#e3342f",
       cancelButtonColor: "#6c757d",
@@ -63,8 +64,12 @@ export default function QuotationPage() {
       Swal.fire({
         icon: "success",
         title: "Deleted!",
+        timerProgressBar: true,
+        iconColor: "#3085d6",
+        confirmButtonColor: "#3085d6",
+        timer: 2500,
+        showConfirmButton: false,
         text: res.data.message || "Quotation deleted successfully!",
-       
       });
 
       setQuotation((prev) => prev.filter((q) => q._id !== id));
@@ -84,7 +89,7 @@ export default function QuotationPage() {
       </Helmet>
 
       {loading ? (
-        <div className="flex items-center justify-center h-60">
+        <div className="flex items-center justify-center">
           <Loading />
         </div>
       ) : (

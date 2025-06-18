@@ -27,6 +27,8 @@ import ReportPage from "./pages/ReportPage";
 import ProfitSummary from "./components/report/ProfitSummary";
 import ExpensePage from "./pages/ExpensePage";
 import PurchasePage from "./pages/PurchasePage";
+import SupplierPage from "./pages/SupplierPage";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -54,6 +56,7 @@ function App() {
             <Route path="profitSummary" element={<ProfitSummary />} />
             <Route path="expense" element={<ExpensePage />} />
             <Route path="purchase" element={<PurchasePage />} />
+            <Route path="supplier" element={<SupplierPage />} />
             {/* <Route path="expense" element={<ExpensePage />} />
             <Route path="reportStatement" element={<ReportStatementPage />} /> */}
             <Route
@@ -65,7 +68,7 @@ function App() {
           </Route>
 
           {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
     </HelmetProvider>

@@ -43,7 +43,6 @@ export default function InvoiceView() {
       .then((res) => {
         const data = res.data;
         setPaymentDetailsData(data);
-        console.log(data);
       });
     setIsOpen(true);
   };

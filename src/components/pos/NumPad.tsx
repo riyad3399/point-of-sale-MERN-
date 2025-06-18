@@ -4,7 +4,6 @@ import { Delete, RefreshCw } from 'lucide-react';
 
 const NumPad: React.FC = () => {
   const handleButtonClick = (value: string) => {
-    console.log('Button clicked:', value);
     // Handle number pad input here
   };
 

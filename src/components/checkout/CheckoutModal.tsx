@@ -50,7 +50,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [dueAmount, setDueAmount] = useState<number>(0);
   const [dueDate, setDueDate] = useState<string>("");
 
-  console.log(products, "checkout modal");
   useEffect(() => {
     const paid = typeof paidAmount === "number" ? paidAmount : 0;
     const disc = typeof discount === "number" ? discount : 0;
@@ -74,7 +73,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       });
 
       if (res.status === 201 || res.status === 200) {
-        console.log("Customer added:", res.data);
         return true;
       }
 
@@ -85,12 +83,18 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           icon: "error",
           title: "এই ফোন নম্বরটি ইতিমধ্যে আছে",
           text: err.response?.data?.message || "Customer already exists.",
+          timer: 2500,
+          timerProgressBar: true,
+          showConfirmButton: false,
         });
       } else {
         Swal.fire({
           icon: "error",
           title: "Customer Add ব্যর্থ হয়েছে",
           text: err.response?.data?.message || "দয়া করে পরে আবার চেষ্টা করুন।",
+          timer: 2500,
+          timerProgressBar: true,
+          showConfirmButton: false,
         });
       }
       return false;

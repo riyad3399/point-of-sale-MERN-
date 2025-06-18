@@ -56,15 +56,18 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
           title: "Deleted!",
           text: "Your Customer has been deleted.",
           icon: "success",
-          timer: 1500,
           showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
         });
       } catch (err) {
-        console.log(err);
         Swal.fire({
           title: "Error!",
           text: "Failed to delete the Customer.",
           icon: "error",
+          timer: 2500,
+          timerProgressBar: true,
+          showConfirmButton: false,
         });
       }
     }

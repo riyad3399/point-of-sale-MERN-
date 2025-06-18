@@ -232,7 +232,7 @@ const ProductesPage: React.FC = () => {
         <div className="flex justify-end mt-4">
           {!loading &&
             activeTab === "productes" &&
-            filteredProducts.length > 0 && (
+            filteredProducts.length > 10 && (
               <Pagination
                 page={currentPage}
                 totalPages={totalPages}
@@ -245,6 +245,7 @@ const ProductesPage: React.FC = () => {
             )}
         </div>
       </div>
+      
     </div>
   );
 };

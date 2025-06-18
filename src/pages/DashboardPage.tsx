@@ -83,17 +83,7 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  // const fetchDueCustomers = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       "http://localhost:3000/invoice/due-customers"
-  //     );
-  //     const data = res.data;
-  //     setDueCustomers(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+
 
   const fetchOverviewData = async () => {
     const res = await axios.get("http://localhost:3000/invoice/sales-7-days");
@@ -155,7 +145,6 @@ const DashboardPage: React.FC = () => {
           message: message,
         }),
       });
-      console.log(res);
       Swal.fire("Success", "SMS পাঠানো হয়েছে!", "success");
     } catch (err) {
       Swal.fire("Error", "SMS পাঠাতে ব্যার্থ!", "error");

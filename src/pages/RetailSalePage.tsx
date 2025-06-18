@@ -10,20 +10,15 @@ import {
 } from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
-import { Product } from "../types";
+import { OptionType, Product, QuotationType } from "../types";
 import { TbCurrencyTaka } from "react-icons/tb";
 import CheckoutModal from "../components/checkout/CheckoutModal";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { clearCart } from "../utils/clearCart";
-
-type OptionType = {
-  value: string;
-  label: string;
-  customerName: string;
-  phone: string;
-};
+import { handleInsertAndUpdateQuotation } from "../utils/handleInsertAndUpdateQuotation";
+import { addToCart } from "../utils/cartUtils";
 
 export default function RetailSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -51,7 +46,6 @@ export default function RetailSalePage() {
         quantity: item.quantity,
       }));
       setCart(cartItems); // এই cart UI তে render হবে
-
       if (editQuotation.customer) {
         const selected = {
           value: editQuotation.customer.value || "",
@@ -78,47 +72,14 @@ export default function RetailSalePage() {
     );
   };
 
-  const getProductById = (id: string) => allProduct.find((p) => p._id === id);
-
-
-  const addToCart = (id: string) => {
-    const product = getProductById(id);
-    if (!product) return;
-
-    if (product.quantity === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Stock Out!",
-        text: "এই পণ্যটি স্টকে নেই।",
-      });
-      return;
-    }
-
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === id);
-      const currentQty = existing?.quantity || 0;
-
-      if (currentQty >= product.quantity) {
-        Swal.fire({
-          icon: "warning",
-          title: "স্টকে পণ্য নেই",
-          text: `সর্বোচ্চ ${product.quantity}টি পণ্য স্টকে আছে!`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        return prev;
-      }
-
-      if (existing) {
-        return prev.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-
-      return [...prev, { id, quantity: 1 }];
-    });
+  const getProductById = (id: string) => {
+    return allProduct.find((p) => p._id === id);
   };
-  
+
+  const handleAddToCart = (id: string) => {
+    addToCart(id, getProductById, setCart, cart);
+  };
+
   const updateQuantity = (id: string, delta: number) => {
     const product = getProductById(id);
     if (!product) return;
@@ -149,7 +110,6 @@ export default function RetailSalePage() {
           .filter(Boolean) // remove nulls
     );
   };
-  
 
   const total = cart.reduce((acc, item) => {
     const product = allProduct.find((p) => p._id === item.id);
@@ -257,35 +217,12 @@ export default function RetailSalePage() {
     ({ status: s, ...rest }) => rest
   );
 
-  const quotation = {
+  const quotation: QuotationType = {
     items: newQuotationProduct,
     customer: selectWalking,
     saleType: retailSale,
     shippingCost: shippingCost,
   };
-
-  const handleInsertQuotation = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/quotations/add",
-        quotation
-      );
-      if (response.status === 201) {
-        Swal.fire({
-          icon: "success",
-          iconColor: "#093",
-          title: "Quotation Add Successful!",
-        });
-      }
-    
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title:  err.response?.data?.message || "Quotation Error",
-      });
-    }
-  };
-  
 
   return (
     <div className="">
@@ -353,7 +290,7 @@ export default function RetailSalePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                     onClick={() =>
-                      product.quantity > 0 && addToCart(product._id)
+                      product.quantity > 0 && handleAddToCart(product._id)
                     }
                   >
                     {/* ✅ Stock Out Badge */}
@@ -532,7 +469,7 @@ export default function RetailSalePage() {
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={handleInsertQuotation}
+                onClick={() => handleInsertAndUpdateQuotation(quotation)}
                 className="text-xs md:text-sm btn-sm md:btn-md btn-success flex items-center font-semibold"
               >
                 <Notebook size={16} className="mr-1" /> Quotation

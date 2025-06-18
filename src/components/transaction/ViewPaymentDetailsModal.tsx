@@ -29,7 +29,6 @@ const ViewPaymentDetailsModal = ({
   paymentDetailsData,
 }: PaymentDetailsProps) => {
   const { paymentDetails, customer } = paymentDetailsData;
-  console.log(paymentDetails, customer);
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-GB", {
       day: "2-digit",

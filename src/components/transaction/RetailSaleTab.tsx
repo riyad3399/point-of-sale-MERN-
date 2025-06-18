@@ -91,7 +91,6 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
   const handleEdit = (invoice: InvoiceType) => {
     setEditingInvoice(invoice);
     setModalOpen(true);
-    console.log(invoice);
   };
 
   const handleSaveEdit = async (updatedData: any) => {

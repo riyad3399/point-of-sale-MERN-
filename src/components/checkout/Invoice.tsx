@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Printer } from "lucide-react";
 import axios from "axios";
 import { CompanyType } from "../../types";
+import Swal from "sweetalert2";
 
 interface Product {
   productId: string;
@@ -50,7 +51,7 @@ const Invoice: React.FC<InvoiceProps> = ({
   const balance = paidAmount - payable;
 
   const invoicePostedRef = useRef(false);
-  const [companyInfo, setCompanyInfo]=useState<CompanyType | null>()
+  const [companyInfo, setCompanyInfo] = useState<CompanyType | null>();
 
   useEffect(() => {
     if (!selectWalking || products.length === 0 || invoicePostedRef.current)
@@ -91,9 +92,25 @@ const Invoice: React.FC<InvoiceProps> = ({
           dueDate: due > 0 ? dueDate : null,
         });
 
-        console.log("✅ Invoice saved:");
+        Swal.fire({
+          icon: "success",
+          title: "Invoice Created!",
+          text: `Invoice #${response.data.transactionId} Created successful!`,
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        });
       } catch (error) {
-        console.error("❌ Error saving invoice:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Failed!",
+          text:
+            error.response?.data?.message || "ইনভয়েস তৈরি করতে সমস্যা হয়েছে।",
+          timer: 2500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+
         invoicePostedRef.current = false;
       }
     };
@@ -102,15 +119,14 @@ const Invoice: React.FC<InvoiceProps> = ({
   }, [selectWalking, products]);
 
   const fetchCompanyInfo = async () => {
-    const res = await axios.get("http://localhost:3000/setting")
-    const data = res.data.data
-    setCompanyInfo(data)
-    console.log(data);
-  }
+    const res = await axios.get("http://localhost:3000/setting");
+    const data = res.data.data;
+    setCompanyInfo(data);
+  };
 
   useEffect(() => {
-    fetchCompanyInfo()
-  },[])
+    fetchCompanyInfo();
+  }, []);
 
   return (
     <motion.div
@@ -130,10 +146,12 @@ const Invoice: React.FC<InvoiceProps> = ({
             />
           </div>
           <div className="text-right text-sm">
-            <h2 className="text-lg font-bold">{ companyInfo?.storeName}</h2>
-            <p>{companyInfo?.address}, { companyInfo?.city}</p>
-            <p>Phone: { companyInfo?.phone}</p>
-            <p>Email: { companyInfo?.email}</p>
+            <h2 className="text-lg font-bold">{companyInfo?.storeName}</h2>
+            <p>
+              {companyInfo?.address}, {companyInfo?.city}
+            </p>
+            <p>Phone: {companyInfo?.phone}</p>
+            <p>Email: {companyInfo?.email}</p>
           </div>
         </div>
 

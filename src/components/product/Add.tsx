@@ -64,7 +64,6 @@ const Add: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (response.ok) {
         Swal.fire({
@@ -73,6 +72,7 @@ const Add: React.FC = () => {
           title: "Product added successfully!",
           showConfirmButton: false,
           timer: 1500,
+          timerProgressBar: true,
         });
         reset();
       } else {

@@ -63,7 +63,6 @@ export default function UpdateCustomerModal({
             icon: "success",
             draggable: true,
           });
-          console.log(res.data);
           onClose();
           reset();
         });

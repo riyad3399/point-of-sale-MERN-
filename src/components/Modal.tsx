@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -39,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className=" h-fit absolute inset-0 flex items-center justify-center bg-black/50"
+          className="h-fit absolute max-w-7xl inset-0 flex items-center justify-center bg-black/50 mx-auto w-full"
           initial="hidden"
           animate="visible"
           exit="hidden"
@@ -56,10 +57,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
           >
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 btn-outline"
               aria-label="Close"
             >
-              ✕
+              <X/>
             </button>
             {title && (
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
