@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { User, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { UserInfo } from "../types";
 import axios from "axios";
@@ -18,32 +18,15 @@ export default function RegisterPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios
-      .get("http://localhost:3000/user/profile", {
-        headers: { Authorization: token },
-      })
-      .then((res) => {
-        navigate("/");
-        console.log(res.data);
-      })
-      .catch((err) => {
-        navigate("/login");
-      });
-  }, [navigate]);
-
   const onSubmit = async (data: UserInfo) => {
     // console.log(data);
     await axios
-      .post("http://localhost:3000/user/login", data)
-      .then((user) => {
-        localStorage.setItem("token", user.data.token);
-
-        navigate("/profile");
+      .post("http://localhost:3000/user/register", data)
+      .then((res) => {
+        navigate("/login");
       })
       .catch((err) => {
-        navigate("/login");
+        navigate("/register");
       });
   };
 
@@ -58,7 +41,7 @@ export default function RegisterPage() {
         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
       >
         <h2 className="text-3xl font-bold text-center text-sky-600 mb-6">
-          Login Account
+          Create Account
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -158,7 +141,7 @@ export default function RegisterPage() {
             type="submit"
             className="w-full btn-primary py-3 transition-all"
           >
-            Login
+            Register
           </motion.button>
 
           {/* Success Message */}
@@ -168,7 +151,7 @@ export default function RegisterPage() {
               animate={{ opacity: 1 }}
               className="flex items-center gap-2 justify-center text-green-600 text-sm mt-2"
             >
-              <CheckCircle size={18} /> Login Successful!
+              <CheckCircle size={18} /> Registration Successful!
             </motion.div>
           )}
         </form>

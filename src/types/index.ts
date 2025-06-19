@@ -18,7 +18,7 @@ export interface Product {
   subType: string;
   size?: string;
   color?: string;
-  createdAt: string; 
+  createdAt: string;
   updatedAt: string;
 }
 
@@ -69,7 +69,7 @@ export interface InvoiceType {
   customer: { name: string; phone: string };
   paymentMethod: string;
   saleSystem: string;
-  items: { name: string; quantity: number; price: number; status:string }[];
+  items: { name: string; quantity: number; price: number; status: string }[];
   totals: {
     total: number;
     discount: number;
@@ -88,7 +88,7 @@ export interface InvoiceType {
 }
 
 // store information
-export interface FormValues  {
+export interface FormValues {
   storeName: string;
   phone: string;
   address: string;
@@ -99,7 +99,7 @@ export interface FormValues  {
   taxRate: number;
   currency: string;
   logo: FileList;
-};
+}
 
 export type OptionType = {
   value: number;
@@ -115,7 +115,7 @@ export interface QuotationType {
   items: {
     name: string;
     price: number;
-    productId: string; 
+    productId: string;
     quantity: number;
   }[];
   saleType: "retailSale" | "wholeSale";
@@ -123,7 +123,6 @@ export interface QuotationType {
   createdAt: string;
   updatedAt: string;
 }
-
 
 // Company Type
 export interface CompanyType {
@@ -142,7 +141,6 @@ export interface CompanyType {
   updatedAt: string;
   __v: number;
 }
-
 
 // --- Interfaces and Types ---
 export interface Purchase {
@@ -179,7 +177,6 @@ export interface Supplier {
   updatedAt: string;
 }
 
-
 // Expense
 export interface Item {
   category?: string;
@@ -196,4 +193,11 @@ export interface Expense {
   totalAmount: number;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface UserInfo {
+  _id: string;
+  userName: string;
+  password: string;
+  createOn: string;
 }
