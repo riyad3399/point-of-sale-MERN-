@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { User, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { UserInfo } from "../types";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { handleLogin, handleProfile } from "../utils/api";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const {
     register,
     handleSubmit,
@@ -15,42 +15,19 @@ export default function RegisterPage() {
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    axios
-      .get("http://localhost:3000/user/profile", {
-        headers: { Authorization: token },
-      })
-      .then((res) => {
-        navigate("/");
-        console.log(res.data);
-      })
-      .catch((err) => {
-        navigate("/login");
-      });
+    handleProfile(token, navigate);
   }, [navigate]);
 
   const onSubmit = async (data: UserInfo) => {
-    // console.log(data);
-    await axios
-      .post("http://localhost:3000/user/login", data)
-      .then((user) => {
-        localStorage.setItem("token", user.data.token);
-
-        navigate("/profile");
-      })
-      .catch((err) => {
-        navigate("/login");
-      });
+    handleLogin(data, navigate);
   };
 
-  const password = watch("password");
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-50 to-sky-100 px-4">
+    <div className="min-h-screen h-full flex items-center justify-center bg-gradient-to-tr from-blue-50 to-sky-100 px-4">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,42 +40,57 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Name */}
-          <div className="relative">
-            <User
-              className="absolute left-3 top-[15px] text-gray-400"
-              size={20}
-            />
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <User className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
+              id="userName"
               type="text"
               placeholder=" "
               {...register("userName", { required: true })}
-              className="w-full pl-10 pt-4 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 peer"
+              className="peer w-full rounded-xl border border-gray-300 pl-10 pr-3 py-3 text-sm text-gray-900 placeholder-transparent shadow-sm 
+    focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
             />
             <label
               htmlFor="userName"
-              className="absolute left-10 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-0.5 peer-focus:text-sm peer-focus:text-sky-500"
+              className="absolute left-10 -top-2 text-xs text-gray-500 bg-white px-1 transition-all duration-200 
+    peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
+    peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
+    peer-focus:text-xs peer-focus:text-sky-600"
             >
-              Name
+              Username
             </label>
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">Name is required</p>
+            {errors.userName && (
+              <p className="text-red-500 text-xs mt-1">Username is required</p>
             )}
-          </div>
+          </motion.div>
 
           {/* Password */}
-          <div className="relative">
-            <Lock
-              className="absolute left-3 top-[15px] text-gray-400"
-              size={20}
-            />
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
+              placeholder=" "
               {...register("password", { required: true, minLength: 6 })}
-              className="w-full pl-10 pr-10 pt-4 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 peer"
+              className="peer w-full rounded-xl border border-gray-300 pl-10 pr-10 py-3 text-sm text-gray-900 placeholder-transparent shadow-sm 
+    focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
             />
             <label
               htmlFor="password"
-              className="absolute left-10 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-0.5 peer-focus:text-sm peer-focus:text-sky-500"
+              className="absolute left-10 -top-2 text-xs text-gray-500 bg-white px-1 transition-all duration-200 
+    peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
+    peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
+    peer-focus:text-xs peer-focus:text-sky-600"
             >
               Password
             </label>
@@ -113,43 +105,7 @@ export default function RegisterPage() {
                 Password must be at least 6 characters
               </p>
             )}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="relative">
-            <Lock
-              className="absolute left-3 top-[15px] text-gray-400"
-              size={20}
-            />
-            <input
-              type={showConfirm ? "text" : "password"}
-              id="confirmPassword"
-              placeholder=" "
-              {...register("confirmPassword", {
-                required: true,
-                validate: (value) =>
-                  value === password || "Passwords do not match",
-              })}
-              className="w-full pl-10 pr-10 pt-4 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 peer"
-            />
-            <label
-              htmlFor="confirmPassword"
-              className="absolute left-10 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-0.5 peer-focus:text-sm peer-focus:text-sky-500"
-            >
-              Confirm Password
-            </label>
-            <span
-              className="absolute right-3 top-[15px] text-gray-400 cursor-pointer"
-              onClick={() => setShowConfirm(!showConfirm)}
-            >
-              {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
-            </span>
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+          </motion.div>
 
           {/* Submit Button */}
           <motion.button

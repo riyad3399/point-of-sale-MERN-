@@ -13,7 +13,10 @@ import {
   Calendar,
   ChevronDown,
   Hash,
-  XCircle, // Added for clear filters/search
+  XCircle,
+  Edit,
+  Trash,
+  Truck, // Added for clear filters/search
 } from "lucide-react";
 import Loading from "../Loading";
 import { fetchSupplierDetails } from "../../utils/api";
@@ -139,8 +142,8 @@ const SupplierList = () => {
     <div className="min-h-screen dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
         {/* Header Title */}
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center md:text-left">
-          🏭 Supplier Directory
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center md:text-left flex items-center gap-2">
+          <Truck className="text-blue-500 h-8 w-8"/> Supplier Directory
         </h2>
 
         {/* Stats Cards */}
@@ -393,6 +396,7 @@ const SupplierList = () => {
                   whileHover="hover"
                   className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-200 relative overflow-hidden"
                 >
+                  
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-br from-blue-50 dark:from-blue-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     initial={{ opacity: 0 }}

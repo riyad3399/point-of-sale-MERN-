@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Trash2, PlusCircle, X } from "lucide-react";
 import SupplierAddForm from "../supplier/SupplierAddForm";
+import FloatingInput from "./FloatingInput";
 
 interface Supplier {
   _id: string;
@@ -28,6 +29,8 @@ interface PurchaseFormData {
     product: string;
     quantity: number;
     purchasePrice: number;
+    retailPrice?: number; // নতুন
+    wholesalePrice?: number; // নতুন
   }[];
   paid: number;
   paymentMethod: string;
@@ -38,7 +41,15 @@ const PurchaseForm = () => {
     useForm<PurchaseFormData>({
       defaultValues: {
         supplier: null,
-        items: [{ product: "", quantity: 1, purchasePrice: 0 }],
+        items: [
+          {
+            product: "",
+            quantity: 1,
+            purchasePrice: 0,
+            retailPrice: 0,
+            wholesalePrice: 0,
+          },
+        ],
         paid: 0,
         paymentMethod: "Cash",
       },
@@ -57,6 +68,8 @@ const PurchaseForm = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
+
+  console.log(products);
 
   useEffect(() => {
     axios
@@ -91,6 +104,8 @@ const PurchaseForm = () => {
         productId: item.product,
         quantity: item.quantity,
         purchasePrice: item.purchasePrice,
+        retailPrice: item.retailPrice,
+        wholesalePrice: item.wholesalePrice,
       })),
       total,
       paid: data.paid,
@@ -170,7 +185,7 @@ const PurchaseForm = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="grid grid-cols-5 items-center gap-3 bg-gray-50 p-3 rounded-md shadow-sm"
+                    className="grid grid-cols-7 items-center gap-2 bg-gray-50 p-3 rounded-md shadow-sm"
                   >
                     <Controller
                       control={control}
@@ -199,6 +214,14 @@ const PurchaseForm = () => {
                                   `items.${index}.purchasePrice`,
                                   selectedProduct.purchasePrice
                                 );
+                                setValue(
+                                  `items.${index}.retailPrice`,
+                                  selectedProduct.retailPrice || 0
+                                );
+                                setValue(
+                                  `items.${index}.wholesalePrice`,
+                                  selectedProduct.wholesalePrice || 0
+                                );
                               }
                             }}
                             options={products?.map((p) => ({
@@ -212,22 +235,40 @@ const PurchaseForm = () => {
                       }}
                     />
 
-                    <input
+                    <FloatingInput
+                      id={`qty-${index}`}
+                      label="Qty"
                       type="number"
-                      {...register(`items.${index}.quantity`, {
+                      registerProps={register(`items.${index}.quantity`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Qty"
-                      className="border px-2 py-2 rounded-md input"
                     />
 
-                    <input
+                    <FloatingInput
+                      id={`purchase-${index}`}
+                      label="Purchase Price"
                       type="number"
-                      {...register(`items.${index}.purchasePrice`, {
+                      registerProps={register(`items.${index}.purchasePrice`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Price"
-                      className="border px-2 py-2 rounded-md input"
+                    />
+
+                    <FloatingInput
+                      id={`retail-${index}`}
+                      label="Retail Price"
+                      type="number"
+                      registerProps={register(`items.${index}.retailPrice`, {
+                        valueAsNumber: true,
+                      })}
+                    />
+
+                    <FloatingInput
+                      id={`wholesale-${index}`}
+                      label="Wholesale Price"
+                      type="number"
+                      registerProps={register(`items.${index}.wholesalePrice`, {
+                        valueAsNumber: true,
+                      })}
                     />
 
                     <button

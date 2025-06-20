@@ -10,7 +10,6 @@ import { InvoiceType } from "../../types";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
-
 export default function WholeSaleTab({ capitalizeFirstLetter }) {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +25,7 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
     null
   );
   const [modalOpen, setModalOpen] = useState(false);
+  const [storeInfo, setStoreInfo] = useState({});
 
   const navigate = useNavigate();
 
@@ -93,6 +93,15 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
     setModalOpen(true);
   };
 
+  useEffect(() => {
+    const fetchStoreInfo = async () => {
+      const res = await axios.get("http://localhost:3000/setting");
+      const data = res.data.data;
+      setStoreInfo(data);
+    };
+    fetchStoreInfo();
+  }, []);
+
   const handleSaveEdit = async (updatedData: any) => {
     if (!editingInvoice) return;
 
@@ -135,7 +144,7 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
               margin: 40px;
               color: #333;
             }
-            h1 {
+            h1, h2 {
               margin: 0;
             }
             .section {
@@ -175,26 +184,64 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-bottom: 20px;
+              margin-bottom: 10px;
             }
             .header img {
-              height: 60px;
+              height: 70px;
+            }
+            .company-info-wrapper {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid #ccc;
+              padding-bottom: 10px;
+              margin-bottom: 20px;
+            }
+            .company-details {
+              text-align: right;
+            }
+            .invoice-meta {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 20px;
+              font-size: 16px;
             }
           </style>
         </head>
         <body>
-          <div class="header">
-            <div><h1>Invoice #${tx.transactionId}</h1></div>
-            <img id="invoiceLogo" src="https://i.ibb.co/mHZkPKd/r-logo.png" alt="Logo" />
+          <div class="company-info-wrapper">
+            <!-- Left: Logo -->
+            <div>
+              <img id="invoiceLogo" style="height:60px; weight: 60px; border-radius: 10px;" src=${
+                storeInfo?.logo
+              } alt="Logo" />
+            </div>
+    
+            <!-- Right: Company Info -->
+            <div class="company-details">
+              <h2 style="margin-bottom: 5px;">${storeInfo?.storeName}</h2>
+              <div style="font-size: 14px; color: #555;">
+                <div>Address: ${storeInfo?.address},<br/> ${
+      storeInfo?.city
+    }</div>
+                <div>Phone: ${storeInfo?.phone}</div>
+              </div>
+            </div>
           </div>
     
-          <div class="section customer-info">
-            <strong>Customer:</strong> ${tx.customer.name} (${
+         
+          <div class="invoice-meta">
+            <div>
+              <strong>Customer:</strong> ${tx.customer.name} (${
       tx.customer.phone
     })<br/>
-            <strong>Date:</strong> ${new Date(
-              tx.createdAt
-            ).toLocaleDateString()}
+              <strong>Date:</strong> ${new Date(
+                tx.createdAt
+              ).toLocaleDateString()}
+            </div>
+            <div>
+              <strong>Invoice #</strong> ${tx.transactionId}
+            </div>
           </div>
     
           <div class="section">
@@ -303,7 +350,6 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
         </body>
       </html>
     `);
-
     printWindow?.document.close();
     printWindow?.print();
   };

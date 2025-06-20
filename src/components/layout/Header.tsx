@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Menu, Bell, MessageSquare } from "lucide-react";
+import { Menu, Bell, MessageSquare, User } from "lucide-react";
 import axios from "axios";
 import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "../LanguageSwitcher";
+import LogoutButton from "../LogoutButton";
+import { getHandleProfile } from "../../utils/api";
 
 type SmsBalanceType = {
   response_code: number;
@@ -16,7 +18,9 @@ const Header: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [smsBalance, setSmsBalance] = useState<SmsBalanceType>();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [user, setUser] = useState({});
 
+  const token = localStorage.getItem("token");
 
   const fetchLowStockItems = async () => {
     try {
@@ -46,8 +50,11 @@ const Header: React.FC = () => {
     fetchSmsBalance();
     const interval = setInterval(fetchLowStockItems, 10000);
 
-
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    getHandleProfile(token, setUser);
   }, []);
 
   return (
@@ -142,12 +149,12 @@ const Header: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden">
-                <img src="" alt="" className="h-full w-full object-cover" />
+              <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 overflow-hidden">
+                <User/>
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium">use name</p>
-                <p className="text-xs text-gray-500 capitalize">role</p>
+                <p className="text-sm font-medium">{user?.userName}</p>
+                <p className="text-xs text-gray-500 capitalize">Role</p>
               </div>
             </motion.button>
 
@@ -159,21 +166,7 @@ const Header: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
               >
-                <a
-                  href="#profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Your Profile
-                </a>
-                <a
-                  href="#settings"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Settings
-                </a>
-                <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                  Sign out
-                </button>
+                {token && <LogoutButton />}
               </motion.div>
             )}
           </div>
