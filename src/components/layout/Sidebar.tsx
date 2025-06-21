@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BiLogoProductHunt } from "react-icons/bi";
 import {
-  LayoutDashboard,
   ShoppingCart,
   FileText,
   Settings,
@@ -12,12 +10,15 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
-  Notebook,
   Coins,
-  ShoppingBag,
   Truck,
+  Tags,
+  Boxes,
+  PackageSearch,
+  BarChart3,
+  PackagePlus,
+  FileSignature,
 } from "lucide-react";
-import { MdCategory } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 const Sidebar: React.FC = () => {
@@ -46,7 +47,9 @@ const Sidebar: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <img src={"/photo/logo.png"} alt="Logo" className=" w-[85%]" />
+            <Link to="/">
+              <img src={"/photo/logo.png"} alt="Logo" className=" w-[85%]" />
+            </Link>
           </motion.div>
         )}
         <button
@@ -62,25 +65,25 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 pt-4 px-2">
+      <nav className="flex-1 pt-1.5 px-2">
         <div className="space-y-1">
           <SidebarLink
             to="/"
-            icon={<LayoutDashboard />}
+            icon={<BarChart3 />}
             text={t("sidebar.dashboard")}
             collapsed={collapsed}
             title={t("sidebar.dashboard")}
           />
           <SidebarLink
             to="/categories"
-            icon={<MdCategory size={24} />}
+            icon={<Tags />}
             text={t("sidebar.categories")}
             collapsed={collapsed}
             title={t("sidebar.categories")}
           />
           <SidebarLink
             to="/productes"
-            icon={<BiLogoProductHunt size={22} />}
+            icon={<Boxes size={22} />}
             text={t("sidebar.products")}
             collapsed={collapsed}
             title={t("sidebar.products")}
@@ -94,14 +97,14 @@ const Sidebar: React.FC = () => {
           />
           <SidebarLink
             to="/wholeSale"
-            icon={<ShoppingCart />}
+            icon={<PackageSearch />}
             text={t("sidebar.wholeSale")}
             collapsed={collapsed}
             title={t("sidebar.wholeSale")}
           />
           <SidebarLink
             to="/quotation"
-            icon={<Notebook />}
+            icon={<FileSignature />}
             text={t("sidebar.quotations")}
             collapsed={collapsed}
             title={t("sidebar.quotations")}
@@ -129,7 +132,7 @@ const Sidebar: React.FC = () => {
           />
           <SidebarLink
             to="/purchase"
-            icon={<ShoppingBag />}
+            icon={<PackagePlus />}
             text={t("sidebar.purchase")}
             collapsed={collapsed}
             title={t("sidebar.purchase")}
