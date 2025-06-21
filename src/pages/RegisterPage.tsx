@@ -21,7 +21,7 @@ export default function RegisterPage() {
   const password = watch("password");
 
   const onSubmit = async (data: UserInfo) => {
-    handleRegister(data, navigate);
+    await handleRegister(data, navigate);
   };
 
   return (
@@ -44,24 +44,21 @@ export default function RegisterPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <User
-              className="absolute left-3 top-3 text-gray-400"
-              size={20}
-            />
+            <User className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
               id="userName"
               type="text"
               placeholder=" "
               {...register("userName", { required: "Username is required" })}
               className="peer w-full rounded-xl border border-gray-300 pl-10 pr-3 py-3 text-sm text-gray-900 placeholder-transparent shadow-sm 
-              focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
+                focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
             />
             <label
               htmlFor="userName"
               className="absolute left-10 -top-2 text-xs text-gray-500 bg-white px-1 transition-all duration-200 
-              peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
-              peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
-              peer-focus:text-xs peer-focus:text-sky-600"
+                peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
+                peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
+                peer-focus:text-xs peer-focus:text-sky-600"
             >
               Username
             </label>
@@ -79,10 +76,7 @@ export default function RegisterPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Lock
-              className="absolute left-3 top-3 text-gray-400"
-              size={20}
-            />
+            <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
               id="password"
               type={showPassword ? "text" : "password"}
@@ -92,14 +86,14 @@ export default function RegisterPage() {
                 minLength: { value: 6, message: "Minimum 6 characters" },
               })}
               className="peer w-full rounded-xl border border-gray-300 pl-10 pr-10 py-3 text-sm text-gray-900 placeholder-transparent shadow-sm 
-              focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
+                focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
             />
             <label
               htmlFor="password"
               className="absolute left-10 -top-2 text-xs text-gray-500 bg-white px-1 transition-all duration-200 
-              peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
-              peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
-              peer-focus:text-xs peer-focus:text-sky-600"
+                peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
+                peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
+                peer-focus:text-xs peer-focus:text-sky-600"
             >
               Password
             </label>
@@ -117,16 +111,14 @@ export default function RegisterPage() {
           </motion.div>
 
           {/* Confirm Password */}
+
           <motion.div
             className="relative"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Lock
-              className="absolute left-3 top-3 text-gray-400"
-              size={20}
-            />
+            <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
               id="confirmPassword"
               type={showConfirm ? "text" : "password"}
@@ -137,14 +129,14 @@ export default function RegisterPage() {
                   value === password || "Passwords do not match",
               })}
               className="peer w-full rounded-xl border border-gray-300 pl-10 pr-10 py-3 text-sm text-gray-900 placeholder-transparent shadow-sm 
-              focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
+                focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
             />
             <label
               htmlFor="confirmPassword"
               className="absolute left-10 -top-2 text-xs text-gray-500 bg-white px-1 transition-all duration-200 
-              peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
-              peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
-              peer-focus:text-xs peer-focus:text-sky-600"
+                peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm 
+                peer-placeholder-shown:text-gray-400 peer-focus:-top-2 
+                peer-focus:text-xs peer-focus:text-sky-600"
             >
               Confirm Password
             </label>
@@ -170,17 +162,6 @@ export default function RegisterPage() {
           >
             Register
           </motion.button>
-
-          {/* Success Message */}
-          {isSubmitSuccessful && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-2 justify-center text-green-600 text-sm mt-2"
-            >
-              <CheckCircle size={18} /> Registration Successful!
-            </motion.div>
-          )}
         </form>
       </motion.div>
     </div>

@@ -3,17 +3,21 @@ import AddExpense from "../components/expense/AddExpense";
 import ExpenseList from "../components/expense/ExpenseList";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-const tabs = [
-  { key: "add", label: "খরচ যোগ করুন" },
-  { key: "list", label: "খরচের তালিকা" },
-];
+
 
 export default function ExpensePage() {
   const [activeTab, setActiveTab] = useState("add");
+  const { t } = useTranslation();
+
+  const tabs = [
+    { key: "add", label: t("expense.addExpense") },
+    { key: "list", label: t("expense.expenseList") },
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto p-4 bg-white rounded-md">
+    <div className="max-w-7xl mx-auto p-6 bg-white rounded-md">
       <Helmet>
         <title>Expense | POS System</title>
       </Helmet>

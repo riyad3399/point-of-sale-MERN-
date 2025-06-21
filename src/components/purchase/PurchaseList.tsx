@@ -19,6 +19,8 @@ import StatCard from "../helper/StatCard";
 import FilterDropdown from "../helper/FilterDropdown";
 import { Purchase } from "../../types";
 import PurchaseCard from "../helper/PurchaseCard";
+import { useTranslation } from "react-i18next";
+
 
 type PaymentStatus = "all" | "paid" | "due";
 type DateFilter = "all" | "today" | "week" | "month" | "custom";
@@ -36,6 +38,7 @@ export default function PurchaseList() {
     start: "",
     end: "",
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchPurchases = async () => {
@@ -200,36 +203,34 @@ export default function PurchaseList() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-slate-800">
-              Purchase History
+              {t("purchase.listTitle")}
             </h1>
-            <p className="text-slate-500 mt-1">
-              Manage and analyze all your purchases
-            </p>
+            <p className="text-slate-500 mt-1">{t("purchase.subtitle")}</p>
           </div>
         </div>
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
-          title="Total Purchases"
+          title={t("purchase.totalPurchases")}
           value={stats.count}
           icon={<TrendingUp />}
           color="indigo"
         />
         <StatCard
-          title="Total Amount"
+          title={t("purchase.totalAmount")}
           value={`৳${stats.total.toLocaleString()}`}
           icon={<DollarSign />}
           color="blue"
         />
         <StatCard
-          title="Amount Paid"
+          title={t("purchase.amountPaid")}
           value={`৳${stats.paid.toLocaleString()}`}
           icon={<CheckCircle />}
           color="green"
         />
         <StatCard
-          title="Amount Due"
+          title={t("purchase.amountDue")}
           value={`৳${stats.due.toLocaleString()}`}
           icon={<AlertCircle />}
           color="red"
@@ -243,7 +244,7 @@ export default function PurchaseList() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search by supplier or product..."
+              placeholder={t("purchase.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
@@ -260,7 +261,11 @@ export default function PurchaseList() {
             } relative`}
           >
             <Filter className="w-4 h-4" />
-            <span>{showFilters ? "Hide Filters" : "Show Filters"}</span>
+            <span>
+              {showFilters
+                ? t("purchase.hideFilters")
+                : t("purchase.showFilters")}
+            </span>
             {activeFiltersCount > 0 && (
               <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
                 {activeFiltersCount}
@@ -294,7 +299,7 @@ export default function PurchaseList() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Payment Status Filter */}
                 <FilterDropdown
-                  label="Payment Status"
+                  label={t("purchase.paymentStatus")}
                   value={paymentStatus}
                   onChange={(e) =>
                     setPaymentStatus(e.target.value as PaymentStatus)
@@ -307,7 +312,7 @@ export default function PurchaseList() {
                 />
 
                 <FilterDropdown
-                  label="Payment Method"
+                  label={t("purchase.paymentMethod")}
                   value={paymentMethodFilter}
                   onChange={(e) => setPaymentMethodFilter(e.target.value)}
                   options={[
@@ -321,7 +326,7 @@ export default function PurchaseList() {
 
                 {/* Date Filter */}
                 <FilterDropdown
-                  label="Date Range"
+                  label={t("purchase.dateRange")}
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value as DateFilter)}
                   options={[
@@ -409,7 +414,7 @@ export default function PurchaseList() {
         >
           <Package className="w-20 h-20 text-slate-300 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-slate-700 mb-2">
-            No Purchases Found
+            {t("purchase.noPurchasesFound")}
           </h3>
           <p className="text-slate-500">
             {activeFiltersCount > 0
@@ -421,7 +426,7 @@ export default function PurchaseList() {
               onClick={clearFilters}
               className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm hover:bg-indigo-600"
             >
-              Clear Filters
+              {t("purchase.clearFilters")}
             </button>
           )}
         </motion.div>

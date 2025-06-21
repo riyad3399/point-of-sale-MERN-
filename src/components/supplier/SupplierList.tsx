@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  User,
   Phone,
   Mail,
   MapPin,
@@ -11,19 +10,15 @@ import {
   Users,
   Building2,
   Calendar,
-  ChevronDown,
   Hash,
   XCircle,
-  Edit,
-  Trash,
-  Truck, // Added for clear filters/search
+  Truck,
 } from "lucide-react";
 import Loading from "../Loading";
 import { fetchSupplierDetails } from "../../utils/api";
 import ViewSupplierDetailsModal from "./ViewSupplierDetailsModal";
 import { Supplier } from "../../types";
-
-
+import { useTranslation } from "react-i18next";
 
 const SupplierList = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -41,6 +36,7 @@ const SupplierList = () => {
     null
   );
 
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -124,7 +120,7 @@ const SupplierList = () => {
     setShowFilters(false); // Optionally if you want the panel to close on clear
   };
 
-// view details
+  // view details
   const handleViewDetails = async (id: string) => {
     const data = await fetchSupplierDetails(id);
     if (data) {
@@ -143,7 +139,8 @@ const SupplierList = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header Title */}
         <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center md:text-left flex items-center gap-2">
-          <Truck className="text-blue-500 h-8 w-8"/> Supplier Directory
+          <Truck className="text-blue-500 h-8 w-8" />{" "}
+          {t("supplier.supplierDirectory")}
         </h2>
 
         {/* Stats Cards */}
@@ -160,7 +157,7 @@ const SupplierList = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  Total Suppliers
+                  {t("supplier.totalSuppliers")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.total}
@@ -179,7 +176,7 @@ const SupplierList = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  With Email
+                  {t("supplier.withEmail")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.withEmail}
@@ -198,7 +195,7 @@ const SupplierList = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  With Phone
+                  {t("supplier.withPhone")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.withPhone}
@@ -217,7 +214,7 @@ const SupplierList = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  With Address
+                  {t("supplier.withAddress")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.withAddress}
@@ -244,7 +241,7 @@ const SupplierList = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search by supplier or contact..."
+                placeholder={t("supplier.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500"
@@ -282,7 +279,7 @@ const SupplierList = () => {
                 {/* Contact Info Filters */}
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                    Contact Information
+                    {t("supplier.contactInfo")}
                   </h4>
                   <label className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 cursor-pointer">
                     <input
@@ -291,7 +288,7 @@ const SupplierList = () => {
                       onChange={(e) => setFilterByEmail(e.target.checked)}
                       className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                     />
-                    Has Email
+                    {t("supplier.hasEmail")}
                   </label>
                   <label className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 cursor-pointer">
                     <input
@@ -300,7 +297,7 @@ const SupplierList = () => {
                       onChange={(e) => setFilterByPhone(e.target.checked)}
                       className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                     />
-                    Has Phone
+                    {t("supplier.hasPhone")}
                   </label>
                   <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer">
                     <input
@@ -309,14 +306,14 @@ const SupplierList = () => {
                       onChange={(e) => setFilterByAddress(e.target.checked)}
                       className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                     />
-                    Has Address
+                    {t("supplier.hasAddress")}
                   </label>
                 </div>
 
                 {/* Sort Options */}
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                    Sort By
+                    {t("supplier.sortBy")}
                   </h4>
                   <div className="flex flex-col gap-2">
                     <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer">
@@ -328,7 +325,7 @@ const SupplierList = () => {
                         onChange={() => setSortBy("name")}
                         className="form-radio h-4 w-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                       />
-                      Name (A-Z)
+                      {t("supplier.sortNameAZ")}
                     </label>
                     <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer">
                       <input
@@ -339,7 +336,7 @@ const SupplierList = () => {
                         onChange={() => setSortBy("date")}
                         className="form-radio h-4 w-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                       />
-                      Date Added (Newest first)
+                      {t("supplier.sortDateNewest")}
                     </label>
                   </div>
                 </div>
@@ -351,7 +348,7 @@ const SupplierList = () => {
                     className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm"
                   >
                     <XCircle className="w-4 h-4" />
-                    Clear Filters
+                    {t("supplier.clearFilters")}
                   </button>
                 </div>
               </div>
@@ -396,7 +393,6 @@ const SupplierList = () => {
                   whileHover="hover"
                   className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-200 relative overflow-hidden"
                 >
-                  
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-br from-blue-50 dark:from-blue-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     initial={{ opacity: 0 }}
@@ -494,7 +490,7 @@ const SupplierList = () => {
                           !supplier.phone &&
                           !supplier.address && (
                             <span className="text-xs text-gray-400 italic">
-                              No contact info
+                              {t("supplier.noSuppliersFound")}
                             </span>
                           )}
                       </div>
@@ -502,7 +498,7 @@ const SupplierList = () => {
                         onClick={() => handleViewDetails(supplier._id)}
                         className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                       >
-                        View Details
+                        {t("supplier.viewDetails")}
                       </button>
                     </div>
                   </div>{" "}

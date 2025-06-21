@@ -130,16 +130,16 @@ const Sidebar: React.FC = () => {
           <SidebarLink
             to="/purchase"
             icon={<ShoppingBag />}
-            text={"Purchase"}
+            text={t("sidebar.purchase")}
             collapsed={collapsed}
-            title={"Purchase"}
+            title={t("sidebar.purchase")}
           />
           <SidebarLink
             to="/supplier"
             icon={<Truck />}
-            text={"Supplier"}
+            text={t("sidebar.supplier")}
             collapsed={collapsed}
-            title={"Supplier"}
+            title={t("sidebar.supplier")}
           />
 
           {/* Report Dropdown */}

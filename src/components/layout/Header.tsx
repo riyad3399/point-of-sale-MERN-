@@ -150,7 +150,7 @@ const Header: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 overflow-hidden">
-                <User/>
+                <User />
               </div>
               <div className="hidden md:block text-left">
                 <p className="text-sm font-medium">{user?.userName}</p>
@@ -161,7 +161,7 @@ const Header: React.FC = () => {
             {/* User Dropdown */}
             {showUserMenu && (
               <motion.div
-                className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+                className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 hover:bg-red-500 hover:text-white "
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}

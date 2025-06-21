@@ -1,10 +1,11 @@
-import React, { useState } from "react"; // Import useState and React
+import { useState } from "react"; 
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { motion } from "framer-motion"; // Import framer-motion
+import { motion } from "framer-motion"; 
+import { useTranslation } from "react-i18next";
 
-// Interface definition remains the same
+
 interface SupplierFormData {
   name: string;
   phone?: string;
@@ -13,14 +14,14 @@ interface SupplierFormData {
 }
 
 const SupplierAddForm = () => {
-  // State to handle loading status for the button/API call
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitted, isSubmitting }, // isSubmitting can also be used, but managing state manually gives more control over UI
+    formState: { errors, isSubmitted, isSubmitting }, 
   } = useForm<SupplierFormData>();
 
   const onSubmit = async (data: SupplierFormData) => {
@@ -39,9 +40,8 @@ const SupplierAddForm = () => {
           timerProgressBar: true,
           showConfirmButton: false,
         });
-        reset(); // Reset form fields
+        reset(); 
       } else {
-        // Handle cases where status is not 201 but request succeeded (optional)
         Swal.fire({
           icon: "warning",
           title:  "Operation Completed",
@@ -73,7 +73,6 @@ const SupplierAddForm = () => {
   };
 
   return (
-    // Apply framer-motion animation to the container
     <motion.div
       className="max-w-lg w-full mx-auto p-8 bg-white dark:bg-gray-800 rounded-xl shadow-xl flex flex-col items-center justify-center"
       variants={containerVariants}
@@ -89,12 +88,12 @@ const SupplierAddForm = () => {
           custom={0}
         >
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-            Supplier Name <span className="text-red-500">*</span>
+            {t("supplier.supplierName")} <span className="text-red-500">*</span>
           </label>
           <input
             {...register("name", { required: "Name is required" })}
             className="px-4 py-3 input dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
-            placeholder="Enter supplier name"
+            placeholder={t("supplier.enterSupplierName")}
             aria-invalid={errors.name ? "true" : "false"}
           />
           {errors.name && (
@@ -111,7 +110,7 @@ const SupplierAddForm = () => {
           custom={1}
         >
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-            Phone Number
+            {t("supplier.phoneNumber")}
           </label>
           <input
             {...register("phone", {
@@ -122,7 +121,7 @@ const SupplierAddForm = () => {
               },
             })}
             className="px-4 py-3 input dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
-            placeholder="013XXXXXXXX"
+            placeholder={t("supplier.enterPhoneNumber")}
           />
           {/* Optionally display phone validation errors */}
           {errors.phone && (
@@ -138,7 +137,7 @@ const SupplierAddForm = () => {
           custom={1}
         >
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-            Email
+            {t("supplier.email")}
           </label>
           <input
             {...register("email", {
@@ -149,7 +148,7 @@ const SupplierAddForm = () => {
               },
             })}
             className="px-4 py-3 input dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
-            placeholder="demo@gmail.com"
+            placeholder={t("supplier.enterEmail")}
           />
           {/* Optionally display phone validation errors */}
           {errors.email && (
@@ -166,14 +165,14 @@ const SupplierAddForm = () => {
           custom={2}
         >
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-            Address
+            {t("supplier.address")}
           </label>
           <textarea
             {...register("address")}
             rows={3}
             className="px-4 py-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0
            disabled:cursor-not-allowed disabled:opacity-50 rounded-md border border-gray-300 dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white resize-none transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
-            placeholder="e.g., 123, Badda, Dhaka"
+            placeholder={t("supplier.enterAddress")}
           />
         </motion.div>
 
@@ -181,9 +180,9 @@ const SupplierAddForm = () => {
         <motion.button
           type="submit"
           className="w-full btn-primary"
-          disabled={isLoading} // Disable button when loading
-          variants={inputVariants} // Reuse input variants for stagger
-          custom={3} // Last item in the sequence
+          disabled={isLoading}
+          variants={inputVariants}
+          custom={3}
         >
           {isLoading ? (
             <div className="flex items-center justify-center space-x-2">
@@ -210,7 +209,7 @@ const SupplierAddForm = () => {
               <span>Processing...</span>
             </div>
           ) : (
-            "Save Supplier"
+            t("supplier.saveSupplier")
           )}
         </motion.button>
       </form>

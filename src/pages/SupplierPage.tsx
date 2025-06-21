@@ -2,15 +2,18 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SupplierAddForm from "../components/supplier/SupplierAddForm";
 import SupplierList from "../components/supplier/SupplierList";
+import { useTranslation } from "react-i18next";
 
 
 
 export default function SupplierPage() {
   const [activeTab, setActiveTab] = useState<"form" | "list">("form");
 
+  const { t } = useTranslation();
+
   const tabs = [
-    { key: "form", label: "Add Supplier" },
-    { key: "list", label: "Supplier List" },
+    { key: "form", label: t("supplier.addSupplier") },
+    { key: "list", label: t("supplier.supplierList") },
   ];
 
   return (

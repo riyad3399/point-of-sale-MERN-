@@ -9,7 +9,7 @@ const LogoutButton = () => {
   return (
     <button
       onClick={() => handleLogout(navigate)}
-      className="ml-3 flex items-center gap-1 hover:text-red-500"
+      className="ml-3 flex items-center gap-1"
     >
       Logout <LogOut size={18}/>
     </button>

@@ -1,5 +1,6 @@
 import axios from "axios";
-import { Supplier } from "../types";
+import { Supplier, UserInfo } from "../types";
+import Swal from "sweetalert2";
 
 const URI = `http://localhost:3000`;
 
@@ -54,17 +55,29 @@ export const handleLogout = async (navigate) => {
 };
 
 // Login
-export const handleLogin = async (data, navigate) => {
-  await axios
-    .post("http://localhost:3000/user/login", data)
-    .then((user) => {
-      localStorage.setItem("token", user.data.token);
+export const handleLogin = async (data: UserInfo, navigate: any) => {
+  try {
+    const response = await axios.post("http://localhost:3000/user/login", data);
+    localStorage.setItem("token", response.data.token);
 
-      navigate("/profile");
-    })
-    .catch((err) => {
-      navigate("/login");
+    await Swal.fire({
+      icon: "success",
+      title: "Login Successful",
+      showConfirmButton: false,
+      timer: 1500,
     });
+
+    navigate("/");
+  } catch (err) {
+    await Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: "Please check your username and password.",
+      confirmButtonColor: "#3085d6",
+    });
+
+    navigate("/login");
+  }
 };
 
 // Register

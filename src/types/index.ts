@@ -196,8 +196,7 @@ export interface Expense {
 }
 
 export interface UserInfo {
-  _id: string;
+  _id?: string;
   userName: string;
   password: string;
-  createOn: string;
 }

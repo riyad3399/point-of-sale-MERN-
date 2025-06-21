@@ -6,7 +6,9 @@ const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedLanguage = e.target.value;
     i18n.changeLanguage(e.target.value);
+    localStorage.setItem("language", selectedLanguage);
   };
 
   return (

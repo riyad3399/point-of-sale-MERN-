@@ -1,9 +1,10 @@
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import CreatableSelect from "react-select/creatable";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, PlusCircle, Trash2, X } from "lucide-react";
+import { PlusCircle, Trash2 } from "lucide-react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const defaultItem = {
   category: null,
@@ -26,6 +27,7 @@ export default function AddExpense() {
       items: [defaultItem],
     },
   });
+  const { t } = useTranslation();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -33,7 +35,6 @@ export default function AddExpense() {
   });
 
   const onSubmit = async (data: any) => {
-
     const cleanedItems = data.items.map((item: any) => ({
       ...item,
       category: item.category?.value || "",
@@ -46,7 +47,7 @@ export default function AddExpense() {
       totalAmount: grandTotal,
       items: cleanedItems,
     };
-    
+
     try {
       const response = await axios.post(
         "http://localhost:3000/expenses",
@@ -66,7 +67,6 @@ export default function AddExpense() {
           items: [defaultItem],
         });
       }
-     
     } catch (err) {
       console.error(err);
       Swal.fire({
@@ -99,7 +99,9 @@ export default function AddExpense() {
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 my-4">
         <div>
-          <label className="block text-gray-700 font-semibold mb-2">Date</label>
+          <label className="block text-gray-700 font-semibold mb-2">
+            {t("expense.date")}
+          </label>
           <input
             type="date"
             {...register("date")}
@@ -108,7 +110,7 @@ export default function AddExpense() {
         </div>
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
-            Payment Method
+            {t("expense.paymentMethod")}
           </label>
           <select
             {...register("method")}
@@ -126,12 +128,14 @@ export default function AddExpense() {
           <thead className="bg-red-50 text-gray-700">
             <tr>
               <th className="px-3 py-2 text-center">#</th>
-              <th className="px-3 py-2">Category</th>
-              <th className="px-3 py-2">Remarks</th>
-              <th className="px-3 py-2 text-center">Unit Price</th>
-              <th className="px-3 py-2 text-center">Quantity</th>
-              <th className="px-3 py-2 text-center">Total</th>
-              <th className="px-3 py-2 text-center">Action</th>
+              <th className="px-3 py-2">{t("expense.category")}</th>
+              <th className="px-3 py-2">{t("expense.remarks")}</th>
+              <th className="px-3 py-2 text-center">
+                {t("expense.unitPrice")}
+              </th>
+              <th className="px-3 py-2 text-center">{t("expense.quantity")}</th>
+              <th className="px-3 py-2 text-center">{t("expense.total")}</th>
+              <th className="px-3 py-2 text-center">{t("expense.action")}</th>
             </tr>
           </thead>
           <tbody className="">
@@ -156,7 +160,7 @@ export default function AddExpense() {
                         <CreatableSelect
                           {...field}
                           options={categories}
-                          placeholder="Select or type"
+                          placeholder={t("expense.selectOrType")}
                           classNamePrefix="react-select"
                           isClearable
                         />
@@ -166,7 +170,7 @@ export default function AddExpense() {
                   <td className="px-3 py-2">
                     <input
                       {...register(`items.${index}.remarks`)}
-                      placeholder="Optional note"
+                      placeholder={t("expense.optionalNote")}
                       className="w-full border rounded-md p-2 ring-1 ring-blue-500 focus:ring-2 outline-none "
                     />
                   </td>
@@ -214,7 +218,7 @@ export default function AddExpense() {
           onClick={() => append(defaultItem)}
           className="mt-3 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition font-medium"
         >
-          <PlusCircle className="w-5 h-5" /> Add Item
+          <PlusCircle className="w-5 h-5" /> {t("expense.addItem")}
         </button>
 
         <div className="text-xl font-semibold">
@@ -226,7 +230,7 @@ export default function AddExpense() {
         type="submit"
         className="w-full mt-4 btn-primary text-white font-bold py-3 rounded-2xl shadow-lg transition-all"
       >
-        Submit Expense
+        {t("expense.submitExpense")}
       </button>
     </motion.form>
   );

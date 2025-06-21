@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, CheckCircle, ChevronDown, Clock, ShoppingBag } from "lucide-react";
 import { TbCurrencyTaka } from "react-icons/tb";
 import { Purchase } from "../../types";
+import { useTranslation } from "react-i18next";
+
 
 
 interface PurchaseCardProps {
@@ -21,6 +23,8 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
 }) => {
   const progress = (purchase.paid / purchase.total) * 100;
 
+  const { t } = useTranslation();
+
   return (
     <motion.div
       variants={variants}
@@ -38,12 +42,12 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
           {purchase.due > 0 ? (
             <div className="flex items-center gap-1 px-3 py-1 bg-red-500/10 text-red-600 rounded-full text-xs font-bold">
               <AlertCircle className="w-3 h-3" />
-              DUE
+              {t("purchase.due")}
             </div>
           ) : (
             <div className="flex items-center gap-1 px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-bold">
               <CheckCircle className="w-3 h-3" />
-              PAID
+              {t("purchase.paid")}
             </div>
           )}
         </div>
@@ -86,10 +90,10 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
             />
           </div>
           <div className="flex justify-between mt-2 text-xs text-slate-500 font-medium">
-            <span>Paid: ৳{purchase.paid.toLocaleString()}</span>
+            <span>{t("purchase.paid")}: ৳{purchase.paid.toLocaleString()}</span>
             {purchase.due > 0 && (
               <span className="text-red-500 font-bold">
-                Due: ৳{purchase.due.toLocaleString()}
+                {t("purchase.due")}: ৳{purchase.due.toLocaleString()}
               </span>
             )}
           </div>
@@ -118,7 +122,7 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
               {/* Items List */}
               <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-indigo-500" />
-                Items ({purchase.items.length})
+                {t("purchase.items")} ({purchase.items.length})
               </h4>
               <div className="space-y-2 mb-4 max-h-48 overflow-y-auto pr-2">
                 {purchase.items.map((item, index) => (

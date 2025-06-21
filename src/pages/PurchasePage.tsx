@@ -2,14 +2,15 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PurchaseForm from "../components/purchase/PurchaseForm";
 import PurchaseList from "../components/purchase/PurchaseList";
-// import PurchaseList from "../components/purchase/PurchaseList"; // এখানে পরে যুক্ত করতে পারো
+import { useTranslation } from "react-i18next";
 
 export default function PurchasePage() {
   const [activeTab, setActiveTab] = useState<"form" | "list">("form");
+  const { t } = useTranslation();
 
   const tabs = [
-    { key: "form", label: "Purchase" },
-    { key: "list", label: "Purchase List" },
+    { key: "form", label: t("purchase.addPurchase") },
+    { key: "list", label: t("purchase.purchaseList") },
   ];
 
   return (

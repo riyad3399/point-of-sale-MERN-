@@ -30,10 +30,10 @@ import ExpensePage from "./pages/ExpensePage";
 import PurchasePage from "./pages/PurchasePage";
 import SupplierPage from "./pages/SupplierPage";
 import AlertItemsPage from "./pages/AlertItemsPage";
-import Profile from "./components/Profile";
 
 // Auth Guard
 import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
   return (
@@ -41,8 +41,22 @@ function App() {
       <AnimatePresence mode="wait">
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
 
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
@@ -69,7 +83,6 @@ function App() {
               <Route path="purchase" element={<PurchasePage />} />
               <Route path="supplier" element={<SupplierPage />} />
               <Route path="alertItems" element={<AlertItemsPage />} />
-              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
 

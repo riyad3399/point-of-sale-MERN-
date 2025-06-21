@@ -1,15 +1,17 @@
 import i18n from "i18next";
-import LanguageDetector from "i18next-browser-languagedetector"
+import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-import enTranslation from "./locales/en/translation.json"
-import bnTranslation from "./locales/bn/translation.json"
+import enTranslation from "./locales/en/translation.json";
+import bnTranslation from "./locales/bn/translation.json";
+
+const savedLanguage = localStorage.getItem("language");
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     debug: true,
-    lng: "en",
+    lng: savedLanguage || "en",
     resources: {
       en: {
         translation: enTranslation,
@@ -24,4 +26,4 @@ i18n
     },
   });
 
-export default i18n
+export default i18n;

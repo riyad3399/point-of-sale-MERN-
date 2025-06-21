@@ -23,8 +23,10 @@ import UpdateExpenseModal from "./UpdateExpenseModal";
 import { deleteExpense } from "../../utils/api";
 import Swal from "sweetalert2";
 import { Expense, Item } from "../../types";
+import { useTranslation } from "react-i18next";
 
-// Types
+
+
 
 // Helper functions
 const calculateExpenseTotal = (items: Item[]): number => {
@@ -65,6 +67,8 @@ export default function ExpenseList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const { t } = useTranslation();
 
   // Fetch expenses
   const fetchAllExpenses = async () => {
@@ -168,13 +172,13 @@ export default function ExpenseList() {
         {/* Header with actions */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <Wallet className="text-blue-600 dark:text-blue-400" />
-            Expense Tracker
+            <Wallet className="text-blue-600 dark:text-blue-400 h-8 w-8" />
+            {t("expense.title")}
           </h1>
           <div>
             <button className="flex items-center gap-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors shadow-sm hover:shadow-md">
               <BarChart2 size={18} />
-              <Link to="/report"> Reports</Link>
+              <Link to="/report"> {t("expense.reports")}</Link>
             </button>
           </div>
         </div>
@@ -193,7 +197,7 @@ export default function ExpenseList() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Total Entries
+                  {t("expense.totalEntries")}
                 </p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white">
                   {stats.totalEntries}
@@ -212,7 +216,7 @@ export default function ExpenseList() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Total Amount
+                  {t("expense.totalAmount")}
                 </p>
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {formatCurrency(stats.totalAmount)}
@@ -231,7 +235,7 @@ export default function ExpenseList() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Payment Methods
+                  {t("expense.paymentMethods")}
                 </p>
                 <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                   {stats.uniqueMethods}
@@ -250,7 +254,7 @@ export default function ExpenseList() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Categories
+                  {t("expense.categories")}
                 </p>
                 <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
                   {stats.categories}
@@ -270,7 +274,7 @@ export default function ExpenseList() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search expenses by category, remarks, or amount..."
+                placeholder={t("expense.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -315,7 +319,7 @@ export default function ExpenseList() {
                 className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-xl transition-colors"
               >
                 <XCircle className="w-4 h-4" />
-                Clear
+                {t("expense.clear")}
               </button>
             </div>
           </div>
@@ -349,7 +353,7 @@ export default function ExpenseList() {
                           {formatDate(expense.date)}
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {expense.items.length} items
+                          {expense.items.length} {t("expense.items")}
                         </p>
                       </div>
                     </div>
@@ -385,7 +389,7 @@ export default function ExpenseList() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Total Amount
+                          {t("expense.totalAmount")}
                         </p>
                         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                           {formatCurrency(calculateExpenseTotal(expense.items))}
@@ -393,10 +397,8 @@ export default function ExpenseList() {
                       </div>
                     </div>
                     <button className="hidden text-sm text-blue-600 dark:text-blue-400 hover:underline  items-center gap-1">
-                      <FileText
-                        className="w-4 h-4"
-                       />
-                      View Details
+                      <FileText className="w-4 h-4" />
+                      {t("expense.viewDetails")}
                     </button>
                   </div>
 
@@ -422,7 +424,7 @@ export default function ExpenseList() {
                         <div className="flex justify-between sm:justify-end gap-4">
                           <div className="text-right">
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Unit Price
+                              {t("expense.unitPrice")}
                             </p>
                             <p className="font-medium text-gray-800 dark:text-gray-200">
                               {formatCurrency(item.unitPrice)}
@@ -430,7 +432,7 @@ export default function ExpenseList() {
                           </div>
                           <div className="text-center">
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Qty
+                              {t("expense.quantity")}
                             </p>
                             <p className="font-medium text-gray-800 dark:text-gray-200">
                               {item.quantity}
@@ -438,7 +440,7 @@ export default function ExpenseList() {
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Total
+                              {t("expense.total")}
                             </p>
                             <p className="font-medium text-red-600 dark:text-red-400">
                               {formatCurrency(item.unitPrice * item.quantity)}

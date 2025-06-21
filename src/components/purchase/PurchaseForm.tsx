@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Trash2, PlusCircle, X } from "lucide-react";
 import SupplierAddForm from "../supplier/SupplierAddForm";
 import FloatingInput from "./FloatingInput";
+import { useTranslation } from "react-i18next";
+
 
 interface Supplier {
   _id: string;
@@ -68,8 +70,7 @@ const PurchaseForm = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
-
-  console.log(products);
+  const { t } = useTranslation();
 
   useEffect(() => {
     axios
@@ -131,14 +132,14 @@ const PurchaseForm = () => {
         className="max-w-7xl mx-auto bg-white"
       >
         <h2 className="text-3xl font-bold text-blue-700 flex items-center gap-2 mb-6">
-          <ShoppingBag className="w-7 h-7" /> Purchase Entry
+          <ShoppingBag className="w-7 h-7" /> {t("purchase.title")}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Supplier Select */}
           <div>
             <label className="block font-semibold text-gray-700 mb-2">
-              Supplier
+              {t("purchase.supplierLabel")}
             </label>
             <Controller
               control={control}
@@ -166,7 +167,7 @@ const PurchaseForm = () => {
                     ...suppliers.map((s) => ({ label: s.name, value: s._id })),
                     { label: "➕ New Supplier", value: "add_new" },
                   ]}
-                  placeholder="Select or Add Supplier"
+                  placeholder={t("purchase.selectSupplier")}
                   className="lg:w-[50%] w-full"
                 />
               )}
@@ -175,7 +176,9 @@ const PurchaseForm = () => {
 
           {/* Product Items */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Product Items</h3>
+            <h3 className="text-lg font-semibold mb-3">
+              {t("purchase.productItems")}
+            </h3>
             <div className="space-y-3">
               <AnimatePresence>
                 {fields.map((field, index) => (
@@ -228,7 +231,7 @@ const PurchaseForm = () => {
                               label: p.productName,
                               value: p._id,
                             }))}
-                            placeholder="Select product"
+                            placeholder={t("purchase.selectProduct")}
                             className="col-span-2"
                           />
                         );
@@ -237,7 +240,7 @@ const PurchaseForm = () => {
 
                     <FloatingInput
                       id={`qty-${index}`}
-                      label="Qty"
+                      label={t("purchase.quantity")}
                       type="number"
                       registerProps={register(`items.${index}.quantity`, {
                         valueAsNumber: true,
@@ -246,7 +249,7 @@ const PurchaseForm = () => {
 
                     <FloatingInput
                       id={`purchase-${index}`}
-                      label="Purchase Price"
+                      label={t("purchase.purchasePrice")}
                       type="number"
                       registerProps={register(`items.${index}.purchasePrice`, {
                         valueAsNumber: true,
@@ -255,7 +258,7 @@ const PurchaseForm = () => {
 
                     <FloatingInput
                       id={`retail-${index}`}
-                      label="Retail Price"
+                      label={t("purchase.retailPrice")}
                       type="number"
                       registerProps={register(`items.${index}.retailPrice`, {
                         valueAsNumber: true,
@@ -264,7 +267,7 @@ const PurchaseForm = () => {
 
                     <FloatingInput
                       id={`wholesale-${index}`}
-                      label="Wholesale Price"
+                      label={t("purchase.wholesalePrice")}
                       type="number"
                       registerProps={register(`items.${index}.wholesalePrice`, {
                         valueAsNumber: true,
@@ -274,7 +277,7 @@ const PurchaseForm = () => {
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      title="Remove"
+                      title={t("purchase.deleteProduct")}
                     >
                       <Trash2 className="text-red-500" />
                     </button>
@@ -289,23 +292,23 @@ const PurchaseForm = () => {
               }
               className="mt-3 text-blue-600 flex items-center gap-2"
             >
-              <PlusCircle className="w-5 h-5" /> Add Product
+              <PlusCircle className="w-5 h-5" /> {t("purchase.addProduct")}
             </button>
           </div>
 
           {/* Payment Section */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label>Paid</label>
+              <label>{t("purchase.paid")}</label>
               <input
                 type="number"
                 {...register("paid", { valueAsNumber: true })}
-                placeholder="Paid"
+                placeholder={t("purchase.paid")}
                 className="border mt-1 w-full outline-none input"
               />
             </div>
             <div>
-              <label>Payment Method</label>
+              <label>{t("purchase.paymentMethod")}</label>
               <select
                 {...register("paymentMethod")}
                 className="border mt-1 w-full outline-none input"
@@ -319,12 +322,13 @@ const PurchaseForm = () => {
 
           {/* Total and Submit */}
           <div className="text-right mt-6 text-lg font-semibold">
-            Total: <span className="text-green-600">৳ {total.toFixed(2)}</span>
+            {t("purchase.total")}:{" "}
+            <span className="text-green-600">৳ {total.toFixed(2)}</span>
           </div>
 
           <div className="text-right">
             <button type="submit" className=" text-white btn-primary">
-              Purchase
+              {t("purchase.submitButton")}
             </button>
           </div>
         </form>
