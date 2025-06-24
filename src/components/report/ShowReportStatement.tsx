@@ -54,6 +54,7 @@ export default function ShowReportStatement() {
     fetchSettingInfo();
   }, []);
 
+
   const handlePrint = () => {
     if (!printRef.current) return;
 
@@ -139,6 +140,7 @@ export default function ShowReportStatement() {
     setShowModal(true);
   };
 
+
   const totalAmount = reportData.reduce(
     (sum, item) => sum + item.totalAmount,
     0
@@ -156,7 +158,7 @@ export default function ShowReportStatement() {
     <div className="md:p-4 max-w-5xl mx-auto">
       {/* Print Button */}
       <div className="flex justify-between mb-6 print:hidden">
-        <Link to="/reportStatement">
+        <Link to="/report">
           <button className="flex mb-4 items-center gap-2 btn-outline">
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-medium">Back</span>

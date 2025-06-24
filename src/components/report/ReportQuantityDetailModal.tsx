@@ -10,6 +10,7 @@ interface CustomerDetail {
   createdAt: string;
   paymentMethod: string;
   saleSystem: string;
+  purchasePrice:number
 }
 
 interface QuantityDetailModalProps {
@@ -25,6 +26,9 @@ export default function ReportQuantityDetailModal({
   itemName,
   customers,
 }: QuantityDetailModalProps) {
+
+console.log(customers,"modal data");
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -70,6 +74,7 @@ export default function ReportQuantityDetailModal({
                     <th className="border px-3 py-2 text-left">Invoice ID</th>
                     <th className="border px-3 py-2 text-left">Customer</th>
                     <th className="border px-3 py-2 text-left">Phone</th>
+                    <th className="border px-3 py-2 text-left">Purchase Price</th>
                     <th className="border px-3 py-2 text-center">Quantity</th>
                     <th className="border px-3 py-2 text-right">Amount (৳)</th>
                     <th className="border px-3 py-2 text-center">Date</th>
@@ -94,6 +99,7 @@ export default function ReportQuantityDetailModal({
                           cust.name.slice(1).toLowerCase()}
                       </td>
                       <td className="border px-3 py-2">{cust.phone}</td>
+                      <td className="border px-3 py-2 text-center">{cust.purchasePrice}</td>
                       <td className="border px-3 py-2 text-center">
                         {cust.quantity}
                       </td>

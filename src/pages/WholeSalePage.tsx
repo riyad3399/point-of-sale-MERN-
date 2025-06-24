@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus,
-  Minus,
-  Trash,
-  ShoppingCart,
-  icons,
-  Notebook,
-} from "lucide-react";
+import { Plus, Minus, Trash, ShoppingCart, Notebook } from "lucide-react";
 import SearchableDropdown from "../components/SearchableDropdown";
 import axios from "axios";
 import { OptionType, Product, QuotationType } from "../types";
@@ -19,6 +12,8 @@ import { useLocation } from "react-router-dom";
 import { clearCart } from "../utils/clearCart";
 import { handleInsertAndUpdateQuotation } from "../utils/handleInsertAndUpdateQuotation";
 import { addToCart } from "../utils/cartUtils";
+import { handleGetProduct } from "../utils/api";
+
 
 export default function WholeSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -113,7 +108,21 @@ export default function WholeSalePage() {
 
   const total = cart.reduce((acc, item) => {
     const product = allProduct.find((p) => p._id === item.id);
-    return acc + item.quantity * (product?.wholesalePrice || 0);
+    if (!product || !product.fifoStock?.length) return acc;
+
+    let qtyLeft = item.quantity;
+    let subTotal = 0;
+
+    for (const stock of product.fifoStock) {
+      if (qtyLeft <= 0) break;
+
+      const usedQty = Math.min(stock.remainingQuantity, qtyLeft);
+      qtyLeft -= usedQty;
+
+      subTotal += usedQty * stock.wholesalePrice;
+    }
+
+    return acc + subTotal;
   }, 0);
 
   const categories = ["All", ...new Set(allProduct.map((p) => p.category))];
@@ -126,6 +135,7 @@ export default function WholeSalePage() {
       .includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
 
   const handleReturnSale = (
     product: Product,
@@ -166,26 +176,36 @@ export default function WholeSalePage() {
   const productsInCart = cart
     .map((item) => {
       const fullProduct = allProduct.find((p) => p._id === item.id);
-      if (!fullProduct) return null;
-      return {
-        productId: fullProduct._id,
-        name: fullProduct.productName,
-        quantity: item.quantity,
-        price: fullProduct.wholesalePrice,
-        purchasePrice: fullProduct.purchasePrice,
-        status: selectValues[fullProduct._id] || "sale",
-      };
+      if (!fullProduct || !fullProduct.fifoStock?.length) return null;
+
+      let qtyLeft = item.quantity;
+      const stockUsed = [];
+
+      for (const stock of fullProduct.fifoStock) {
+        if (qtyLeft <= 0) break;
+
+        const usedQty = Math.min(stock.remainingQuantity, qtyLeft);
+        qtyLeft -= usedQty;
+
+        stockUsed.push({
+          productId: fullProduct._id,
+          name: fullProduct.productName,
+          quantity: usedQty,
+          price: stock.wholesalePrice,
+          purchasePrice: stock.purchasePrice,
+          status: selectValues[fullProduct._id] || "sale",
+        });
+      }
+
+      return stockUsed;
     })
+    .flat()
     .filter(Boolean);
 
   const totalAmount = total + shippingCost - selectReturnSale;
 
   useEffect(() => {
-    const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/product");
-      const data = await res.data;
-      setAllProduct(data);
-    };
+    handleGetProduct(setAllProduct);
 
     axios.get("http://localhost:3000/customer").then((res) => {
       const options = res.data.map((customer: any) => ({
@@ -206,8 +226,6 @@ export default function WholeSalePage() {
       ];
       setCustomers(optionsWithWalkingCustomer);
     });
-
-    handleGetProduct();
   }, []);
 
   const quotationProduct = [...productsInCart];
@@ -282,53 +300,60 @@ export default function WholeSalePage() {
                   </p>
                 </motion.div>
               ) : (
-                filteredProducts.map((product) => (
-                  <motion.div
-                    key={product._id}
-                    className={` bg-white rounded-xl shadow-md w-full transform transition-all duration-300 `}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    onClick={() =>
-                      product.quantity > 0 && handleAddToCart(product._id)
-                    }
-                  >
-                    {/* ✅ Stock Out Badge */}
+                filteredProducts.map((product) => {
+                  // FIFO stock থেকে মোট পরিমাণ স্টক বের করো
+                  const totalQuantity =
+                    product.fifoStock?.reduce(
+                      (sum, stock) => sum + stock.remainingQuantity,
+                      0
+                    ) || 0;
 
-                    <div className="relative overflow-hidden inline-block w-full h-28">
-                      <img
-                        src={`http://localhost:3000/product/image/${product._id}`}
-                        alt={product.productName}
-                        className={`hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md`}
-                      />
-                      {product.quantity === 0 && (
-                        <div
-                          className={`absolute top-0 left-0 bg-primary-900 text-sm px-2 py-1 rounded z-0 font-bold w-full h-full flex items-center justify-center ${
-                            product.quantity === 0 && "opacity-80"
-                          }`}
-                        >
-                          <span className="text-white">Stock Out</span>
-                        </div>
-                      )}
-                    </div>
+                  // FIFO অনুযায়ী প্রোডাক্টের বর্তমান বিক্রয় মূল্য
+                  const currentwholesalePrice =
+                    product.fifoStock?.[0]?.wholesalePrice ?? product.wholesalePrice;
 
-                    <div className="p-2 space-y-1">
-                      <h2 className="font-semibold text-sm text-gray-800">
-                        {product.productName}
-                      </h2>
-                      <p className="text-sm font-semibold text-gray-800">
-                        Stock:{" "}
-                        <span className="text-blue-600">
-                          {product.quantity}
-                        </span>
-                      </p>
-                      <strong className="text-blue-600 text-sm flex items-center gap-1">
-                        <TbCurrencyTaka size={20} />
-                        {product.wholesalePrice.toFixed(2)}
-                      </strong>
-                    </div>
-                  </motion.div>
-                ))
+                  return (
+                    <motion.div
+                      key={product._id}
+                      className="bg-white rounded-xl shadow-md w-full transform transition-all duration-300"
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      onClick={() =>
+                        totalQuantity > 0 && handleAddToCart(product._id)
+                      }
+                    >
+                      {/* ✅ Stock Image and Stock Out Badge */}
+                      <div className="relative overflow-hidden inline-block w-full h-28">
+                        <img
+                          src={`http://localhost:3000/product/image/${product._id}`}
+                          alt={product.productName}
+                          className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md"
+                        />
+                        {totalQuantity === 0 && (
+                          <div className="absolute top-0 left-0 bg-primary-900 text-sm px-2 py-1 rounded z-0 font-bold w-full h-full flex items-center justify-center opacity-80">
+                            <span className="text-white">Stock Out</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* ✅ Product Info */}
+                      <div className="p-2 space-y-1">
+                        <h2 className="font-semibold text-sm text-gray-800">
+                          {product.productName}
+                        </h2>
+                        <p className="text-sm font-semibold text-gray-800">
+                          Stock:{" "}
+                          <span className="text-blue-600">{totalQuantity}</span>
+                        </p>
+                        <strong className="text-blue-600 text-sm flex items-center gap-1">
+                          <TbCurrencyTaka size={20} />
+                          {currentwholesalePrice.toFixed(2)}
+                        </strong>
+                      </div>
+                    </motion.div>
+                  );
+                })
               )}
             </div>
           </div>
@@ -359,6 +384,15 @@ export default function WholeSalePage() {
               {cart.map(({ id, quantity }) => {
                 const product = allProduct.find((p) => p._id === id);
                 if (!product) return null;
+
+                const fifoEntry = product.fifoStock?.find(
+                  (stock) => stock.remainingQuantity > 0
+                );
+
+                const wholesalePrice =
+                  fifoEntry?.wholesalePrice ?? product.wholesalePrice;
+                const totalPrice = wholesalePrice * quantity;
+
                 return (
                   <motion.div
                     key={id}
@@ -390,7 +424,7 @@ export default function WholeSalePage() {
                           {product.productName}
                         </p>
                         <select
-                          className={`text-xs absolute right-12 top-6  px-1 py-0.5 rounded-md ring-1 ring-blue-400 focus:outline-none`}
+                          className="text-xs absolute right-12 top-6 px-1 py-0.5 rounded-md ring-1 ring-blue-400 focus:outline-none"
                           onChange={(e) => handleReturnSale(product, e)}
                         >
                           <option value="sale">Sale</option>
@@ -399,11 +433,11 @@ export default function WholeSalePage() {
                       </div>
                       <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <TbCurrencyTaka size={17} />
-                        {product.wholesalePrice.toFixed(2)} each
+                        {wholesalePrice.toFixed(2)} each
                       </p>
                       <p className="font-semibold text-sm mt-1 flex items-center gap-1">
                         <TbCurrencyTaka size={18} />
-                        {(product.wholesalePrice * quantity).toFixed(2)}
+                        {totalPrice.toFixed(2)}
                       </p>
                     </div>
 

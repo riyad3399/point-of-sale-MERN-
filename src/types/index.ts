@@ -20,6 +20,11 @@ export interface Product {
   color?: string;
   createdAt: string;
   updatedAt: string;
+  fifoStock: {
+    purchasePrice: number;
+    remainingQuantity: number;
+    purchaseDate: string;
+  }[];
 }
 
 // Cart types
