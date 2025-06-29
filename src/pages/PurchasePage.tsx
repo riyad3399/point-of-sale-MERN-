@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import PurchaseForm from "../components/purchase/PurchaseForm";
+import PurchaseForm from "../components/purchase/AddPurchase";
 import PurchaseList from "../components/purchase/PurchaseList";
 import { useTranslation } from "react-i18next";
 

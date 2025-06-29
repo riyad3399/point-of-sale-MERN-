@@ -436,7 +436,7 @@ export default function RetailSalePage() {
                       </p>
                       <p className="font-semibold text-sm mt-1 flex items-center gap-1">
                         <TbCurrencyTaka size={18} />
-                        {totalPrice.toFixed(2)}
+                        {total.toFixed(2)}
                       </p>
                     </div>
 

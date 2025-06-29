@@ -1,10 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, CheckCircle, ChevronDown, Clock, ShoppingBag } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  ChevronDown,
+  Clock,
+  ShoppingBag,
+  Trash2,
+  CreditCard,
+} from "lucide-react";
 import { TbCurrencyTaka } from "react-icons/tb";
 import { Purchase } from "../../types";
 import { useTranslation } from "react-i18next";
-
-
+import { useNavigate } from "react-router-dom";
+import { handleGetSinglePurchase } from "../../utils/api";
 
 interface PurchaseCardProps {
   purchase: Purchase;
@@ -22,8 +30,18 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
   variants,
 }) => {
   const progress = (purchase.paid / purchase.total) * 100;
-
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handlePayment = (id: string) => {
+    handleGetSinglePurchase(id, navigate);
+    
+  };
+
+  const handleDelete = () => {
+    console.log("Delete Purchase:", purchase._id);
+    // delete confirmation / logic here
+  };
 
   return (
     <motion.div
@@ -33,79 +51,83 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
       className="bg-white rounded-2xl shadow-xl transition-all duration-300 overflow-hidden border border-slate-100"
     >
       {/* Card Header */}
-      <div
-        className="p-6 cursor-pointer relative"
-        onClick={() => toggleExpand(purchase._id)}
-      >
-        {/* Status Badge */}
-        <div className="absolute top-4 right-4">
-          {purchase.due > 0 ? (
-            <div className="flex items-center gap-1 px-3 py-1 bg-red-500/10 text-red-600 rounded-full text-xs font-bold">
-              <AlertCircle className="w-3 h-3" />
-              {t("purchase.due")}
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-bold">
-              <CheckCircle className="w-3 h-3" />
-              {t("purchase.paid")}
-            </div>
-          )}
-        </div>
-
-        {/* Supplier & Date */}
-        <h3 className="text-xl font-bold text-slate-800 mb-1 pr-16">
-          {purchase.supplier.name}
-        </h3>
-        <div className="flex items-center gap-3 text-sm text-slate-500 mb-4">
-          <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4" />
-            {new Date(purchase.date).toLocaleDateString("en-GB")}
-          </div>
-          <div className="flex items-center gap-1">
-            {getPaymentIcon(purchase.paymentMethod)}
-            {purchase.paymentMethod}
-          </div>
-        </div>
-
-        {/* Amount Display */}
-        <div className="mb-4">
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-3xl font-bold text-slate-800 flex items-center">
-              <TbCurrencyTaka className="inline mr-1" />
-              {purchase.total.toLocaleString()}
-            </span>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="relative h-2 bg-slate-200 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className={`absolute h-full rounded-full ${
-                progress === 100
-                  ? "bg-gradient-to-r from-green-400 to-green-600"
-                  : "bg-gradient-to-r from-indigo-400 to-indigo-600"
-              }`}
-            />
-          </div>
-          <div className="flex justify-between mt-2 text-xs text-slate-500 font-medium">
-            <span>{t("purchase.paid")}: ৳{purchase.paid.toLocaleString()}</span>
-            {purchase.due > 0 && (
-              <span className="text-red-500 font-bold">
-                {t("purchase.due")}: ৳{purchase.due.toLocaleString()}
-              </span>
+      <div>
+        <div
+          className="p-6 relative"
+          onClick={() => toggleExpand(purchase._id)}
+        >
+          {/* Status Badge */}
+          <div className="absolute top-4 right-4">
+            {purchase.due > 0 ? (
+              <div className="flex items-center gap-1 px-3 py-1 bg-red-500/10 text-red-600 rounded-full text-xs font-bold">
+                <AlertCircle className="w-3 h-3" />
+                {t("purchase.due")}
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-bold">
+                <CheckCircle className="w-3 h-3" />
+                {t("purchase.paid")}
+              </div>
             )}
           </div>
-        </div>
 
-        {/* Expand Button */}
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          className="absolute bottom-1 right-4 flex items-center justify-center w-8 h-8 bg-slate-100 rounded-full"
-        >
-          <ChevronDown className="w-5 h-5 text-slate-600" />
-        </motion.div>
+          {/* Supplier & Date */}
+          <h3 className="text-xl font-bold text-slate-800 mb-1 pr-16">
+            {purchase.supplier.name}
+          </h3>
+          <div className="flex items-center gap-3 text-sm text-slate-500 mb-4">
+            <div className="flex items-center gap-1">
+              <Clock className="w-4 h-4" />
+              {new Date(purchase.date).toLocaleDateString("en-GB")}
+            </div>
+            <div className="flex items-center gap-1">
+              {getPaymentIcon(purchase.paymentMethod)}
+              {purchase.paymentMethod}
+            </div>
+          </div>
+
+          {/* Amount Display */}
+          <div className="mb-4">
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-3xl font-bold text-slate-800 flex items-center">
+                <TbCurrencyTaka className="inline mr-1" />
+                {purchase.total.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="relative h-2 bg-slate-200 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className={`absolute h-full rounded-full ${
+                  progress === 100
+                    ? "bg-gradient-to-r from-green-400 to-green-600"
+                    : "bg-gradient-to-r from-indigo-400 to-indigo-600"
+                }`}
+              />
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-slate-500 font-medium">
+              <span>
+                {t("purchase.paid")}: ৳{purchase.paid.toLocaleString()}
+              </span>
+              {purchase.due > 0 && (
+                <span className="text-red-500 font-bold">
+                  {t("purchase.due")}: ৳{purchase.due.toLocaleString()}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Expand Button */}
+          <motion.div
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            className="absolute bottom-1 right-4 flex items-center justify-center w-8 h-8 bg-slate-100 rounded-full"
+          >
+            <ChevronDown className="w-5 h-5 text-slate-600" />
+          </motion.div>
+        </div>
       </div>
 
       {/* Expandable Details */}
@@ -124,6 +146,7 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
                 <ShoppingBag className="w-4 h-4 text-indigo-500" />
                 {t("purchase.items")} ({purchase.items.length})
               </h4>
+
               <div className="space-y-2 mb-4 max-h-48 overflow-y-auto pr-2">
                 {purchase.items.map((item, index) => (
                   <div
@@ -168,6 +191,22 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
                     </span>
                   </div>
                 </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => handlePayment(purchase._id)}
+                  className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-all"
+                >
+                  <CreditCard className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </motion.div>

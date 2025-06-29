@@ -14,7 +14,6 @@ import { handleInsertAndUpdateQuotation } from "../utils/handleInsertAndUpdateQu
 import { addToCart } from "../utils/cartUtils";
 import { handleGetProduct } from "../utils/api";
 
-
 export default function WholeSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
   const [search, setSearch] = useState("");
@@ -130,12 +129,11 @@ export default function WholeSalePage() {
   const filteredProducts = allProduct.filter((product) => {
     const matchesCategory =
       selectedCategory === "All" || product.category === selectedCategory;
-    const matchesSearch = product.productName
+    const matchesSearch = (product.productName || "")
       .toLowerCase()
       .includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-
 
   const handleReturnSale = (
     product: Product,
@@ -310,7 +308,8 @@ export default function WholeSalePage() {
 
                   // FIFO অনুযায়ী প্রোডাক্টের বর্তমান বিক্রয় মূল্য
                   const currentwholesalePrice =
-                    product.fifoStock?.[0]?.wholesalePrice ?? product.wholesalePrice;
+                    product.fifoStock?.[0]?.wholesalePrice ??
+                    product.wholesalePrice;
 
                   return (
                     <motion.div
@@ -437,7 +436,7 @@ export default function WholeSalePage() {
                       </p>
                       <p className="font-semibold text-sm mt-1 flex items-center gap-1">
                         <TbCurrencyTaka size={18} />
-                        {totalPrice.toFixed(2)}
+                        {total.toFixed(2)}
                       </p>
                     </div>
 

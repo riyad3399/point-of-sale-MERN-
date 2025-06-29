@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Supplier, UserInfo } from "../types";
-import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 
 const URI = `http://localhost:3000`;
@@ -103,7 +102,7 @@ export const handleProfile = async (token, navigate) => {
 };
 
 // get User
-export const getHandleProfile = async (token:string, setUser) => {
+export const getHandleProfile = async (token: string, setUser) => {
   await axios
     .get(`${URI}/user/profile`, {
       headers: { Authorization: token },
@@ -119,9 +118,63 @@ export const handleGetProduct = async (setAllProduct) => {
   try {
     const res = await axios.get(`${URI}/product`);
     setAllProduct(res.data);
-    console.log(res.data);
   } catch (error) {
-    setAllProduct([]); 
+    setAllProduct([]);
   }
 };
 
+//-----------------------PURCHASE--------------------//
+
+// POST
+export const handleInsertPurchase = async (reset, transformed) => {
+  try {
+    const res = await axios.post(`${URI}/purchases/add`, transformed);
+    toast.success(res.data.message || "Purchase Successfully");
+    reset();
+  } catch (err) {
+    toast.error(err.message || "Something went wrong");
+  }
+};
+
+// PUT
+export const handleUpdatePurchasePayment = async (
+  amount: number,
+  method: string,
+  note: string
+) => {
+  try {
+    const res = await axios.put(
+      `http://localhost:3000/purchases/${purchase._id}/pay`,
+      {
+        amount: amount,
+        method: method,
+        note: note,
+      }
+    );
+    toast.success(res.data.message || "payment successfull");
+  } catch (err) {
+    toast.error(err.message || "Something went wrong");
+  }
+};
+
+// GET
+export const handleGetSinglePurchase = async (id: string, navigate) => {
+  try {
+    const res = await axios.get(`${URI}/purchases/${id}`);
+    navigate("/purchasePayment", { state: res.data });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// -------------------------SUPPLIER-----------------------//
+
+// GET - All supplier
+export const handleGetSupplier = async (setSuppliers) => {
+  try {
+    const res = await axios.get(`${URI}/suppliers`);
+    setSuppliers(res.data.data);
+  } catch (error) {
+    setSuppliers([]);
+  }
+};

@@ -10,7 +10,7 @@ interface CustomerDetail {
   createdAt: string;
   paymentMethod: string;
   saleSystem: string;
-  purchasePrice:number
+  purchasePrice: number;
 }
 
 interface QuantityDetailModalProps {
@@ -26,8 +26,7 @@ export default function ReportQuantityDetailModal({
   itemName,
   customers,
 }: QuantityDetailModalProps) {
-
-console.log(customers,"modal data");
+  console.log(customers, "modal data");
 
   return (
     <AnimatePresence>
@@ -70,15 +69,31 @@ console.log(customers,"modal data");
               <table className="min-w-full text-sm border border-gray-200 rounded-xl shadow-sm">
                 <thead className="bg-indigo-50 text-gray-700 font-medium">
                   <tr>
-                    <th className="border px-3 py-2">#</th>
-                    <th className="border px-3 py-2 text-left">Invoice ID</th>
-                    <th className="border px-3 py-2 text-left">Customer</th>
-                    <th className="border px-3 py-2 text-left">Phone</th>
-                    <th className="border px-3 py-2 text-left">Purchase Price</th>
-                    <th className="border px-3 py-2 text-center">Quantity</th>
-                    <th className="border px-3 py-2 text-right">Amount (৳)</th>
-                    <th className="border px-3 py-2 text-center">Date</th>
-                    <th className="border px-3 py-2 text-center">Readmark</th>
+                    <th className="border px-3 py-2 text-sm">#</th>
+                    <th className="border px-3 py-2 text-left text-sm">
+                      Invoice ID
+                    </th>
+                    <th className="border px-3 py-2 text-left text-sm">
+                      Customer
+                    </th>
+                    <th className="border px-3 py-2 text-left text-sm">
+                      Phone
+                    </th>
+                    <th className="border px-3 py-2 text-sm">
+                      Purchase Price
+                    </th>
+                    <th className="border px-3 py-2 text-center text-sm">
+                      Quantity
+                    </th>
+                    <th className="border px-3 py-2 text-right text-sm">
+                      Amount
+                    </th>
+                    <th className="border px-3 py-2 text-center text-sm">
+                      Date
+                    </th>
+                    <th className="border px-3 py-2 text-center text-sm">
+                      Readmark
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,7 +114,9 @@ console.log(customers,"modal data");
                           cust.name.slice(1).toLowerCase()}
                       </td>
                       <td className="border px-3 py-2">{cust.phone}</td>
-                      <td className="border px-3 py-2 text-center">{cust.purchasePrice}</td>
+                      <td className="border px-3 py-2 text-center">
+                        {cust.purchasePrice}
+                      </td>
                       <td className="border px-3 py-2 text-center">
                         {cust.quantity}
                       </td>

@@ -34,6 +34,7 @@ import AlertItemsPage from "./pages/AlertItemsPage";
 // Auth Guard
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
+import PurchasePaymentPage from "./components/purchase/PurchasePaymentPage";
 
 function App() {
   return (
@@ -83,6 +84,7 @@ function App() {
               <Route path="purchase" element={<PurchasePage />} />
               <Route path="supplier" element={<SupplierPage />} />
               <Route path="alertItems" element={<AlertItemsPage />} />
+              <Route path="purchasePayment" element={<PurchasePaymentPage />} />
             </Route>
           </Route>
 
