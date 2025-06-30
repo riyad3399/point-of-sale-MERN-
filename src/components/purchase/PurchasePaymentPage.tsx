@@ -25,6 +25,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Loading from "../Loading";
 import { handleUpdatePurchasePayment } from "../../utils/api";
+import PurchasePaymentHeader from "../helper/PurchasePaymentHeader";
 
 export default function PurchasePaymentPage() {
   const [loading, setLoading] = useState(false);
@@ -138,12 +139,14 @@ export default function PurchasePaymentPage() {
       const amount = Number(data.amount);
       const method = data.method;
       const note = data.note || "";
+      const id = purchase._id;
 
-      handleUpdatePurchasePayment(amount, method, note);
+      handleUpdatePurchasePayment(amount, method, note, id);
 
       // Clear draft
       localStorage.removeItem(`payment_draft_${purchase._id}`);
 
+      
       setPaymentSuccess(true);
       setTimeout(() => {
         if (showReceipt) {
@@ -218,48 +221,8 @@ export default function PurchasePaymentPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Header with navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white/80 backdrop-blur-lg border-b border-white/20 sticky top-0 z-10"
-      >
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/purchase")}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <TbArrowLeft className="w-5 h-5 text-slate-600" />
-              </button>
-              <div>
-                <h1 className="text-xl font-semibold text-slate-800">
-                  Payment Processing
-                </h1>
-                <p className="text-sm text-slate-600">
-                  Invoice #{purchase.invoiceNumber}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {savedDraft && (
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
-                >
-                  <TbDeviceFloppy className="w-4 h-4" />
-                  Draft Saved
-                </motion.div>
-              )}
-              <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                <TbShieldCheck className="w-4 h-4" />
-                Secure Payment
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      
+      <PurchasePaymentHeader purchase={purchase} savedDraft={savedDraft}/>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -536,7 +499,7 @@ export default function PurchasePaymentPage() {
                         <input
                           type="number"
                           step="0.01"
-                          className={`w-full pl-12 pr-4 py-4 border-2 rounded-xl text-xl font-semibold transition-all duration-200 ${
+                          className={`w-full pl-12 pr-4 input transition-all duration-200 ${
                             errors.amount
                               ? "border-red-300 focus:border-red-500 focus:ring-red-100"
                               : watchedAmount
@@ -712,7 +675,7 @@ export default function PurchasePaymentPage() {
                       <textarea
                         rows={3}
                         {...register("note")}
-                        className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 resize-none"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-primary-500 focus:ring-1 focus:ring-primary-600 transition-all duration-200 resize-none outline-none"
                         placeholder="Add any additional notes about this payment..."
                       />
                       <p className="text-xs text-slate-500 mt-1">
@@ -733,7 +696,7 @@ export default function PurchasePaymentPage() {
                         className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform ${
                           loading || !isValid
                             ? "bg-slate-300 cursor-not-allowed opacity-60"
-                            : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                            : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                         }`}
                       >
                         {loading ? (

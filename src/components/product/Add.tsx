@@ -6,7 +6,6 @@ import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
-
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0 },
@@ -29,6 +28,7 @@ const containerVariants = {
 const Add: React.FC = () => {
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
   const [allCategories, setAllCategories] = useState<never[]>([]);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const {
     register,
@@ -87,6 +87,15 @@ const Add: React.FC = () => {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
   useEffect(() => {
     generateNumber();
     axios
@@ -130,7 +139,7 @@ const Add: React.FC = () => {
                 required: "Product Name is required",
               })}
               placeholder={t("addProduct.productName.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
             {errors.productName && (
               <p className="text-red-500 text-xs mt-1">
@@ -148,7 +157,8 @@ const Add: React.FC = () => {
               {...register("productCode")}
               value={randomNumber}
               readOnly
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-600"
+              disabled
+              className="mt-1 w-full input text-gray-600"
             />
           </div>
         </motion.div>
@@ -161,7 +171,7 @@ const Add: React.FC = () => {
             </label>
             <select
               {...register("category", { required: "Category is required" })}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             >
               {allCategories.map((category) => (
                 <option value={category.categoryName}>
@@ -184,7 +194,7 @@ const Add: React.FC = () => {
               type="text"
               {...register("brand")}
               placeholder={t("addProduct.brand.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
         </motion.div>
@@ -201,7 +211,7 @@ const Add: React.FC = () => {
                 required: "Purchase Price is required",
               })}
               placeholder={t("addProduct.purchasePrice.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
 
@@ -215,7 +225,7 @@ const Add: React.FC = () => {
                 required: "Retail Price is required",
               })}
               placeholder={t("addProduct.retailPrice.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
         </motion.div>
@@ -231,7 +241,7 @@ const Add: React.FC = () => {
                 required: "Wholesale Price is required",
               })}
               placeholder={t("addProduct.wholesalePrice.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
 
@@ -243,7 +253,7 @@ const Add: React.FC = () => {
               type="number"
               {...register("quantity", { required: "Quantity is required" })}
               placeholder={t("addProduct.quantity.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
         </motion.div>
@@ -258,7 +268,7 @@ const Add: React.FC = () => {
               type="number"
               {...register("alertQuantity")}
               placeholder={t("addProduct.alertQuantity.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
 
@@ -266,10 +276,7 @@ const Add: React.FC = () => {
             <label className="text-sm font-medium text-gray-700">
               {t("addProduct.unit.label")}
             </label>
-            <select
-              {...register("unit")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
+            <select {...register("unit")} className="mt-1 w-full input">
               <option value="">{t("addProduct.unit.placeholder")}</option>
               <option value="pcs">Pcs</option>
               <option value="kg">Kg</option>
@@ -288,7 +295,7 @@ const Add: React.FC = () => {
               type="number"
               {...register("tax")}
               placeholder={t("addProduct.tax.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
 
@@ -296,10 +303,7 @@ const Add: React.FC = () => {
             <label className="text-sm font-medium text-gray-700">
               {t("addProduct.taxType.label")}
             </label>
-            <select
-              {...register("taxType")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
+            <select {...register("taxType")} className="mt-1 w-full input">
               <option value=""> {t("addProduct.taxType.placeholder")}</option>
               <option value="inclusive">
                 {t("addProduct.taxType.inclusive")}
@@ -320,7 +324,7 @@ const Add: React.FC = () => {
               type="text"
               {...register("size")}
               placeholder={t("addProduct.size.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
 
@@ -332,7 +336,7 @@ const Add: React.FC = () => {
               type="text"
               {...register("color")}
               placeholder={t("addProduct.color.placeholder")}
-              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-1 w-full input"
             />
           </div>
         </motion.div>
@@ -346,21 +350,30 @@ const Add: React.FC = () => {
             {...register("description")}
             placeholder={t("addProduct.description.placeholder")}
             rows={3}
-            className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="mt-1 w-full input"
           />
         </motion.div>
 
         {/* Photo Upload */}
-        <motion.div variants={fieldVariants}>
-          <label className="text-sm font-medium text-gray-700">
-            {t("addProduct.photo.label")}
-          </label>
+        <div>
           <input
             type="file"
+            accept="image/*"
             {...register("photo")}
-            className="block w-full mt-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+            onChange={(e) => {
+              handleImageChange(e);
+              register("photo").onChange(e); // keep react-hook-form working
+            }}
+            className=""
           />
-        </motion.div>
+          {preview && (
+            <img
+              src={preview}
+              alt="Preview"
+              className="mt-2 w-24 h-24 object-cover rounded"
+            />
+          )}
+        </div>
 
         {/* Submit Button */}
         <motion.div variants={fieldVariants}>

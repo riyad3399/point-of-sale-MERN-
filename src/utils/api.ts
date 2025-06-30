@@ -140,11 +140,12 @@ export const handleInsertPurchase = async (reset, transformed) => {
 export const handleUpdatePurchasePayment = async (
   amount: number,
   method: string,
-  note: string
+  note: string,
+  id:string
 ) => {
   try {
     const res = await axios.put(
-      `http://localhost:3000/purchases/${purchase._id}/pay`,
+      `${URI}/purchases/${id}/pay`,
       {
         amount: amount,
         method: method,
