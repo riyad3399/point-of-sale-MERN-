@@ -2,13 +2,11 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserInfo } from "../types";
 import { handleLogin } from "../utils/api";
-
-
-
-
+import { useAuth } from "../context/AuthContext";
+import { useRegisterVisibility } from "../hooks/useRegisterVisibility";
 
 export default function LoginPage() {
   const {
@@ -16,11 +14,15 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<UserInfo>();
+  const { visible: showRegister, loading } = useRegisterVisibility();
+
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   const onSubmit = async (data: UserInfo) => {
-    await handleLogin(data, navigate);
+    await handleLogin(data, navigate, login);
   };
 
   return (
@@ -120,6 +122,14 @@ export default function LoginPage() {
             Login
           </motion.button>
         </form>
+      {!loading && showRegister && (
+        <p className="mt-4 text-center text-sm">
+          অ্যাকাউন্ট নেই?{" "}
+          <Link to="/register" className="text-blue-600 underline">
+            Register করুন
+          </Link>
+        </p>
+      )}
       </motion.div>
     </div>
   );

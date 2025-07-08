@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { User, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 import { UserInfo } from "../types";
 import { useNavigate } from "react-router-dom";
 import { handleRegister } from "../utils/api";

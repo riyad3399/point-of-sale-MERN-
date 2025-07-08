@@ -35,64 +35,76 @@ import AlertItemsPage from "./pages/AlertItemsPage";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import PurchasePaymentPage from "./components/purchase/PurchasePaymentPage";
+import RoleBasedRoute from "./components/RoleBasedRoute";
+import { AuthProvider } from "./context/AuthContext";
+import UserListPage from "./pages/UserListPage";
 
 function App() {
   return (
-    <HelmetProvider>
-      <AnimatePresence mode="wait">
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            }
-          />
-
-          {/* Protected Routes */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<AppLayout />}>
-              <Route index element={<DashboardPage />} />
-              <Route path="categories" element={<CategoriesPage />} />
-              <Route path="productes" element={<ProductesPage />} />
-              <Route path="showProduct" element={<ShowProduct />} />
-              <Route path="inventory" element={<InventoryPage />} />
-              <Route path="transactions" element={<TransactionsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="customers" element={<CustomersPage />} />
-              <Route path="retailSale" element={<RetailSalePage />} />
-              <Route path="wholeSale" element={<WholeSalePage />} />
-              <Route path="quotation" element={<QuotationPage />} />
-              <Route path="report" element={<ReportPage />} />
-              <Route path="invoiceView" element={<InvoiceView />} />
-              <Route
-                path="showReportStatement"
-                element={<ShowReportStatement />}
-              />
-              <Route path="profitSummary" element={<ProfitSummary />} />
-              <Route path="expense" element={<ExpensePage />} />
-              <Route path="purchase" element={<PurchasePage />} />
-              <Route path="supplier" element={<SupplierPage />} />
-              <Route path="alertItems" element={<AlertItemsPage />} />
-              <Route path="purchasePayment" element={<PurchasePaymentPage />} />
+    <AuthProvider>
+      <HelmetProvider>
+        <AnimatePresence mode="wait">
+          <Routes>
+            {/* Public Routes */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={<RoleBasedRoute allowedRoles={["admin", "developer"]} />}
+            >
+              <Route index element={<UserListPage />} />
             </Route>
-          </Route>
 
-          {/* Not Found */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AnimatePresence>
-    </HelmetProvider>
+            <Route
+              element={<RoleBasedRoute allowedRoles={["developer", "admin"]} />}
+            >
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+
+            {/* Protected Routes */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/" element={<AppLayout />}>
+                <Route index element={<DashboardPage />} />
+                <Route path="categories" element={<CategoriesPage />} />
+                <Route path="productes" element={<ProductesPage />} />
+                <Route path="showProduct" element={<ShowProduct />} />
+                <Route path="inventory" element={<InventoryPage />} />
+                <Route path="transactions" element={<TransactionsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="customers" element={<CustomersPage />} />
+                <Route path="retailSale" element={<RetailSalePage />} />
+                <Route path="wholeSale" element={<WholeSalePage />} />
+                <Route path="quotation" element={<QuotationPage />} />
+                <Route path="report" element={<ReportPage />} />
+                <Route path="invoiceView" element={<InvoiceView />} />
+                <Route
+                  path="showReportStatement"
+                  element={<ShowReportStatement />}
+                />
+                <Route path="profitSummary" element={<ProfitSummary />} />
+                <Route path="expense" element={<ExpensePage />} />
+                <Route path="purchase" element={<PurchasePage />} />
+                <Route path="supplier" element={<SupplierPage />} />
+                <Route path="alertItems" element={<AlertItemsPage />} />
+                <Route
+                  path="purchasePayment"
+                  element={<PurchasePaymentPage />}
+                />
+              </Route>
+            </Route>
+
+            {/* Not Found */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AnimatePresence>
+      </HelmetProvider>
+    </AuthProvider>
   );
 }
 

@@ -6,6 +6,10 @@ import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "../LanguageSwitcher";
 import LogoutButton from "../LogoutButton";
 import { getHandleProfile } from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
+import { useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
 type SmsBalanceType = {
   response_code: number;
@@ -18,9 +22,11 @@ const Header: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [smsBalance, setSmsBalance] = useState<SmsBalanceType>();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [user, setUser] = useState({});
 
-  const token = localStorage.getItem("token");
+  const token: string | null = localStorage.getItem("token");
+  const location = useLocation();
+
+  const { user } = useAuth();
 
   const fetchLowStockItems = async () => {
     try {
@@ -54,8 +60,24 @@ const Header: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    getHandleProfile(token, setUser);
-  }, []);
+    if (
+      !token ||
+      location.pathname === "/login" ||
+      location.pathname === "/register"
+    )
+      return;
+
+    const fetchUser = async () => {
+      const profile = await getHandleProfile(token);
+      if (profile) {
+        toast.success(
+          `Welcome, ${capitalizeFirstLetter(profile.user?.userName)}`
+        );
+      }
+    };
+
+    fetchUser();
+  }, [token, location.pathname]);
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -153,15 +175,19 @@ const Header: React.FC = () => {
                 <User />
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium">{user?.userName}</p>
-                <p className="text-xs text-gray-500 capitalize">Role</p>
+                <p className="text-sm font-medium">
+                  {capitalizeFirstLetter(user?.userName)}
+                </p>
+                <p className="text-xs text-gray-500 capitalize">
+                  {user?.roles}
+                </p>
               </div>
             </motion.button>
 
             {/* User Dropdown */}
             {showUserMenu && (
               <motion.div
-                className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 hover:bg-red-500 hover:text-white "
+                className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 "
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}

@@ -194,6 +194,14 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title={t("sidebar.settings")}
           />
+          <SidebarLink
+            to="/admin/users"
+            icon={<Settings />}
+            text={t("sidebar.settings")}
+            collapsed={collapsed}
+            title={t("sidebar.settings")}
+          />
+
         </div>
       </nav>
 

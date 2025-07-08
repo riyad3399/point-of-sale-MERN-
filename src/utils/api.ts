@@ -1,6 +1,8 @@
 import axios from "axios";
 import { Supplier, UserInfo } from "../types";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const URI = `http://localhost:3000`;
 
@@ -35,52 +37,82 @@ export const deleteExpense = async (id: string) => {
 };
 
 // Logout
-export const handleLogout = async (navigate) => {
-  try {
-    const res = await axios.post(
-      `${URI}/user/logout`,
-      {},
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      }
-    );
+export const useHandleLogout = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
-    localStorage.removeItem("token");
-    toast.success(res.data.message);
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout failed", error);
-  }
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        logout();
+        navigate("/login");
+        return;
+      }
+
+      const res = await axios.post(
+        `${URI}/user/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success(res.data?.message || "Logout successful");
+    } catch (err) {
+      toast.error("Logout failed");
+    } finally {
+      logout(); // context logout call
+      navigate("/login");
+    }
+  };
+
+  return handleLogout;
 };
 
 // Login
-export const handleLogin = async (data: UserInfo, navigate: any) => {
+export const handleLogin = async (
+  data: UserInfo,
+  navigate: any,
+  login: (token: string) => void
+) => {
   try {
     const response = await axios.post(`${URI}/user/login`, data);
-    localStorage.setItem("token", response.data.token);
+    const token = response.data.token;
 
-    toast.success(response.data.message);
+    // Token set এবং context login
+    localStorage.setItem("token", token);
+    login(token); // 👉 context auth update
 
+    toast.success(response.data.message || "Login successful!");
     navigate("/");
-  } catch (err) {
-    toast.error(err.message);
-
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || "Login failed");
     navigate("/login");
   }
 };
 
 // Register
 export const handleRegister = async (data, navigate) => {
+  const token = localStorage.getItem("token");
+
   await axios
-    .post(`${URI}/user/register`, data)
+    .post(`${URI}/user/register`, data, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    })
     .then((res) => {
       toast.success(res.data.message);
       navigate("/login");
     })
     .catch((err) => {
-      toast.error(err.message);
+      const msg =
+        err.response?.data?.message || err.message || "Registration failed";
+      toast.error(msg);
       navigate("/register");
     });
 };
@@ -102,16 +134,23 @@ export const handleProfile = async (token, navigate) => {
 };
 
 // get User
-export const getHandleProfile = async (token: string, setUser) => {
-  await axios
-    .get(`${URI}/user/profile`, {
-      headers: { Authorization: token },
-    })
-    .then((res) => {
-      setUser(res.data.user);
-    })
-    .catch((err) => {});
+export const getHandleProfile = async (token: string) => {
+  try {
+    const res = await axios.get(`${URI}/user/profile`, {
+      headers: { Authorization: `${token}` },
+    });
+
+    return res.data; 
+  } catch (err: any) {
+    console.error(
+      "Profile fetch failed:",
+      err?.response?.data?.message || err.message
+    );
+    return null; 
+  }
 };
+
+
 
 // GET - ALL Products
 export const handleGetProduct = async (setAllProduct) => {
@@ -141,17 +180,14 @@ export const handleUpdatePurchasePayment = async (
   amount: number,
   method: string,
   note: string,
-  id:string
+  id: string
 ) => {
   try {
-    const res = await axios.put(
-      `${URI}/purchases/${id}/pay`,
-      {
-        amount: amount,
-        method: method,
-        note: note,
-      }
-    );
+    const res = await axios.put(`${URI}/purchases/${id}/pay`, {
+      amount: amount,
+      method: method,
+      note: note,
+    });
     toast.success(res.data.message || "payment successfull");
   } catch (err) {
     toast.error(err.message || "Something went wrong");

@@ -1,18 +1,21 @@
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { handleLogout } from "../utils/api";
+import { useHandleLogout } from "../utils/api";
+import { motion } from "framer-motion";
 
 const LogoutButton = () => {
-  const navigate = useNavigate();
-
+  const handleLogout = useHandleLogout();
 
   return (
-    <button
-      onClick={() => handleLogout(navigate)}
-      className="ml-3 flex items-center gap-1"
+    <motion.button
+      onClick={handleLogout}
+      className="group  flex items-center gap-2 px-3 py-2  text-primary-600  transition-all duration-200  w-full"
     >
-      Logout <LogOut size={18}/>
-    </button>
+      <LogOut
+        size={18}
+        className="transition-transform duration-300 group-hover:-rotate-90"
+      />
+      <span className="font-medium tracking-wide">Logout</span>
+    </motion.button>
   );
 };
 
