@@ -14,7 +14,8 @@
     "expense": "Expense",
     "supplier": "Supplier",
     "purchase": "Purchase",
-    "appName": "Sale Mate"
+    "appName": "Sale Mate",
+    "userManage": "User Management"
   },
   "Dashboard": {
     "title": "Dashboard",

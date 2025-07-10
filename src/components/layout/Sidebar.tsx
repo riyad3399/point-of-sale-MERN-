@@ -18,20 +18,38 @@ import {
   BarChart3,
   PackagePlus,
   FileSignature,
+  Wrench,
+  CircleDollarSign,
+  Briefcase,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const pathName = location.pathname;
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [reportOpen, setReportOpen] = useState<boolean>(false);
+  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   useEffect(() => {
     setCollapsed(pathName === "/retailSale" || pathName === "/wholeSale");
     setReportOpen(pathName.startsWith("/report"));
   }, [pathName]);
+
+  const isDeveloper = user?.role === "developer";
+
+  const toggleMenu = (menuKey: string) => {
+    if (collapsed) setCollapsed(false);
+    setOpenMenus((prev) => ({
+      ...prev,
+      [menuKey]: !prev[menuKey],
+    }));
+  };
+
 
   return (
     <aside
@@ -74,109 +92,115 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title={t("sidebar.dashboard")}
           />
-          <SidebarLink
-            to="/categories"
-            icon={<Tags />}
-            text={t("sidebar.categories")}
-            collapsed={collapsed}
-            title={t("sidebar.categories")}
-          />
-          <SidebarLink
-            to="/productes"
-            icon={<Boxes size={22} />}
-            text={t("sidebar.products")}
-            collapsed={collapsed}
-            title={t("sidebar.products")}
-          />
-          <SidebarLink
-            to="/retailSale"
-            icon={<ShoppingCart />}
-            text={t("sidebar.retailSale")}
-            collapsed={collapsed}
-            title={t("sidebar.retailSale")}
-          />
-          <SidebarLink
-            to="/wholeSale"
-            icon={<PackageSearch />}
-            text={t("sidebar.wholeSale")}
-            collapsed={collapsed}
-            title={t("sidebar.wholeSale")}
-          />
-          <SidebarLink
-            to="/quotation"
-            icon={<FileSignature />}
-            text={t("sidebar.quotations")}
-            collapsed={collapsed}
-            title={t("sidebar.quotations")}
-          />
-          <SidebarLink
-            to="/transactions"
-            icon={<FileText />}
-            text={t("sidebar.transactions")}
-            collapsed={collapsed}
-            title={t("sidebar.transactions")}
-          />
-          <SidebarLink
-            to="/customers"
-            icon={<Users />}
-            text={t("sidebar.customers")}
-            collapsed={collapsed}
-            title={t("sidebar.customers")}
-          />
-          <SidebarLink
-            to="/expense"
-            icon={<Coins />}
-            text={t("sidebar.expense")}
-            collapsed={collapsed}
-            title={t("sidebar.expense")}
-          />
-          <SidebarLink
-            to="/purchase"
-            icon={<PackagePlus />}
-            text={t("sidebar.purchase")}
-            collapsed={collapsed}
-            title={t("sidebar.purchase")}
-          />
-          <SidebarLink
-            to="/supplier"
-            icon={<Truck />}
-            text={t("sidebar.supplier")}
-            collapsed={collapsed}
-            title={t("sidebar.supplier")}
-          />
-
-          {/* Report Dropdown */}
-          <NavLink
-            to="/report"
-            onClick={() => setReportOpen(!reportOpen)}
-            className={({ isActive }) =>
-              `w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
-                pathName.startsWith("/report")
-                  ? "bg-primary-700 text-white"
-                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-              }`
-            }
+          <div
+            onClick={() => toggleMenu("sales")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/retailSale") ||
+              pathName.startsWith("/wholeSale") ||
+              pathName.startsWith("/transactions") ||
+              pathName.startsWith("/quotation")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
           >
-            <ScrollText />
+            <ShoppingCart />
             {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                {t("sidebar.report")}
-              </span>
+              <span className="flex-1 text-left whitespace-nowrap">Sales</span>
             )}
             {!collapsed && (
-              <motion.div animate={{ rotate: reportOpen ? 90 : 0 }}>
+              <motion.div animate={{ rotate: openMenus["sales"] ? 90 : 0 }}>
                 <ChevronRight size={16} />
               </motion.div>
             )}
-          </NavLink>
+          </div>
 
-          {reportOpen && !collapsed && (
+          {openMenus["sales"] && !collapsed && (
             <motion.div
               className="ml-8 mt-1 space-y-1"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
+              <SidebarLink
+                to="/retailSale"
+                icon={<ShoppingCart size={18} />}
+                text={t("sidebar.retailSale")}
+                collapsed={collapsed}
+                title={t("sidebar.retailSale")}
+              />
+              <SidebarLink
+                to="/wholeSale"
+                icon={<PackageSearch size={18} />}
+                text={t("sidebar.wholeSale")}
+                collapsed={collapsed}
+                title={t("sidebar.wholeSale")}
+              />
+              {(user?.permissions?.sales?.transactions?.add ||
+                user?.permissions?.sales?.transactions?.delete ||
+                user?.permissions?.sales?.transactions?.view ||
+                user?.permissions?.sales?.transactions?.edit) && (
+                <SidebarLink
+                  to="/transactions"
+                  icon={<FileText size={18} />}
+                  text={t("sidebar.transactions")}
+                  collapsed={collapsed}
+                  title={t("sidebar.transactions")}
+                />
+              )}
+
+              <SidebarLink
+                to="/quotation"
+                icon={<FileSignature size={18} />}
+                text={t("sidebar.quotations")}
+                collapsed={collapsed}
+                title={t("sidebar.quotations")}
+              />
+            </motion.div>
+          )}
+
+          <div
+            onClick={() => toggleMenu("products")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/productes") ||
+              pathName.startsWith("/categories") ||
+              pathName.startsWith("/alertItems")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <Boxes />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Inventory
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["products"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+          {openMenus["products"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/categories"
+                icon={<Tags size={18} />}
+                text={t("sidebar.categories")}
+                collapsed={collapsed}
+                title={t("sidebar.categories")}
+              />
+              <SidebarLink
+                to="/productes"
+                icon={<Boxes size={18} />}
+                text={t("sidebar.products")}
+                collapsed={collapsed}
+                title={t("sidebar.products")}
+              />
               <SidebarLink
                 to="/alertItems"
                 icon={<AlertCircle size={16} />}
@@ -186,22 +210,350 @@ const Sidebar: React.FC = () => {
               />
             </motion.div>
           )}
+          <div
+            onClick={() => toggleMenu("purchase")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/purchase")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <PackagePlus />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Purchase
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["purchase"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
 
-          <SidebarLink
-            to="/settings"
-            icon={<Settings />}
-            text={t("sidebar.settings")}
-            collapsed={collapsed}
-            title={t("sidebar.settings")}
-          />
-          <SidebarLink
-            to="/admin/users"
-            icon={<Settings />}
-            text={t("sidebar.settings")}
-            collapsed={collapsed}
-            title={t("sidebar.settings")}
-          />
+          {openMenus["purchase"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/purchase"
+                icon={<PackagePlus size={18} />}
+                text={t("sidebar.purchase")}
+                collapsed={collapsed}
+                title={t("sidebar.purchase")}
+              />
+            </motion.div>
+          )}
 
+          <div
+            onClick={() => toggleMenu("customers")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/customers")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <Users />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Customers
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["customers"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["customers"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/customers"
+                icon={<Users size={18} />}
+                text={t("sidebar.customers")}
+                collapsed={collapsed}
+                title={t("sidebar.customers")}
+              />
+            </motion.div>
+          )}
+          <div
+            onClick={() => toggleMenu("supplier")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/supplier")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <Truck />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Supplier
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["customers"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["supplier"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/supplier"
+                icon={<Truck size={18} />}
+                text={t("sidebar.supplier")}
+                collapsed={collapsed}
+                title={t("sidebar.supplier")}
+              />
+            </motion.div>
+          )}
+          <div
+            onClick={() => toggleMenu("expense")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/expense")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <Coins />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Expense
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["expense"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["expense"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/expense"
+                icon={<Coins size={18} />}
+                text={t("sidebar.expense")}
+                collapsed={collapsed}
+                title={t("sidebar.expense")}
+              />
+            </motion.div>
+          )}
+          <div
+            onClick={() => toggleMenu("accounts")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/accounts")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <CircleDollarSign />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Accounts
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["accounts"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["accounts"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/accounts"
+                icon={<CircleDollarSign size={18} />}
+                text={"Accounts"}
+                collapsed={collapsed}
+                title={"Accounts"}
+              />
+            </motion.div>
+          )}
+          <div
+            onClick={() => toggleMenu("employee")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/employee")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <Briefcase />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Employee
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["employee"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["employee"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/employee"
+                icon={<Briefcase size={18} />}
+                text={"Employee"}
+                collapsed={collapsed}
+                title={"Employee"}
+              />
+            </motion.div>
+          )}
+          <div
+            onClick={() => toggleMenu("report")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/report")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <ScrollText />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">Report</span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["report"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["report"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/report"
+                icon={<ScrollText size={18} />}
+                text={t("sidebar.report")}
+                collapsed={collapsed}
+                title={t("sidebar.report")}
+              />
+            </motion.div>
+          )}
+          <div
+            onClick={() => toggleMenu("settings")}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              pathName.startsWith("/settings")
+                ? "bg-primary-700 text-white"
+                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+            }`}
+          >
+            <Settings />
+            {!collapsed && (
+              <span className="flex-1 text-left whitespace-nowrap">
+                Settings
+              </span>
+            )}
+            {!collapsed && (
+              <motion.div animate={{ rotate: openMenus["settings"] ? 90 : 0 }}>
+                <ChevronRight size={16} />
+              </motion.div>
+            )}
+          </div>
+
+          {openMenus["settings"] && !collapsed && (
+            <motion.div
+              className="ml-8 mt-1 space-y-1"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+            >
+              <SidebarLink
+                to="/settings"
+                icon={<Settings size={18} />}
+                text={t("sidebar.settings")}
+                collapsed={collapsed}
+                title={t("sidebar.settings")}
+              />
+            </motion.div>
+          )}
+
+          {isDeveloper && (
+            <>
+              <div
+                onClick={() => toggleMenu("usersAndPermission")}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                  pathName.startsWith("users-management")
+                    ? "bg-primary-700 text-white"
+                    : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+                }`}
+              >
+                <Wrench />
+                {!collapsed && (
+                  <span className="flex-1 text-left whitespace-nowrap">
+                    Users & Permission
+                  </span>
+                )}
+                {!collapsed && (
+                  <motion.div
+                    animate={{
+                      rotate: openMenus["usersAndPermission"] ? 90 : 0,
+                    }}
+                  >
+                    <ChevronRight size={16} />
+                  </motion.div>
+                )}
+              </div>
+
+              {openMenus["usersAndPermission"] && !collapsed && (
+                <motion.div
+                  className="ml-8 mt-1 space-y-1"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isDeveloper && (
+                    <SidebarLink
+                      to="/users-management"
+                      icon={<Wrench size={18} />}
+                      text="User Management"
+                      collapsed={collapsed}
+                      title="User Management"
+                    />
+                  )}
+                </motion.div>
+              )}
+            </>
+          )}
         </div>
       </nav>
 

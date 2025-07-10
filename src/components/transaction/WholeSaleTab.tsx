@@ -9,6 +9,7 @@ import InvoiceDuePaymentModal from "./InvoiceDuePaymentModal";
 import { InvoiceType } from "../../types";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
 
 
 export default function WholeSaleTab({ capitalizeFirstLetter }) {
@@ -26,7 +27,9 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
     null
   );
   const [modalOpen, setModalOpen] = useState(false);
-    const [storeInfo, setStoreInfo]=useState({})
+  const [storeInfo, setStoreInfo] = useState({})
+  
+  const {user} = useAuth()
   
 
   const navigate = useNavigate();
@@ -356,6 +359,24 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
     printWindow?.print();
   };
 
+
+
+  // const retailSalePermission = user?.permissions?.sales?.retailSale || {};
+  const wholeSalePermission = user?.permissions?.sales?.wholeSale || {};
+
+  // const retailKeys = {};
+  const wholeKeys = {};
+
+  // const keys1 = new Set([...Object.keys(retailSalePermission)]);
+  const keys2 = new Set([...Object.keys(wholeSalePermission)]);
+
+  // keys1.forEach((key) => {
+  //   retailKeys[key] = Boolean(retailSalePermission[key]);
+  // });
+  keys2.forEach((key) => {
+    wholeKeys[key] = Boolean(wholeSalePermission[key]);
+  });
+
   const {t } = useTranslation();
 
   return (
@@ -489,30 +510,32 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
                         </td>
                         <td className="">
                           <div className="flex items-center justify-center gap-2">
-                            <button
-                              className="text-blue-500 hover:text-blue-700"
-                              onClick={() => handlePrint(tx._id)}
-                            >
-                              <PrinterIcon />
-                            </button>
-                            <button
-                              onClick={() => handleInvoiceView(tx._id)}
-                              className="ml-2 text-blue-500 hover:text-blue-700"
-                            >
-                              <ViewIcon />
-                            </button>
-                            <button
+                            {wholeKeys.view && <div>
+                              <button
+                                className="text-blue-500 hover:text-blue-700"
+                                onClick={() => handlePrint(tx._id)}
+                              >
+                                <PrinterIcon />
+                              </button>
+                              <button
+                                onClick={() => handleInvoiceView(tx._id)}
+                                className="ml-2 text-blue-500 hover:text-blue-700"
+                              >
+                                <ViewIcon />
+                              </button>
+                            </div>}
+                            {wholeKeys.edit && <button
                               className="ml-2 text-green-500 hover:text-green-700"
                               onClick={() => handleEdit(tx)}
                             >
                               <EditIcon />
-                            </button>
-                            <button
+                            </button>}
+                            {wholeKeys.delete && <button
                               className="ml-2 text-red-500 hover:text-red-700"
                               onClick={() => handleDelete(tx._id)}
                             >
                               <Trash />
-                            </button>
+                            </button>}
                           </div>
                         </td>
                       </tr>

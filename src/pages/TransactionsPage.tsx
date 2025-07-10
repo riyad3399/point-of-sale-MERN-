@@ -4,29 +4,69 @@ import WholeSaleTab from "../components/transaction/WholeSaleTab";
 import RetailSaleTab from "../components/transaction/RetailSaleTab";
 import AllTransactions from "../components/transaction/AllTransactions";
 import { useTranslation } from "react-i18next";
-
-
+import { useAuth } from "../context/AuthContext";
 
 export default function TransactionsPage() {
   const [activeTab, setActiveTab] = useState("all");
+
+  const { user } = useAuth();
 
   function capitalizeFirstLetter(string: string) {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
- 
+  const retailSalePermission = user?.permissions?.sales?.retailSale || {};
+  const wholeSalePermission = user?.permissions?.sales?.wholeSale || {};
+
+  const retailKeys = {};
+  const wholeKeys = {};
+
+  const keys1 = new Set([...Object.keys(retailSalePermission)]);
+  const keys2 = new Set([...Object.keys(wholeSalePermission)]);
+
+  keys1.forEach((key) => {
+    retailKeys[key] = Boolean(retailSalePermission[key]);
+  });
+  keys2.forEach((key) => {
+    wholeKeys[key] = Boolean(wholeSalePermission[key]);
+  });
+
+  console.log(retailKeys, wholeKeys);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "all":
         return (
-          <AllTransactions capitalizeFirstLetter={capitalizeFirstLetter} />
+          (retailKeys.view ||
+            retailKeys.delete ||
+            retailKeys.edit ||
+            retailKeys.add ||
+            wholeKeys.view ||
+            wholeKeys.delete ||
+            wholeKeys.edit ||
+            wholeKeys.add) && (
+            <AllTransactions capitalizeFirstLetter={capitalizeFirstLetter} />
+          )
         );
       case "wholesale":
-        return <WholeSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />;
+        return (
+          (wholeKeys.view ||
+            wholeKeys.delete ||
+            wholeKeys.edit ||
+            wholeKeys.add) && (
+            <WholeSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />
+          )
+        );
       case "retail":
-        return <RetailSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />;
+        return (
+          (retailKeys.view ||
+            retailKeys.delete ||
+            retailKeys.edit ||
+            retailKeys.add) && (
+            <RetailSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />
+          )
+        );
 
       default:
         return null;
@@ -34,7 +74,7 @@ export default function TransactionsPage() {
   };
 
   const { t } = useTranslation();
-  
+
   const tabs = [
     { id: "all", label: t("transactions.all") },
     { id: "wholesale", label: t("transactions.wholesale") },

@@ -46,10 +46,7 @@ export default function LoginPage() {
     }),
   };
 
-  const buttonVariants = {
-    hover: { scale: 1.05, boxShadow: "0px 10px 30px rgba(59, 130, 246, 0.3)" },
-    tap: { scale: 0.95 },
-  };
+
 
   return (
     <div className="min-h-screen h-full flex items-center justify-center bg-gray-100 overflow-hidden">
@@ -64,10 +61,7 @@ export default function LoginPage() {
           ],
         }}
         transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
-      >
-        {/* Subtle Wave Overlay */}
-      
-      </motion.div>
+      ></motion.div>
 
       {/* Split-Screen Layout */}
       <motion.div
@@ -85,8 +79,11 @@ export default function LoginPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex items-center space-x-2"
             >
-            
-              <img src="../../photo/logo.png" alt="Logo"  className="w-full h-fit"/>
+              <img
+                src="../../photo/logo.png"
+                alt="Logo"
+                className="w-full h-fit"
+              />
             </motion.div>
             <motion.p
               initial={{ opacity: 0, y: 20 }}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Supplier, UserInfo } from "../types";
+import { PermissionsProps, RoleProps, Supplier, UserInfo } from "../types";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +35,8 @@ export const deleteExpense = async (id: string) => {
   const response = await axios.delete(`${URI}/expenses/${id}`);
   return response.data;
 };
+
+// ---------------------- USER ----------------------//
 
 // Logout
 export const useHandleLogout = () => {
@@ -118,7 +120,7 @@ export const handleRegister = async (data, navigate) => {
 };
 
 // User profile
-export const handleProfile = async (token, navigate) => {
+export const handleProfile = async (token: string, navigate) => {
   await axios
     .get(`${URI}/user/profile`, {
       headers: { Authorization: token },
@@ -133,25 +135,72 @@ export const handleProfile = async (token, navigate) => {
     });
 };
 
-// get User
+// get User profile
 export const getHandleProfile = async (token: string) => {
   try {
     const res = await axios.get(`${URI}/user/profile`, {
       headers: { Authorization: `${token}` },
     });
 
-    return res.data; 
+    return res.data;
   } catch (err: any) {
     console.error(
       "Profile fetch failed:",
       err?.response?.data?.message || err.message
     );
-    return null; 
+    return null;
   }
 };
 
+// GET - all users
+export const getAllUsers = async (token: string| null) => {
+  try {
+    const response = await axios.get(`${URI}/user`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
 
+    return response.data.users;
+  } catch (error) {
+    console.error(
+      "Failed to fetch users:",
+      error?.response?.data?.message || error.message
+    );
+    throw new Error("Could not fetch users");
+  }
+};
 
+// update user role
+export const handleUpdateUserRoles = async ({
+  roles,
+  userId,
+  token,
+}: RoleProps) => {
+  await axios.post(
+    `http://localhost:3000/user/${userId}/roles`,
+    { roles },
+    { headers: { Authorization: token } }
+  );
+};
+
+// update user permission
+
+export const handleUpdateUserPermission = async ({
+  permissions,
+  token,
+  onUpdated,
+  userId,
+}: PermissionsProps) => {
+  const res = await axios.post(
+    `http://localhost:3000/user/${userId}/permissions`,
+    { permissions },
+    { headers: { Authorization: token } }
+  );
+  onUpdated(res.data.user);
+};
+
+// ---------------------- PRODUCT ----------------------//
 // GET - ALL Products
 export const handleGetProduct = async (setAllProduct) => {
   try {

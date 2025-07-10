@@ -18,7 +18,7 @@ export default function RoleBasedRoute({
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/user/count"); 
+        const res = await axios.get("http://localhost:3000/user/count");
         setUserCount(res.data.userCount);
       } catch (error) {
         console.error("Failed to fetch user count:", error);
@@ -31,21 +31,17 @@ export default function RoleBasedRoute({
     fetchUserCount();
   }, []);
 
-  // 🔄 Loading indicator
   if (authLoading || countLoading) return <Loading />;
 
-  // 🔓 যদি এখনো কোনো user না থাকে, তাহলে register সবার জন্য open
+  // 👇 প্রথম user হলে সবাই register করতে পারবে
   if (userCount === 0) return <Outlet />;
 
-  // 🔐 ইউজার থাকলে authentication + role check
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  // 👇 user না থাকলে login page এ redirect
+  if (!user) return <Navigate to="/login" replace />;
 
-  const hasAccess = user.roles?.some((role) => allowedRoles.includes(role));
-  if (!hasAccess) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+  // 👇 check if user has required role
+  const hasAccess = allowedRoles.includes(user.role); // ✅ single string check
+  if (!hasAccess) return <Navigate to="/unauthorized" replace />;
 
   return <Outlet />;
 }

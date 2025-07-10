@@ -7,26 +7,43 @@ import {
 } from "react";
 import { jwtDecode } from "jwt-decode";
 
-// 🔐 JWT decoded structure (customize if needed)
-interface DecodedUser {
+// ✅ Full decoded user structure
+export interface DecodedUser {
   id: string;
   userName: string;
-  roles: string[];
-  [key: string]: any;
+  roles: string;
+  permissions?: {
+    sales?: {
+      trigger: boolean;
+      retailSale?: PermissionCRUD;
+      wholeSale?: PermissionCRUD;
+      transactions?: PermissionCRUD;
+      quotations?: PermissionCRUD;
+    };
+  };
+  [key: string]: any; // fallback for extra fields
 }
 
-// 🔧 AuthContext type
+// ✅ Define permission structure
+interface PermissionCRUD {
+  view: boolean;
+  add: boolean;
+  edit: boolean;
+  delete: boolean;
+}
+
+// ✅ AuthContext type
 interface AuthContextType {
-  user: DecodedUser ;
+  user: DecodedUser | null;
   login: (token: string) => void;
   logout: () => void;
   loading: boolean;
 }
 
-// 🧪 Initial context value (optional fallback)
+// ✅ Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 🧾 Props for provider
+// ✅ Provider Props
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -56,7 +73,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const decoded = jwtDecode<DecodedUser>(token);
       setUser(decoded);
     } catch (error) {
-      console.error("Invalid login token");
+      console.error("Invalid login token:", error);
     }
   };
 
@@ -72,7 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
-// 🧪 Hook to access context
+// ✅ Hook to access context
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {
@@ -85,4 +102,3 @@ export function useAuth(): AuthContextType {
   }
   return context;
 }
-  

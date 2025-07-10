@@ -206,3 +206,79 @@ export interface UserInfo {
   password: string;
   confirmPassword?: string;
 }
+
+export type PermissionsProps = {
+  permissions: string[];
+  token: string | null;
+  userId: string;
+  onUpdated: (onUpdated: any) => void;
+};
+
+export type RoleProps = {
+  roles: string[];
+  userId: string;
+  token: string | null;
+};
+
+
+// ----------------------- User Management------------------------//
+
+interface CRUDPermission {
+  view: boolean;
+  add: boolean;
+  edit: boolean;
+  delete: boolean;
+}
+
+export interface UserPermissions {
+  sales: {
+    trigger: boolean;
+    retailSale: CRUDPermission;
+    wholeSale: CRUDPermission;
+    transactions: CRUDPermission;
+    quotations: CRUDPermission;
+  };
+  inventory: {
+    trigger: boolean;
+    categories: CRUDPermission;
+    products: CRUDPermission;
+    alertItems: CRUDPermission;
+  };
+  purchase: {
+    trigger: boolean;
+    purchase: CRUDPermission;
+  };
+  customers: {
+    trigger: boolean;
+    customers: CRUDPermission;
+  };
+  supplier: {
+    trigger: boolean;
+    supplier: CRUDPermission;
+  };
+  expense: {
+    trigger: boolean;
+    expense: CRUDPermission;
+  };
+  accounts: {
+    trigger: boolean;
+    accounts: CRUDPermission;
+  };
+  employee: {
+    trigger: boolean;
+    employee: CRUDPermission;
+  };
+  report: {
+    trigger: boolean;
+    report: CRUDPermission;
+  };
+  settings: {
+    trigger: boolean;
+    settings: CRUDPermission;
+  };
+  usersAndPermission: {
+    trigger: boolean;
+    userManagement: CRUDPermission;
+  };
+}
+

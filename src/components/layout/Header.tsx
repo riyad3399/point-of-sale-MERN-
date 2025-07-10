@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Menu, Bell, MessageSquare, User } from "lucide-react";
 import axios from "axios";
@@ -25,6 +25,7 @@ const Header: React.FC = () => {
 
   const token: string | null = localStorage.getItem("token");
   const location = useLocation();
+  const hasWelcomed = useRef(false);
 
   const { user } = useAuth();
 
@@ -69,10 +70,11 @@ const Header: React.FC = () => {
 
     const fetchUser = async () => {
       const profile = await getHandleProfile(token);
-      if (profile) {
+      if (profile && !hasWelcomed.current) {
         toast.success(
           `Welcome, ${capitalizeFirstLetter(profile.user?.userName)}`
         );
+        hasWelcomed.current = true;
       }
     };
 
@@ -178,9 +180,7 @@ const Header: React.FC = () => {
                 <p className="text-sm font-medium">
                   {capitalizeFirstLetter(user?.userName)}
                 </p>
-                <p className="text-xs text-gray-500 capitalize">
-                  {user?.roles}
-                </p>
+                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
             </motion.button>
 

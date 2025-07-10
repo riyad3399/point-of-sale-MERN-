@@ -37,7 +37,7 @@ import PublicRoute from "./components/PublicRoute";
 import PurchasePaymentPage from "./components/purchase/PurchasePaymentPage";
 import RoleBasedRoute from "./components/RoleBasedRoute";
 import { AuthProvider } from "./context/AuthContext";
-import UserListPage from "./pages/UserListPage";
+import UserListPage from "./pages/UserManagenentsPage";
 
 function App() {
   return (
@@ -54,15 +54,9 @@ function App() {
                 </PublicRoute>
               }
             />
-            <Route
-              path="/admin/users"
-              element={<RoleBasedRoute allowedRoles={["admin", "developer"]} />}
-            >
-              <Route index element={<UserListPage />} />
-            </Route>
 
             <Route
-              element={<RoleBasedRoute allowedRoles={["developer", "admin"]} />}
+              element={<RoleBasedRoute allowedRoles={["admin", "developer"]} />}
             >
               <Route path="/register" element={<RegisterPage />} />
             </Route>
@@ -71,6 +65,11 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/" element={<AppLayout />}>
                 <Route index element={<DashboardPage />} />
+                <Route
+                  element={<RoleBasedRoute allowedRoles={["developer"]} />}
+                >
+                  <Route path="users-management" element={<UserListPage />} />
+                </Route>
                 <Route path="categories" element={<CategoriesPage />} />
                 <Route path="productes" element={<ProductesPage />} />
                 <Route path="showProduct" element={<ShowProduct />} />

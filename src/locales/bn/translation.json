@@ -14,7 +14,8 @@
     "expense": "খরচ",
     "supplier": "সরবরাহকারী",
     "purchase": "ক্রয়",
-    "appName": "সেল মেট"
+    "appName": "সেল মেট",
+    "userManage": "ইউজার ম্যানেজমেন্ট"
   },
   "Dashboard": {
     "title": "ড্যাশবোর্ড",

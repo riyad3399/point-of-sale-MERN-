@@ -20,7 +20,7 @@ const PrivateRoute = () => {
       try {
         await axios.get("http://localhost:3000/user/profile", {
           headers: {
-            Authorization: token,
+            Authorization: `${token}`, // ✅ correct format
           },
         });
         setIsAuthenticated(true);
@@ -35,6 +35,7 @@ const PrivateRoute = () => {
 
     checkAuth();
   }, [navigate]);
+  
 
   if (loading) {
     return (
