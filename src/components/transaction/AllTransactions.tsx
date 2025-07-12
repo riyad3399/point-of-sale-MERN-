@@ -9,8 +9,10 @@ import { useNavigate } from "react-router-dom";
 import InvoiceDuePaymentModal from "./InvoiceDuePaymentModal";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { usePermission } from "../../hooks/usePermission";
 
-export default function AllTransactions({ capitalizeFirstLetter }) {
+export default function AllTransactions() {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,6 +30,7 @@ export default function AllTransactions({ capitalizeFirstLetter }) {
   const [storeInfo, setStoreInfo]=useState({})
 
   const navigate = useNavigate();
+  const {hasPermission} = usePermission()
 
   useEffect(() => {
     axios
@@ -127,7 +130,9 @@ export default function AllTransactions({ capitalizeFirstLetter }) {
       setStoreInfo(data)
     }
     fetchStoreInfo()
-  },[])
+  }, [])
+  
+  
 
 
   // Print Invoice
@@ -487,30 +492,46 @@ export default function AllTransactions({ capitalizeFirstLetter }) {
                         </td>
                         <td className="">
                           <div className="flex items-center justify-center gap-2">
-                            <button
-                              className="text-blue-500 hover:text-blue-700"
-                              onClick={() => handlePrint(tx._id)}
-                            >
-                              <PrinterIcon />
-                            </button>
-                            <button
-                              onClick={() => handleInvoiceView(tx._id)}
-                              className="ml-2 text-blue-500 hover:text-blue-700"
-                            >
-                              <ViewIcon />
-                            </button>
-                            <button
-                              className="ml-2 text-green-500 hover:text-green-700"
-                              onClick={() => handleEdit(tx)}
-                            >
-                              <EditIcon />
-                            </button>
-                            <button
-                              className="ml-2 text-red-500 hover:text-red-700"
-                              onClick={() => handleDelete(tx._id)}
-                            >
-                              <Trash />
-                            </button>
+                            {hasPermission("sales", "transactions", [
+                              "view",
+                            ]) && (
+                              <>
+                                <button
+                                  className="text-blue-500 hover:text-blue-700"
+                                  onClick={() => handlePrint(tx._id)}
+                                >
+                                  <PrinterIcon />
+                                </button>
+                                <button
+                                  onClick={() => handleInvoiceView(tx._id)}
+                                  className="text-blue-500 hover:text-blue-700"
+                                >
+                                  <ViewIcon />
+                                </button>
+                              </>
+                            )}
+
+                            {hasPermission("sales", "transactions", [
+                              "edit",
+                            ]) && (
+                              <button
+                                className="text-green-500 hover:text-green-700"
+                                onClick={() => handleEdit(tx)}
+                              >
+                                <EditIcon />
+                              </button>
+                            )}
+
+                            {hasPermission("sales", "transactions", [
+                              "delete",
+                            ]) && (
+                              <button
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => handleDelete(tx._id)}
+                              >
+                                <Trash />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

@@ -10,9 +10,11 @@ import { InvoiceType } from "../../types";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { usePermission } from "../../hooks/usePermission";
 
 
-export default function WholeSaleTab({ capitalizeFirstLetter }) {
+export default function WholeSaleTab() {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -359,23 +361,9 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
     printWindow?.print();
   };
 
+  const {hasPermission} = usePermission()
 
-
-  // const retailSalePermission = user?.permissions?.sales?.retailSale || {};
-  const wholeSalePermission = user?.permissions?.sales?.wholeSale || {};
-
-  // const retailKeys = {};
-  const wholeKeys = {};
-
-  // const keys1 = new Set([...Object.keys(retailSalePermission)]);
-  const keys2 = new Set([...Object.keys(wholeSalePermission)]);
-
-  // keys1.forEach((key) => {
-  //   retailKeys[key] = Boolean(retailSalePermission[key]);
-  // });
-  keys2.forEach((key) => {
-    wholeKeys[key] = Boolean(wholeSalePermission[key]);
-  });
+ 
 
   const {t } = useTranslation();
 
@@ -510,32 +498,46 @@ export default function WholeSaleTab({ capitalizeFirstLetter }) {
                         </td>
                         <td className="">
                           <div className="flex items-center justify-center gap-2">
-                            {wholeKeys.view && <div>
+                            {hasPermission("sales", "transactions", [
+                              "view",
+                            ]) && (
+                              <>
+                                <button
+                                  className="text-blue-500 hover:text-blue-700"
+                                  onClick={() => handlePrint(tx._id)}
+                                >
+                                  <PrinterIcon />
+                                </button>
+                                <button
+                                  onClick={() => handleInvoiceView(tx._id)}
+                                  className="text-blue-500 hover:text-blue-700"
+                                >
+                                  <ViewIcon />
+                                </button>
+                              </>
+                            )}
+
+                            {hasPermission("sales", "transactions", [
+                              "edit",
+                            ]) && (
                               <button
-                                className="text-blue-500 hover:text-blue-700"
-                                onClick={() => handlePrint(tx._id)}
+                                className="text-green-500 hover:text-green-700"
+                                onClick={() => handleEdit(tx)}
                               >
-                                <PrinterIcon />
+                                <EditIcon />
                               </button>
+                            )}
+
+                            {hasPermission("sales", "transactions", [
+                              "delete",
+                            ]) && (
                               <button
-                                onClick={() => handleInvoiceView(tx._id)}
-                                className="ml-2 text-blue-500 hover:text-blue-700"
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => handleDelete(tx._id)}
                               >
-                                <ViewIcon />
+                                <Trash />
                               </button>
-                            </div>}
-                            {wholeKeys.edit && <button
-                              className="ml-2 text-green-500 hover:text-green-700"
-                              onClick={() => handleEdit(tx)}
-                            >
-                              <EditIcon />
-                            </button>}
-                            {wholeKeys.delete && <button
-                              className="ml-2 text-red-500 hover:text-red-700"
-                              onClick={() => handleDelete(tx._id)}
-                            >
-                              <Trash />
-                            </button>}
+                            )}
                           </div>
                         </td>
                       </tr>

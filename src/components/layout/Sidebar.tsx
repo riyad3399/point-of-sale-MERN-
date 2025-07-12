@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
+import { usePermission } from "../../hooks/usePermission";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [reportOpen, setReportOpen] = useState<boolean>(false);
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const { hasPermission, hasModuleAccess } = usePermission();
 
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -49,7 +51,6 @@ const Sidebar: React.FC = () => {
       [menuKey]: !prev[menuKey],
     }));
   };
-
 
   return (
     <aside
@@ -92,27 +93,31 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             title={t("sidebar.dashboard")}
           />
-          <div
-            onClick={() => toggleMenu("sales")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/retailSale") ||
-              pathName.startsWith("/wholeSale") ||
-              pathName.startsWith("/transactions") ||
-              pathName.startsWith("/quotation")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <ShoppingCart />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">Sales</span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["sales"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+          {hasModuleAccess("sales") && (
+            <div
+              onClick={() => toggleMenu("sales")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/retailSale") ||
+                pathName.startsWith("/wholeSale") ||
+                pathName.startsWith("/transactions") ||
+                pathName.startsWith("/quotation")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <ShoppingCart />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Sales
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div animate={{ rotate: openMenus["sales"] ? 90 : 0 }}>
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["sales"] && !collapsed && (
             <motion.div
@@ -121,24 +126,25 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/retailSale"
-                icon={<ShoppingCart size={18} />}
-                text={t("sidebar.retailSale")}
-                collapsed={collapsed}
-                title={t("sidebar.retailSale")}
-              />
-              <SidebarLink
-                to="/wholeSale"
-                icon={<PackageSearch size={18} />}
-                text={t("sidebar.wholeSale")}
-                collapsed={collapsed}
-                title={t("sidebar.wholeSale")}
-              />
-              {(user?.permissions?.sales?.transactions?.add ||
-                user?.permissions?.sales?.transactions?.delete ||
-                user?.permissions?.sales?.transactions?.view ||
-                user?.permissions?.sales?.transactions?.edit) && (
+              {hasPermission("sales", "retailSale", ["trigger"]) && (
+                <SidebarLink
+                  to="/retailSale"
+                  icon={<ShoppingCart size={18} />}
+                  text={t("sidebar.retailSale")}
+                  collapsed={collapsed}
+                  title={t("sidebar.retailSale")}
+                />
+              )}
+              {hasPermission("sales", "wholeSale", ["trigger"]) && (
+                <SidebarLink
+                  to="/wholeSale"
+                  icon={<PackageSearch size={18} />}
+                  text={t("sidebar.wholeSale")}
+                  collapsed={collapsed}
+                  title={t("sidebar.wholeSale")}
+                />
+              )}
+              {hasPermission("sales", "transactions", ["trigger"]) && (
                 <SidebarLink
                   to="/transactions"
                   icon={<FileText size={18} />}
@@ -148,13 +154,15 @@ const Sidebar: React.FC = () => {
                 />
               )}
 
-              <SidebarLink
-                to="/quotation"
-                icon={<FileSignature size={18} />}
-                text={t("sidebar.quotations")}
-                collapsed={collapsed}
-                title={t("sidebar.quotations")}
-              />
+              {hasPermission("sales", "quotations", ["trigger"]) && (
+                <SidebarLink
+                  to="/quotation"
+                  icon={<FileSignature size={18} />}
+                  text={t("sidebar.quotations")}
+                  collapsed={collapsed}
+                  title={t("sidebar.quotations")}
+                />
+              )}
             </motion.div>
           )}
 

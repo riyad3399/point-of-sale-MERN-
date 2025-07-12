@@ -1,89 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import WholeSaleTab from "../components/transaction/WholeSaleTab";
 import RetailSaleTab from "../components/transaction/RetailSaleTab";
 import AllTransactions from "../components/transaction/AllTransactions";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../context/AuthContext";
+import { usePermission } from "../hooks/usePermission";
 
 export default function TransactionsPage() {
-  const [activeTab, setActiveTab] = useState("all");
+  const { hasPermission } = usePermission();
+  const { t } = useTranslation();
 
-  const { user } = useAuth();
+  // Define tabs with visibility based on permissions
+  const tabs = [
+    {
+      id: "all",
+      label: t("transactions.all"),
+      visible:
+        hasPermission("sales", "retailSale", [
+          "view",
+          "add",
+          "edit",
+          "delete",
+        ]) || hasPermission("sales", "wholeSale", ["view", "edit", "delete"]),
+    },
+    {
+      id: "wholesale",
+      label: t("transactions.wholesale"),
+      visible: hasPermission("sales", "wholeSale", ["view", "edit", "delete"]),
+    },
+    {
+      id: "retail",
+      label: t("transactions.retail"),
+      visible: hasPermission("sales", "retailSale", ["view", "edit", "delete"]),
+    },
+  ];
 
-  function capitalizeFirstLetter(string: string) {
-    if (!string) return "";
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+  // Filter only visible tabs
+  const visibleTabs = tabs.filter((tab) => tab.visible);
 
-  const retailSalePermission = user?.permissions?.sales?.retailSale || {};
-  const wholeSalePermission = user?.permissions?.sales?.wholeSale || {};
+  const [activeTab, setActiveTab] = useState(visibleTabs[0]?.id || null);
 
-  const retailKeys = {};
-  const wholeKeys = {};
 
-  const keys1 = new Set([...Object.keys(retailSalePermission)]);
-  const keys2 = new Set([...Object.keys(wholeSalePermission)]);
-
-  keys1.forEach((key) => {
-    retailKeys[key] = Boolean(retailSalePermission[key]);
-  });
-  keys2.forEach((key) => {
-    wholeKeys[key] = Boolean(wholeSalePermission[key]);
-  });
-
-  console.log(retailKeys, wholeKeys);
+  useEffect(() => {
+    if (!visibleTabs.some((tab) => tab.id === activeTab)) {
+      setActiveTab(visibleTabs[0]?.id || null);
+    }
+  }, [activeTab, visibleTabs]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "all":
-        return (
-          (retailKeys.view ||
-            retailKeys.delete ||
-            retailKeys.edit ||
-            retailKeys.add ||
-            wholeKeys.view ||
-            wholeKeys.delete ||
-            wholeKeys.edit ||
-            wholeKeys.add) && (
-            <AllTransactions capitalizeFirstLetter={capitalizeFirstLetter} />
-          )
-        );
+        return <AllTransactions />;
       case "wholesale":
-        return (
-          (wholeKeys.view ||
-            wholeKeys.delete ||
-            wholeKeys.edit ||
-            wholeKeys.add) && (
-            <WholeSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />
-          )
-        );
+        return <WholeSaleTab />;
       case "retail":
-        return (
-          (retailKeys.view ||
-            retailKeys.delete ||
-            retailKeys.edit ||
-            retailKeys.add) && (
-            <RetailSaleTab capitalizeFirstLetter={capitalizeFirstLetter} />
-          )
-        );
-
+        return <RetailSaleTab />;
       default:
         return null;
     }
   };
 
-  const { t } = useTranslation();
+  if (!activeTab) {
+    return (
+      <div className="p-4 max-w-6xl mx-auto text-center text-gray-500">
+        {t("transactions.no_access")}
+      </div>
+    );
+  }
 
-  const tabs = [
-    { id: "all", label: t("transactions.all") },
-    { id: "wholesale", label: t("transactions.wholesale") },
-    { id: "retail", label: t("transactions.retail") },
-  ];
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <div className="flex gap-4 border-b pb-2">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}

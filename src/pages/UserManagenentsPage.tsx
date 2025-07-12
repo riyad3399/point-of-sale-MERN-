@@ -19,6 +19,7 @@ export default function UserManagenentsPage() {
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAuth();
 
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
