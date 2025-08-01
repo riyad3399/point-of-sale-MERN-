@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -66,21 +67,10 @@ const Add: React.FC = () => {
       const result = await response.json();
 
       if (response.ok) {
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Product added successfully!",
-          showConfirmButton: false,
-          timer: 1500,
-          timerProgressBar: true,
-        });
+       toast.success("Product added successfully!");
         reset();
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Failed to add product!",
-        });
+        toast.error("Failed to add product!");
       }
     } catch (error) {
       console.error("Error submitting form:", error);

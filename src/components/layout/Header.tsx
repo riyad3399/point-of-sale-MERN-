@@ -82,7 +82,7 @@ const Header: React.FC = () => {
   }, [token, location.pathname]);
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header className="bg-transparent backdrop-blur-xl sticky top-0 z-10">
       <div className="px-4 md:px-6 py-3 flex items-center md:justify-end justify-between">
         <div className="mr-10">
           <LanguageSwitcher />

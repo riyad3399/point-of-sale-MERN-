@@ -1,10 +1,10 @@
-import { useState } from "react"; 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-
+import toast from "react-hot-toast";
 
 interface SupplierFormData {
   name: string;
@@ -21,7 +21,7 @@ const SupplierAddForm = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitted, isSubmitting }, 
+    formState: { errors },
   } = useForm<SupplierFormData>();
 
   const onSubmit = async (data: SupplierFormData) => {
@@ -30,43 +30,17 @@ const SupplierAddForm = () => {
       const res = await axios.post("http://localhost:3000/suppliers/add", data);
 
       if (res.status === 201) {
-        Swal.fire({
-          icon: "success",
-          title: res.data?.message || "Supplier Added!",
-          text: "নতুন সাপ্লায়ার সফলভাবে যুক্ত হয়েছে।",
-          iconColor: "#3085d6", 
-          confirmButtonColor: "#3085d6",
-          timer: 2500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
-        reset(); 
+        toast.success(res.data?.message || "Supplier Added!");
+        reset();
       } else {
-        Swal.fire({
-          icon: "warning",
-          title:  "Operation Completed",
-          text: `Supplier added with status: ${res.status}.`,
-          confirmButtonColor: "#3085d6",
-          timer: 2500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
+        toast.error(res.data?.message || "something went wrong");
         reset();
       }
     } catch (err) {
       console.error("Error adding supplier:", err);
       const errorMsg =
         err.response?.data?.message || "Supplier যোগ করতে সমস্যা হয়েছে।";
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: errorMsg,
-        iconColor: "#d33",
-        confirmButtonColor: "#d33",
-        timer: 2500,
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }

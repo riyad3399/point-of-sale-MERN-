@@ -38,6 +38,8 @@ import PurchasePaymentPage from "./components/purchase/PurchasePaymentPage";
 import RoleBasedRoute from "./components/RoleBasedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import UserListPage from "./pages/UserManagenentsPage";
+import ProtectedRoute from "./components/roleAndPermission/ProtectedRoute";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 function App() {
   return (
@@ -70,16 +72,94 @@ function App() {
                 >
                   <Route path="users-management" element={<UserListPage />} />
                 </Route>
-                <Route path="categories" element={<CategoriesPage />} />
-                <Route path="productes" element={<ProductesPage />} />
+                <Route
+                  path="categories"
+                  element={
+                    <ProtectedRoute
+                      module="inventory"
+                      subModule="categories"
+                      actions={["trigger"]}
+                    >
+                      <CategoriesPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="productes"
+                  element={
+                    <ProtectedRoute
+                      module="inventory"
+                      subModule="products"
+                      actions={["trigger"]}
+                    >
+                      <ProductesPage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="showProduct" element={<ShowProduct />} />
                 <Route path="inventory" element={<InventoryPage />} />
-                <Route path="transactions" element={<TransactionsPage />} />
+
                 <Route path="settings" element={<SettingsPage />} />
-                <Route path="customers" element={<CustomersPage />} />
-                <Route path="retailSale" element={<RetailSalePage />} />
-                <Route path="wholeSale" element={<WholeSalePage />} />
-                <Route path="quotation" element={<QuotationPage />} />
+                <Route
+                  path="customers"
+                  element={
+                    <ProtectedRoute
+                      module="customers"
+                      subModule="customers"
+                      actions={["trigger"]}
+                    >
+                      <CustomersPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="transactions"
+                  element={
+                    <ProtectedRoute
+                      module="sales"
+                      subModule="transactions"
+                      actions={["trigger"]}
+                    >
+                      <TransactionsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="retailSale"
+                  element={
+                    <ProtectedRoute
+                      module="sales"
+                      subModule="retailSale"
+                      actions={["trigger"]}
+                    >
+                      <RetailSalePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="wholeSale"
+                  element={
+                    <ProtectedRoute
+                      module="sales"
+                      subModule="wholeSale"
+                      actions={["trigger"]}
+                    >
+                      <WholeSalePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="quotation"
+                  element={
+                    <ProtectedRoute
+                      module="sales"
+                      subModule="quotations"
+                      actions={["trigger"]}
+                    >
+                      <QuotationPage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="report" element={<ReportPage />} />
                 <Route path="invoiceView" element={<InvoiceView />} />
                 <Route
@@ -88,9 +168,31 @@ function App() {
                 />
                 <Route path="profitSummary" element={<ProfitSummary />} />
                 <Route path="expense" element={<ExpensePage />} />
-                <Route path="purchase" element={<PurchasePage />} />
+                <Route
+                  path="purchase"
+                  element={
+                    <ProtectedRoute
+                      module="purchase"
+                      subModule="purchase"
+                      actions={["trigger"]}
+                    >
+                      <PurchasePage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="supplier" element={<SupplierPage />} />
-                <Route path="alertItems" element={<AlertItemsPage />} />
+                <Route
+                  path="alertItems"
+                  element={
+                    <ProtectedRoute
+                      module="inventory"
+                      subModule="alertItems"
+                      actions={["trigger"]}
+                    >
+                      <AlertItemsPage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="purchasePayment"
                   element={<PurchasePaymentPage />}
@@ -100,6 +202,8 @@ function App() {
 
             {/* Not Found */}
             <Route path="*" element={<NotFound />} />
+
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Routes>
         </AnimatePresence>
       </HelmetProvider>

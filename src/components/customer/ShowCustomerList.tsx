@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import UpdateCustomerModal from "./UpdateCustomerModal";
 import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { usePermission } from "../../hooks/usePermission";
 
 interface Customer {
   _id: string;
@@ -27,13 +28,9 @@ const buttonVariants = {
   tap: { scale: 0.9 },
 };
 
-const rowVariants = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-};
-
 export default function ShowCustomerList({ customer, setCustomers }: Props) {
   const [editing, setEditing] = useState(false);
+  const { hasPermission } = usePermission();
 
   const handleDeleteCustomer = async (id: string) => {
     const result = await Swal.fire({
@@ -73,8 +70,6 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
     }
   };
 
-  
-
   return (
     <motion.tr
       initial={{ opacity: 0, y: 10 }}
@@ -85,7 +80,7 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
       <Helmet>
         <title>Customers | POS System</title>
       </Helmet>
-     
+
       <td className="p-3 border border-gray-300">{customer.customerId}</td>
       <td className="p-3 border border-gray-300 font-medium">
         {capitalizeFirstLetter(customer.customerName)}
@@ -94,28 +89,32 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
       <td className="p-3 border border-gray-300">{customer.address}</td>
       <td className="p-3 space-x-3 border border-gray-300">
         <div className="md:flex md:justify-start grid items-center justify-center gap-2">
-          <motion.button
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="text-gray-600 hover:text-green-500"
-            title="Edit"
-            onClick={() => setEditing(true)}
-          >
-            <FaRegEdit className="h-5 w-5" />
-          </motion.button>
-          <motion.button
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="text-gray-600 hover:text-red-500"
-            title="Delete"
-            onClick={() => handleDeleteCustomer(customer._id)}
-          >
-            <Trash className="h-5 w-5" />
-          </motion.button>
+          {hasPermission("customers", "customers", ["edit"]) && (
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-green-500"
+              title="Edit"
+              onClick={() => setEditing(true)}
+            >
+              <FaRegEdit className="h-5 w-5" />
+            </motion.button>
+          )}
+          {hasPermission("customers", "customers", ["delete"]) && (
+            <motion.button
+              variants={buttonVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="text-gray-600 hover:text-red-500"
+              title="Delete"
+              onClick={() => handleDeleteCustomer(customer._id)}
+            >
+              <Trash className="h-5 w-5" />
+            </motion.button>
+          )}
         </div>
         <div>
           {editing && (

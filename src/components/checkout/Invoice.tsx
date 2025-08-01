@@ -4,6 +4,7 @@ import { Printer } from "lucide-react";
 import axios from "axios";
 import { CompanyType } from "../../types";
 import Swal from "sweetalert2";
+import ThermalPrintButton from "../printButton/ThermalPrintButton";
 
 interface Product {
   productId: string;
@@ -252,6 +253,27 @@ const Invoice: React.FC<InvoiceProps> = ({
             <Printer className="w-4 h-4" />
             Print
           </motion.button>
+          <ThermalPrintButton
+            companyInfo={{
+              storeName: companyInfo?.storeName || "",
+              address: companyInfo?.address || "",
+              city: companyInfo?.city || "",
+              phone: companyInfo?.phone || "",
+              email: companyInfo?.email || "",
+            }}
+            products={products}
+            customerName={selectWalking?.customerName || "Walking Customer"}
+            customerPhone={selectWalking?.phone || "N/A"}
+            total={totalAmount}
+            discount={discount}
+            payable={payable}
+            paid={paidAmount}
+            due={dueAmount}
+            change={balance}
+            paymentMethod={paymentMethod}
+            checkoutDate={checkoutDate}
+            dueDate={dueDate}
+          />
         </div>
       </div>
     </motion.div>

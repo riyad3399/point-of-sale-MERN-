@@ -19,6 +19,7 @@ import { fetchSupplierDetails } from "../../utils/api";
 import ViewSupplierDetailsModal from "./ViewSupplierDetailsModal";
 import { Supplier } from "../../types";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "../../hooks/usePermission";
 
 const SupplierList = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -35,6 +36,7 @@ const SupplierList = () => {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
+  const { hasPermission } = usePermission();
 
   const { t } = useTranslation();
 

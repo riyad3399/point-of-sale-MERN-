@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { Loader } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 
 type FormValues = {
@@ -40,20 +41,10 @@ const AddCategory: React.FC = () => {
       });
 
       if (response.ok) {
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Category added successfully!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        toast.success("Category added successfully!");
         reset();
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Failed to add Category!",
-        });
+       toast.error("Failed to add Category!");
       }
     } catch (error) {
       console.error("Error:", error);

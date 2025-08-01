@@ -32,12 +32,12 @@ const SettingsPage: React.FC = () => {
                 isActive={activeTab === "store"}
                 onClick={() => setActiveTab("store")}
               />
-              <SettingNavItem
+              {/* <SettingNavItem
                 icon={<Receipt />}
                 title="Receipt Settings"
                 isActive={activeTab === "receipt"}
                 onClick={() => setActiveTab("receipt")}
-              />
+              /> */}
               <SettingNavItem
                 icon={<Upload />}
                 title="Upload Products"

@@ -19,7 +19,7 @@ const LanguageSwitcher: React.FC = () => {
         value={i18n.language}
         className="bg-transparent focus:outline-none text-gray-800 font-medium cursor-pointer"
       >
-        <option value="en">English</option>
+        <option value="en">En</option>
         <option value="bn">বাংলা</option>
       </select>
     </div>

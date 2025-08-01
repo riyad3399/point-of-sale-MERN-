@@ -7,6 +7,7 @@ import Loading from "../components/Loading";
 import { Box, Search } from "lucide-react";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "../hooks/usePermission";
 
 
 const ProductesPage: React.FC = () => {
@@ -19,6 +20,7 @@ const ProductesPage: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const {hasPermission}=usePermission()
 
   const tabVariants = {
     initial: { opacity: 0, y: 10 },
@@ -90,16 +92,18 @@ const ProductesPage: React.FC = () => {
         >
           {t("product.productList")}
         </button>
-        <button
-          onClick={() => setActiveTab("add")}
-          className={`px-4 py-2 focus:outline-none ${
-            activeTab === "add"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-600 hover:text-blue-600"
-          }`}
-        >
-          {t("product.addProduct")}
-        </button>
+        {hasPermission("inventory", "products", ["add"]) && (
+          <button
+            onClick={() => setActiveTab("add")}
+            className={`px-4 py-2 focus:outline-none ${
+              activeTab === "add"
+                ? "text-blue-600 border-b-2 border-blue-600"
+                : "text-gray-600 hover:text-blue-600"
+            }`}
+          >
+            {t("product.addProduct")}
+          </button>
+        )}
       </div>
 
       <div className="relative min-h-screen">
@@ -245,7 +249,6 @@ const ProductesPage: React.FC = () => {
             )}
         </div>
       </div>
-      
     </div>
   );
 };

@@ -166,28 +166,32 @@ const Sidebar: React.FC = () => {
             </motion.div>
           )}
 
-          <div
-            onClick={() => toggleMenu("products")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/productes") ||
-              pathName.startsWith("/categories") ||
-              pathName.startsWith("/alertItems")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <Boxes />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Inventory
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["products"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+          {hasModuleAccess("inventory") && (
+            <div
+              onClick={() => toggleMenu("products")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/productes") ||
+                pathName.startsWith("/categories") ||
+                pathName.startsWith("/alertItems")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <Boxes />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Inventory
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["products"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
           {openMenus["products"] && !collapsed && (
             <motion.div
               className="ml-8 mt-1 space-y-1"
@@ -195,49 +199,59 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/categories"
-                icon={<Tags size={18} />}
-                text={t("sidebar.categories")}
-                collapsed={collapsed}
-                title={t("sidebar.categories")}
-              />
-              <SidebarLink
-                to="/productes"
-                icon={<Boxes size={18} />}
-                text={t("sidebar.products")}
-                collapsed={collapsed}
-                title={t("sidebar.products")}
-              />
-              <SidebarLink
-                to="/alertItems"
-                icon={<AlertCircle size={16} />}
-                text={"Alert Items"}
-                collapsed={collapsed}
-                title={t("sidebar.alertItems")}
-              />
+              {hasPermission("inventory", "categories", ["trigger"]) && (
+                <SidebarLink
+                  to="/categories"
+                  icon={<Tags size={18} />}
+                  text={t("sidebar.categories")}
+                  collapsed={collapsed}
+                  title={t("sidebar.categories")}
+                />
+              )}
+              {hasPermission("inventory", "products", ["trigger"]) && (
+                <SidebarLink
+                  to="/productes"
+                  icon={<Boxes size={18} />}
+                  text={t("sidebar.products")}
+                  collapsed={collapsed}
+                  title={t("sidebar.products")}
+                />
+              )}
+              {hasPermission("inventory", "alertItems", ["trigger"]) && (
+                <SidebarLink
+                  to="/alertItems"
+                  icon={<AlertCircle size={16} />}
+                  text={"Alert Items"}
+                  collapsed={collapsed}
+                  title={t("sidebar.alertItems")}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("purchase")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/purchase")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <PackagePlus />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Purchase
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["purchase"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+          {hasModuleAccess("purchase") && (
+            <div
+              onClick={() => toggleMenu("purchase")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/purchase")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <PackagePlus />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Purchase
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["purchase"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["purchase"] && !collapsed && (
             <motion.div
@@ -256,26 +270,30 @@ const Sidebar: React.FC = () => {
             </motion.div>
           )}
 
-          <div
-            onClick={() => toggleMenu("customers")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/customers")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <Users />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Customers
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["customers"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+          {hasModuleAccess("customers") && (
+            <div
+              onClick={() => toggleMenu("customers")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/customers")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <Users />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Customers
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["customers"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["customers"] && !collapsed && (
             <motion.div
@@ -284,35 +302,42 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/customers"
-                icon={<Users size={18} />}
-                text={t("sidebar.customers")}
-                collapsed={collapsed}
-                title={t("sidebar.customers")}
-              />
+              {hasPermission("customers", "customers", ["trigger"]) && (
+                <SidebarLink
+                  to="/customers"
+                  icon={<Users size={18} />}
+                  text={t("sidebar.customers")}
+                  collapsed={collapsed}
+                  title={t("sidebar.customers")}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("supplier")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/supplier")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <Truck />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Supplier
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["customers"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+
+          {hasModuleAccess("supplier") && (
+            <div
+              onClick={() => toggleMenu("supplier")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/supplier")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <Truck />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Supplier
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["customers"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["supplier"] && !collapsed && (
             <motion.div
@@ -321,35 +346,40 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/supplier"
-                icon={<Truck size={18} />}
-                text={t("sidebar.supplier")}
-                collapsed={collapsed}
-                title={t("sidebar.supplier")}
-              />
+              {hasPermission("supplier", "supplier", ["trigger"]) && (
+                <SidebarLink
+                  to="/supplier"
+                  icon={<Truck size={18} />}
+                  text={t("sidebar.supplier")}
+                  collapsed={collapsed}
+                  title={t("sidebar.supplier")}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("expense")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/expense")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <Coins />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Expense
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["expense"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+
+          {hasModuleAccess("expense") && (
+            <div
+              onClick={() => toggleMenu("expense")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/expense")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <Coins />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Expense
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div animate={{ rotate: openMenus["expense"] ? 90 : 0 }}>
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["expense"] && !collapsed && (
             <motion.div
@@ -358,35 +388,42 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/expense"
-                icon={<Coins size={18} />}
-                text={t("sidebar.expense")}
-                collapsed={collapsed}
-                title={t("sidebar.expense")}
-              />
+              {hasPermission("expense", "expense", ["trigger"]) && (
+                <SidebarLink
+                  to="/expense"
+                  icon={<Coins size={18} />}
+                  text={t("sidebar.expense")}
+                  collapsed={collapsed}
+                  title={t("sidebar.expense")}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("accounts")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/accounts")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <CircleDollarSign />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Accounts
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["accounts"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+
+          {hasModuleAccess("accounts") && (
+            <div
+              onClick={() => toggleMenu("accounts")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/accounts")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <CircleDollarSign />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Accounts
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["accounts"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["accounts"] && !collapsed && (
             <motion.div
@@ -395,35 +432,42 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/accounts"
-                icon={<CircleDollarSign size={18} />}
-                text={"Accounts"}
-                collapsed={collapsed}
-                title={"Accounts"}
-              />
+              {hasPermission("accounts", "accounts", ["trigger"]) && (
+                <SidebarLink
+                  to="/accounts"
+                  icon={<CircleDollarSign size={18} />}
+                  text={"Accounts"}
+                  collapsed={collapsed}
+                  title={"Accounts"}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("employee")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/employee")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <Briefcase />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Employee
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["employee"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+
+          {hasModuleAccess("employee") && (
+            <div
+              onClick={() => toggleMenu("employee")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/employee")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <Briefcase />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Employee
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["employee"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["employee"] && !collapsed && (
             <motion.div
@@ -432,33 +476,39 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/employee"
-                icon={<Briefcase size={18} />}
-                text={"Employee"}
-                collapsed={collapsed}
-                title={"Employee"}
-              />
+              {hasPermission("employee", "employee", ["trigger"]) && (
+                <SidebarLink
+                  to="/employee"
+                  icon={<Briefcase size={18} />}
+                  text={"Employee"}
+                  collapsed={collapsed}
+                  title={"Employee"}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("report")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/report")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <ScrollText />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">Report</span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["report"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+          {hasModuleAccess("report") && (
+            <div
+              onClick={() => toggleMenu("report")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/report")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <ScrollText />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Report
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div animate={{ rotate: openMenus["report"] ? 90 : 0 }}>
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["report"] && !collapsed && (
             <motion.div
@@ -467,35 +517,41 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/report"
-                icon={<ScrollText size={18} />}
-                text={t("sidebar.report")}
-                collapsed={collapsed}
-                title={t("sidebar.report")}
-              />
+              {hasPermission("report", "report", ["trigger"]) && (
+                <SidebarLink
+                  to="/report"
+                  icon={<ScrollText size={18} />}
+                  text={t("sidebar.report")}
+                  collapsed={collapsed}
+                  title={t("sidebar.report")}
+                />
+              )}
             </motion.div>
           )}
-          <div
-            onClick={() => toggleMenu("settings")}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-              pathName.startsWith("/settings")
-                ? "bg-primary-700 text-white"
-                : "text-primary-200 hover:text-white hover:bg-primary-700/50"
-            }`}
-          >
-            <Settings />
-            {!collapsed && (
-              <span className="flex-1 text-left whitespace-nowrap">
-                Settings
-              </span>
-            )}
-            {!collapsed && (
-              <motion.div animate={{ rotate: openMenus["settings"] ? 90 : 0 }}>
-                <ChevronRight size={16} />
-              </motion.div>
-            )}
-          </div>
+          {hasModuleAccess("settings") && (
+            <div
+              onClick={() => toggleMenu("settings")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                pathName.startsWith("/settings")
+                  ? "bg-primary-700 text-white"
+                  : "text-primary-200 hover:text-white hover:bg-primary-700/50"
+              }`}
+            >
+              <Settings />
+              {!collapsed && (
+                <span className="flex-1 text-left whitespace-nowrap">
+                  Settings
+                </span>
+              )}
+              {!collapsed && (
+                <motion.div
+                  animate={{ rotate: openMenus["settings"] ? 90 : 0 }}
+                >
+                  <ChevronRight size={16} />
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {openMenus["settings"] && !collapsed && (
             <motion.div
@@ -504,13 +560,15 @@ const Sidebar: React.FC = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              <SidebarLink
-                to="/settings"
-                icon={<Settings size={18} />}
-                text={t("sidebar.settings")}
-                collapsed={collapsed}
-                title={t("sidebar.settings")}
-              />
+              {hasPermission("settings", "settings", ["trigger"]) && (
+                <SidebarLink
+                  to="/settings"
+                  icon={<Settings size={18} />}
+                  text={t("sidebar.settings")}
+                  collapsed={collapsed}
+                  title={t("sidebar.settings")}
+                />
+              )}
             </motion.div>
           )}
 

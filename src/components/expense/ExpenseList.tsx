@@ -24,6 +24,7 @@ import { deleteExpense } from "../../utils/api";
 import Swal from "sweetalert2";
 import { Expense, Item } from "../../types";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "../../hooks/usePermission";
 
 
 
@@ -67,6 +68,7 @@ export default function ExpenseList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const {hasPermission} =usePermission()
 
   const { t } = useTranslation();
 
@@ -366,18 +368,20 @@ export default function ExpenseList() {
                       >
                         {expense.method}
                       </div>
-                      <button
-                        onClick={() => handleEditExpense(expense)}
-                        className="p-1.5 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
+                      {hasPermission("expense", "expense", ["edit"]) && (
+                        <button
+                          onClick={() => handleEditExpense(expense)}
+                          className="p-1.5 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                      )}
+                      {hasPermission("expense", "expense", ["delete"]) && <button
                         onClick={() => handleDeleteExpense(expense._id)}
                         className="p-1.5 text-gray-500 hover:text-red-600 dark:hover:text-red-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </button>}
                     </div>
                   </div>
 

@@ -10,6 +10,7 @@ import UpdateProduct from "./UpdateProduct";
 import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { Product } from "../../types";
+import { usePermission } from "../../hooks/usePermission";
 
 
 
@@ -30,6 +31,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const {hasPermission}= usePermission()
 
   const navigate = useNavigate();
 
@@ -126,48 +128,58 @@ const ShowProduct: React.FC<ShowProductProps> = ({
         <td className="px-4 py-3 border text-center">{product.quantity}</td>
         <td className="px-4 py-3 border">
           <div className="flex items-center gap-4 justify-center">
-            <motion.button
-              variants={buttonVariants}
-              initial="initial"
-              whileHover="hover"
-              whileTap="tap"
-              className="text-gray-600 hover:text-green-500 transition-transform"
-              title="Edit"
-              onClick={() => setOpen(true)}
-            >
-              <FaRegEdit size={22} />
-            </motion.button>
+            {hasPermission("inventory", "products", ["edit"]) && (
+              <motion.button
+                variants={buttonVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="text-gray-600 hover:text-green-500 transition-transform"
+                title="Edit"
+                onClick={() => setOpen(true)}
+              >
+                <FaRegEdit size={22} />
+              </motion.button>
+            )}
 
-            <motion.button
-              variants={buttonVariants}
-              initial="initial"
-              whileHover="hover"
-              whileTap="tap"
-              className="text-gray-600 hover:text-blue-500 transition-transform"
-              title="View"
-              onClick={() => handleSingleProduct(product._id)}
-            >
-              <View size={22} />
-            </motion.button>
+            {hasPermission("inventory", "products", ["view"]) && (
+              <motion.button
+                variants={buttonVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="text-gray-600 hover:text-blue-500 transition-transform"
+                title="View"
+                onClick={() => handleSingleProduct(product._id)}
+              >
+                <View size={22} />
+              </motion.button>
+            )}
 
-            <motion.button
-              variants={buttonVariants}
-              initial="initial"
-              whileHover="hover"
-              whileTap="tap"
-              className="text-gray-600 hover:text-red-500 transition-transform"
-              title="Delete"
-              onClick={() => handleDeleteProduct(product._id)}
-            >
-              <Trash size={22} />
-            </motion.button>
+            {hasPermission("inventory", "products", ["delete"]) && (
+              <motion.button
+                variants={buttonVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="text-gray-600 hover:text-red-500 transition-transform"
+                title="Delete"
+                onClick={() => handleDeleteProduct(product._id)}
+              >
+                <Trash size={22} />
+              </motion.button>
+            )}
           </div>
         </td>
       </motion.tr>
 
       {/* Modal render outside of <tr> */}
       {open && (
-        <Modal isOpen={open} onClose={() => setOpen(false)} title="Update Product">
+        <Modal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title="Update Product"
+        >
           <UpdateProduct product={product} />
         </Modal>
       )}

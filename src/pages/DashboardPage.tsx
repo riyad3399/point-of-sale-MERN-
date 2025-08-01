@@ -199,7 +199,7 @@ const DashboardPage: React.FC = () => {
         <title>Dashboard | POS System</title>
       </Helmet>
 
-      <h1 className="text-2xl font-bold mb-6">{t("Dashboard.title")}</h1>
+
 
       {/* Stats Grid */}
       <div className="mb-5">

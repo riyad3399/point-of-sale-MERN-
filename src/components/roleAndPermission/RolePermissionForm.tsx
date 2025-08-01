@@ -222,11 +222,8 @@ export default function RolePermissionForm({
                   transition={{ duration: 0.5 }}
                   className="bg-white p-4 rounded-md shadow-sm border border-gray-200"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="capitalize font-medium text-gray-700">
-                      {moduleKey}
-                    </p>
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <div className="flex items-center gap-2 mb-2 bg-gradient-to-r from-success-200  to-primary-200  rounded ">
+                    <label className="flex pr-1 pt-1 pb-1 items-center gap-2 text-sm cursor-pointer">
                       <input
                         type="checkbox"
                         checked={(actions as PermissionActions).trigger}
@@ -236,43 +233,47 @@ export default function RolePermissionForm({
                         }
                         className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
                       />
-                      Enable
                     </label>
+                    <p className="capitalize font-medium text-gray-700">
+                      {moduleKey}
+                    </p>
                   </div>
 
-                  {["view", "add", "edit", "delete"].map((action) => (
-                    <label
-                      key={action}
-                      className="flex items-center gap-2 text-sm mb-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={
-                          (actions as PermissionActions)[
-                            action as keyof PermissionActions
-                          ]
-                        }
-                        disabled={
-                          !trigger ||
-                          !(actions as PermissionActions).trigger ||
-                          isDeveloper
-                        }
-                        onChange={() =>
-                          handleToggle(
-                            groupKey,
-                            moduleKey,
-                            action as keyof PermissionActions
-                          )
-                        }
-                        className={`form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 ${
-                          !trigger || !(actions as PermissionActions).trigger
-                            ? "cursor-not-allowed opacity-50"
-                            : ""
-                        }`}
-                      />
-                      <span className="text-gray-700">{action}</span>
-                    </label>
-                  ))}
+                  <div className="grid grid-cols-2 ">
+                    {["view", "add", "edit", "delete"].map((action) => (
+                      <label
+                        key={action}
+                        className="flex items-center gap-2 text-sm mb-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={
+                            (actions as PermissionActions)[
+                              action as keyof PermissionActions
+                            ]
+                          }
+                          disabled={
+                            !trigger ||
+                            !(actions as PermissionActions).trigger ||
+                            isDeveloper
+                          }
+                          onChange={() =>
+                            handleToggle(
+                              groupKey,
+                              moduleKey,
+                              action as keyof PermissionActions
+                            )
+                          }
+                          className={`form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 ${
+                            !trigger || !(actions as PermissionActions).trigger
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                        />
+                        <span className="text-gray-700">{action}</span>
+                      </label>
+                    ))}
+                  </div>
                 </motion.div>
               ))}
             </div>

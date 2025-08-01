@@ -13,6 +13,7 @@ import { Purchase } from "../../types";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { handleGetSinglePurchase } from "../../utils/api";
+import { usePermission } from "../../hooks/usePermission";
 
 interface PurchaseCardProps {
   purchase: Purchase;
@@ -32,10 +33,10 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
   const progress = (purchase.paid / purchase.total) * 100;
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
 
   const handlePayment = (id: string) => {
     handleGetSinglePurchase(id, navigate);
-    
   };
 
   const handleDelete = () => {
@@ -195,18 +196,22 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
 
               {/* Action Buttons */}
               <div className="mt-6 flex justify-end gap-3">
-                <button
-                  onClick={() => handlePayment(purchase._id)}
-                  className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-all"
-                >
-                  <CreditCard className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center gap-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {hasPermission("purchase", "purchase", ["edit"]) && (
+                  <button
+                    onClick={() => handlePayment(purchase._id)}
+                    className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-all"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                  </button>
+                )}
+                {hasPermission("purchase", "purchase", ["delete"]) && (
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center gap-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

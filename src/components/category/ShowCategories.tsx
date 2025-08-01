@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import CategoryUpdateModal from "./CategoryUpdateModal";
 import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { usePermission } from "../../hooks/usePermission";
 
 interface Category {
   categoryId: number;
@@ -30,6 +31,7 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
 }) => {
   const [asignItem, setAsingItem] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const { hasPermission } = usePermission();
 
   const handleDeleteCategory = async (id: string) => {
     const result = await Swal.fire({
@@ -89,23 +91,27 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
       </Helmet>
 
       <td className="px-4 py-2 border text-left">{product?.categoryId}</td>
-      <td className="px-4 py-2 border text-left">{capitalizeFirstLetter(product.categoryName)}</td>
+      <td className="px-4 py-2 border text-left">
+        {capitalizeFirstLetter(product.categoryName)}
+      </td>
       <td className="px-4 py-2 border text-left">{asignItem.length}</td>
       <td className="px-4 py-2 border text-left">{product?.status}</td>
       <td className="px-4 py-2 border text-center">
         <div className="flex justify-center items-center gap-3">
           <div>
-            <motion.button
-              variants={buttonVariants}
-              initial="initial"
-              whileHover="hover"
-              whileTap="tap"
-              className="text-gray-600 hover:text-green-500"
-              title="Edit"
-              onClick={() => setModalOpen(true)}
-            >
-              <FaRegEdit size={22} />
-            </motion.button>
+            {hasPermission("inventory", "categories", ["edit"]) && (
+              <motion.button
+                variants={buttonVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="text-gray-600 hover:text-green-500"
+                title="Edit"
+                onClick={() => setModalOpen(true)}
+              >
+                <FaRegEdit size={22} />
+              </motion.button>
+            )}
             <CategoryUpdateModal
               open={modalOpen}
               product={product}
@@ -114,17 +120,19 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
             />
           </div>
           <div>
-            <motion.button
-              variants={buttonVariants}
-              initial="initial"
-              whileHover="hover"
-              whileTap="tap"
-              className="text-gray-600 hover:text-red-500"
-              title="Delete"
-              onClick={() => handleDeleteCategory(product?._id)}
-            >
-              <Trash size={22} />
-            </motion.button>
+            {hasPermission("inventory", "categories",["delete"]) && (
+              <motion.button
+                variants={buttonVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="text-gray-600 hover:text-red-500"
+                title="Delete"
+                onClick={() => handleDeleteCategory(product?._id)}
+              >
+                <Trash size={22} />
+              </motion.button>
+            )}
           </div>
         </div>
       </td>

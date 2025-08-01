@@ -7,6 +7,7 @@ import { Box, Search } from "lucide-react";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "../hooks/usePermission";
 
 
 const CategoriesPage: React.FC = () => {
@@ -15,6 +16,7 @@ const CategoriesPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const { hasPermission } = usePermission();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -42,7 +44,6 @@ const CategoriesPage: React.FC = () => {
   }, [activeTab]);
   
 
-
   const filteredCategories = categories.filter((cat: any) => {
     const matchSearch =
       cat.categoryName.toLowerCase().includes(search.toLowerCase()) ||
@@ -53,7 +54,6 @@ const CategoriesPage: React.FC = () => {
     return matchSearch && matchStatus;
   });
 
-  // ✅ Pagination for filtered results
   const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -70,7 +70,7 @@ const CategoriesPage: React.FC = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
-  const {t} = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="mx-auto p-4">
@@ -86,16 +86,18 @@ const CategoriesPage: React.FC = () => {
         >
           {t("category.title")}
         </button>
-        <button
-          onClick={() => setActiveTab("add")}
-          className={`px-4 py-2 focus:outline-none ${
-            activeTab === "add"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-600 hover:text-blue-600"
-          }`}
-        >
-          {t("category.add")}
-        </button>
+        {hasPermission("inventory", "categories", ["add"]) && (
+          <button
+            onClick={() => setActiveTab("add")}
+            className={`px-4 py-2 focus:outline-none ${
+              activeTab === "add"
+                ? "text-blue-600 border-b-2 border-blue-600"
+                : "text-gray-600 hover:text-blue-600"
+            }`}
+          >
+            {t("category.add")}
+          </button>
+        )}
       </div>
 
       {/* Tab Content */}
