@@ -36,6 +36,7 @@ const Sidebar: React.FC = () => {
 
   const { t } = useTranslation();
   const { user } = useAuth();
+  
 
   useEffect(() => {
     setCollapsed(pathName === "/retailSale" || pathName === "/wholeSale");

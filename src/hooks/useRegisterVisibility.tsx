@@ -7,6 +7,7 @@ export const useRegisterVisibility = () => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const checkUserCount = async () => {
       try {

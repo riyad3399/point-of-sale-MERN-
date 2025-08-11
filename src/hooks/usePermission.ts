@@ -4,6 +4,7 @@ type Action = "view" | "add" | "edit" | "delete" | "trigger";
 
 export function usePermission() {
   const { user } = useAuth();
+  console.log(user);
 
   const hasPermission = (
     module: string,

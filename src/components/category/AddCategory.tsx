@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import Swal from "sweetalert2";
 import { Loader } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 
 type FormValues = {
@@ -18,6 +18,8 @@ const AddCategory: React.FC = () => {
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
+  const {token} = useAuth()
+
   const handleGenerateNumber = () => {
     const number = Math.floor(Math.random() * 900000) + 100000;
     setRandomNumber(number);
@@ -27,6 +29,7 @@ const AddCategory: React.FC = () => {
     handleGenerateNumber();
   }, []);
 
+
   const handleCategorySubmit = async (data: FormValues) => {
     try {
       setLoading(true);
@@ -34,6 +37,7 @@ const AddCategory: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           categoryName: data.categoryName,

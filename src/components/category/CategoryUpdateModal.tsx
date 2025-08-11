@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
 
 // interface Category {
 //   id: number;
@@ -31,11 +32,16 @@ export default function CategoryUpdateModal({
       status: product?.status || "Pending",
     },
   });
+  const {token} = useAuth()
 
   const onSubmit = async (data) => {
     try {
-      await axios
-        .patch(`http://localhost:3000/category/${product._id}`, data)
+      await await axios
+        .patch(`http://localhost:3000/category/${product._id}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((res) => {
           const updatedCategory = res.data;
 

@@ -27,10 +27,16 @@ const CategoriesPage: React.FC = () => {
     exit: { opacity: 0, y: -10 },
   };
 
+  const token = localStorage.getItem("token")
+
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/category")
+      .get("http://localhost:3000/category", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setCategories(res.data);
         setCurrentPage(1);

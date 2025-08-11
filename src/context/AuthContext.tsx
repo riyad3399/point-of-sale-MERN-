@@ -5,100 +5,108 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
-// ✅ Full decoded user structure
 export interface DecodedUser {
   id: string;
   userName: string;
-  roles: string;
-  permissions?: {
-    sales?: {
-      trigger: boolean;
-      retailSale?: PermissionCRUD;
-      wholeSale?: PermissionCRUD;
-      transactions?: PermissionCRUD;
-      quotations?: PermissionCRUD;
-    };
-  };
-  [key: string]: any; // fallback for extra fields
+  roles: string | string[];
+  permissions?: Record<string, any>;
+  [key: string]: any;
 }
 
-// ✅ Define permission structure
-interface PermissionCRUD {
-  view: boolean;
-  add: boolean;
-  edit: boolean;
-  delete: boolean;
-}
-
-// ✅ AuthContext type
 interface AuthContextType {
-  user: DecodedUser | null;
-  login: (token: string) => void;
+  user: any | null; // পুরো backend থেকে আসা user object
+  decodedUser: DecodedUser | null; // token decode করে পাওয়া data
+  token: string | null;
+  refreshToken: string | null;
+  login: (token: string, refreshToken: string, user: any) => void;
   logout: () => void;
   loading: boolean;
 }
 
-// ✅ Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ Provider Props
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<DecodedUser | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [decodedUser, setDecodedUser] = useState<DecodedUser | null>(null);
+  const [user, setUser] = useState<any | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const savedToken = localStorage.getItem("token");
+    const savedRefreshToken = localStorage.getItem("refreshToken");
+    const savedUser = localStorage.getItem("user");
+
+    if (savedToken) {
       try {
-        const decoded = jwtDecode<DecodedUser>(token);
-        setUser(decoded);
+        const decoded = jwtDecode<DecodedUser>(savedToken);
+        setDecodedUser(decoded);
+        setToken(savedToken);
+        setRefreshToken(savedRefreshToken);
+        setUser(savedUser ? JSON.parse(savedUser) : null);
       } catch (error) {
         console.error("Invalid token:", error);
-        localStorage.removeItem("token");
+        localStorage.clear();
+        setDecodedUser(null);
+        setToken(null);
+        setRefreshToken(null);
         setUser(null);
       }
     }
     setLoading(false);
   }, []);
 
-  const login = (token: string) => {
+  const login = (token: string, refreshToken: string, user: any) => {
     try {
       localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user));
+
       const decoded = jwtDecode<DecodedUser>(token);
-      setUser(decoded);
+      setDecodedUser(decoded);
+      setToken(token);
+      setRefreshToken(refreshToken);
+      setUser(user);
     } catch (error) {
       console.error("Invalid login token:", error);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
+    setDecodedUser(null);
+    setToken(null);
+    setRefreshToken(null);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        decodedUser,
+        token,
+        refreshToken,
+        login,
+        logout,
+        loading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// ✅ Hook to access context
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {
-    return {
-      user: null,
-      login: () => {},
-      logout: () => {},
-      loading: true,
-    };
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

@@ -8,6 +8,7 @@ import CategoryUpdateModal from "./CategoryUpdateModal";
 import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
+import { useAuth } from "../../context/AuthContext";
 
 interface Category {
   categoryId: number;
@@ -32,6 +33,7 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
   const [asignItem, setAsingItem] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const { hasPermission } = usePermission();
+  const {token} = useAuth()
 
   const handleDeleteCategory = async (id: string) => {
     const result = await Swal.fire({
@@ -46,7 +48,11 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/category/${id}`);
+        await axios.delete(`http://localhost:3000/category/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         setCategories((prev) => prev.filter((cat) => cat._id !== id));
 

@@ -76,26 +76,51 @@ export const useHandleLogout = () => {
 };
 
 // Login
+// export const handleLogin = async (
+//   data: UserInfo,
+//   navigate: any,
+//   login: (token: string) => void
+// ) => {
+//   try {
+//     const response = await axios.post(`${URI}/auth/login`, data);
+//     const token = response.data.token;
+
+//     // Token set এবং context login
+//     localStorage.setItem("token", token);
+//     login(token); // context auth update
+
+//     toast.success(response.data.message || "Login successful!");
+//     navigate("/");
+//   } catch (err: any) {
+//     toast.error(err.response?.data?.message || "Login failed");
+//     navigate("/login");
+//   }
+// };
 export const handleLogin = async (
-  data: UserInfo,
-  navigate: any,
-  login: (token: string) => void
+  data: { userName: string; password: string },
+  navigate: (path: string) => void,
+  login: (token: string, refreshToken: string, user: any) => void
 ) => {
   try {
-    const response = await axios.post(`${URI}/user/login`, data);
-    const token = response.data.token;
+    const response = await axios.post(
+      `${URI}/auth/login`,
+      data
+    );
 
-    // Token set এবং context login
-    localStorage.setItem("token", token);
-    login(token); // 👉 context auth update
+    const { token, refreshToken, user, message } = response.data;
 
-    toast.success(response.data.message || "Login successful!");
+    // Context update করো এবং localStorage-এ সেভ হবে (context এর login ফাংশনে)
+    login(token, refreshToken, user);
+
+    toast.success(message || "Login successful!");
     navigate("/");
   } catch (err: any) {
     toast.error(err.response?.data?.message || "Login failed");
     navigate("/login");
   }
 };
+
+
 
 // Register
 export const handleRegister = async (data, navigate) => {
@@ -120,27 +145,54 @@ export const handleRegister = async (data, navigate) => {
 };
 
 // User profile
-export const handleProfile = async (token: string, navigate) => {
-  await axios
-    .get(`${URI}/user/profile`, {
-      headers: { Authorization: token },
-    })
-    .then((res) => {
-      toast.success(res.data.message);
-      navigate("/");
-    })
-    .catch((err) => {
-      toast.error(err.message);
-      navigate("/login");
+// export const handleProfile = async (token: string, navigate) => {
+//   await axios
+//     .get(`${URI}/auth/me`, {
+//       headers: { Authorization: token },
+//     })
+//     .then((res) => {
+//       toast.success(res.data.message);
+//       navigate("/");
+//     })
+//     .catch((err) => {
+//       toast.error(err.message);
+//       navigate("/login");
+//     });
+// };
+export const handleProfile = async (token: string, navigate: any) => {
+  try {
+    const res = await axios.get(`${URI}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Bearer টোকেন ফরম্যাট
+      },
     });
+
+    console.log("handle profile", res.data);
+
+    // আপনার /me route success হলে message নেই, তাই যেটা দরকার সেটা নিন
+    // উদাহরণস্বরূপ, ইউজার নাম বা অন্য যেকোনো তথ্য থেকে success দেখাতে পারেন
+    toast.success("Profile loaded successfully");
+
+    // প্রয়োজন মতো response থেকে ডাটা নিয়ে কাজ করতে পারেন
+    // const userData = res.data.user;
+
+    navigate("/"); // প্রয়োজনমতো রিডাইরেক্ট করুন
+  } catch (err: any) {
+    // err.message বা err.response.data.message থেকে error দেখাতে পারেন
+    toast.error(
+      err.response?.data?.message || err.message || "Failed to load profile"
+    );
+    navigate("/login");
+  }
 };
 
 // get User profile
 export const getHandleProfile = async (token: string) => {
   try {
-    const res = await axios.get(`${URI}/user/profile`, {
-      headers: { Authorization: `${token}` },
+    const res = await axios.get(`${URI}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
+    console.log(res.data);
 
     return res.data;
   } catch (err: any) {
