@@ -17,7 +17,7 @@ interface UserInfo {
 export default function UserManagenentsPage() {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, token } = useAuth();
 
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function UserManagenentsPage() {
       try {
         const res = await axios.get("http://localhost:3000/user", {
           headers: {
-            Authorization: `${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         setUsers(res.data.users);

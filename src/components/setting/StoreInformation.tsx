@@ -1,19 +1,20 @@
-import { FormValues } from '../../types';
-import { useForm } from 'react-hook-form';
-import { Save, Store } from 'lucide-react';
-import { useEffect, useState } from 'react'
+import { FormValues } from "../../types";
+import { useForm } from "react-hook-form";
+import { Save, Store } from "lucide-react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import axios from 'axios';
-import Swal from 'sweetalert2';
-
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function StoreInformation() {
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [hasStoreData, setHasStoreData] = useState(false);
+  const { token } = useAuth();
 
-
-const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     try {
       const formData = new FormData();
 
@@ -35,51 +36,49 @@ const onSubmit = async (data: FormValues) => {
       await axios[method](url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      Swal.fire({
-        icon: "success",
-        title: "সেভ সফল হয়েছে!",
-        text: hasStoreData
-          ? "Store settings সফলভাবে আপডেট হয়েছে।"
-          : "Store settings সফলভাবে তৈরি হয়েছে।",
-        confirmButtonColor: "#16a34a",
-      });
+      toast.success(
+        hasStoreData
+          ? "Store settings have been successfully updated."
+          : "Store settings have been successfully created."
+      );
 
       setHasStoreData(true);
     } catch (error: any) {
-      Swal.fire({
-        icon: "error",
-        title: "সেভ ব্যর্থ!",
-        text: error?.response?.data?.message || "Store settings সেভ করা যায়নি।",
-        confirmButtonColor: "#dc2626",
-      });
+      toast.error(
+        error?.response?.data?.message || "Store settings could not be saved."
+      );
     }
-    };
-    
-    useEffect(() => {
-      const fetchSettings = async () => {
-        try {
-          const res = await axios.get("http://localhost:3000/setting");
-          const storeData = res.data?.data;
-          if (storeData) {
-            setHasStoreData(true);
-            reset(storeData);
+  };
 
-            // ঠিক এইখানে logoUrl কে পুরো URL বানিয়ে preview করাও
-            if (storeData.logoUrl) {
-              setLogoPreview(`http://localhost:3000/${storeData.logoUrl}`);
-            }
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/setting", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const storeData = res.data?.data;
+        if (storeData) {
+          setHasStoreData(true);
+          reset(storeData);
+
+          // ঠিক এইখানে logoUrl কে পুরো URL বানিয়ে preview করাও
+          if (storeData.logoUrl) {
+            setLogoPreview(`http://localhost:3000/${storeData.logoUrl}`);
           }
-        } catch (err) {
-          setHasStoreData(false);
         }
-      };
+      } catch (err) {
+        setHasStoreData(false);
+      }
+    };
 
-      fetchSettings();
-    }, [reset]);
-
+    fetchSettings();
+  }, [reset]);
 
   return (
     <>

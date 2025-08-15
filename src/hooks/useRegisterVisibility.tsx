@@ -3,15 +3,20 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
 export const useRegisterVisibility = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+
 
 
   useEffect(() => {
     const checkUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/user/count");
+        const res = await axios.get("http://localhost:3000/user/count", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const count = res.data.userCount;
 
         if (count === 0) {

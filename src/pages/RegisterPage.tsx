@@ -1,10 +1,20 @@
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { User, Lock, Eye, EyeOff } from "lucide-react";
-import { UserInfo } from "../types";
-import { useNavigate } from "react-router-dom";
+import { User, Lock, Eye, EyeOff, Building2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { handleRegister } from "../utils/api";
+import { toast } from "react-hot-toast";
+import { InputField } from "../components/helper/InputField";
+import { PasswordField } from "../components/helper/PasswordField";
+
+type RegisterForm = {
+  userName: string;
+  password: string;
+  confirmPassword: string;
+  tenantId?: string;
+  tenantName?: string;
+};
 
 export default function RegisterPage() {
   const {
@@ -12,7 +22,7 @@ export default function RegisterPage() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<UserInfo>();
+  } = useForm<RegisterForm>({ mode: "onChange" });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -21,13 +31,23 @@ export default function RegisterPage() {
 
   const password = watch("password");
 
-  const onSubmit = async (data: UserInfo) => {
+  const onSubmit = async (data: RegisterForm) => {
+    // Validation for tenantId / tenantName
+    if (!data.tenantId && !data.tenantName) {
+      toast.error("Please provide either Tenant ID or Tenant Name");
+      return;
+    }
+
     setIsSubmitting(true);
-    await handleRegister(data, navigate);
-    setIsSubmitting(false);
+    try {
+      await handleRegister(data, navigate);
+    } catch {
+      // handleRegister will show toast itself
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // Animation Variants
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.98 },
     visible: {
@@ -37,18 +57,8 @@ export default function RegisterPage() {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: i * 0.15, duration: 0.5, ease: "easeOut" },
-    }),
-  };
-
   return (
     <div className="min-h-screen h-full flex items-center justify-center bg-gray-100 overflow-hidden">
-      {/* Dynamic Background Animation */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700"
         animate={{
@@ -61,28 +71,23 @@ export default function RegisterPage() {
         transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
       ></motion.div>
 
-      {/* Split-Screen Layout */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="relative w-full max-w-4xl bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 flex overflow-hidden"
       >
-        {/* Left Branding Section */}
+        {/* Left Branding */}
         <div className="hidden md:block w-1/2 bg-gradient-to-br from-primary-800 to-indigo-900 py-5 px-8 text-white lg:flex flex-col justify-between">
           <div>
-            <motion.div
+            <motion.img
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex items-center space-x-2"
-            >
-              <img
-                src="../../photo/logo.png"
-                alt="Logo"
-                className="h-fit w-full"
-              />
-            </motion.div>
+              src="../../photo/logo.png"
+              alt="Logo"
+              className="h-fit w-full"
+            />
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -103,7 +108,7 @@ export default function RegisterPage() {
           </motion.div>
         </div>
 
-        {/* Right Form Section */}
+        {/* Right Form */}
         <div className="w-full md:w-1/2 p-8">
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
@@ -120,207 +125,105 @@ export default function RegisterPage() {
             noValidate
           >
             {/* Username */}
-            <motion.div
-              custom={0}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              className="relative"
-            >
-              <User
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                id="userName"
-                type="text"
-                {...register("userName", { required: "Username is required" })}
-                className="peer w-full rounded-xl border border-gray-200 pl-12 pr-4 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
-                placeholder="Username"
-                autoComplete="username"
-              />
-              <label
-                htmlFor="userName"
-                className="absolute left-12 -top-2 text-xs text-gray-500 bg-white/90 px-1 transition-all duration-300 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600"
-              >
-                Username
-              </label>
-              {errors.userName && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-xs mt-1"
-                >
-                  {errors.userName.message}
-                </motion.p>
-              )}
-            </motion.div>
+            <InputField
+              icon={<User size={20} />}
+              name="userName"
+              label="Username"
+              register={register}
+              errors={errors}
+              rules={{ required: "Username is required" }}
+            />
 
             {/* Password */}
-            <motion.div
-              custom={1}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              className="relative"
-            >
-              <Lock
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "Minimum 6 characters" },
-                })}
-                className="peer w-full rounded-xl border border-gray-200 pl-12 pr-12 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
-                placeholder="Password"
-                autoComplete="new-password"
-              />
-              <label
-                htmlFor="password"
-                className="absolute left-12 -top-2 text-xs text-gray-500 bg-white/90 px-1 transition-all duration-300 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600"
-              >
-                Password
-              </label>
-              <span
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer select-none"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </span>
-              {errors.password && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-xs mt-1"
-                >
-                  {errors.password.message}
-                </motion.p>
-              )}
-            </motion.div>
+            <PasswordField
+              name="password"
+              label="Password"
+              show={showPassword}
+              toggle={() => setShowPassword(!showPassword)}
+              register={register}
+              errors={errors}
+              rules={{
+                required: "Password is required",
+                minLength: { value: 6, message: "Minimum 6 characters" },
+              }}
+            />
 
             {/* Confirm Password */}
-            <motion.div
-              custom={2}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              className="relative"
-            >
-              <Lock
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                id="confirmPassword"
-                type={showConfirm ? "text" : "password"}
-                {...register("confirmPassword", {
-                  required: "Please confirm your password",
-                  validate: (value) =>
-                    value === password || "Passwords do not match",
-                })}
-                className="peer w-full rounded-xl border border-gray-200 pl-12 pr-12 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
-                placeholder="Confirm Password"
-                autoComplete="new-password"
-              />
-              <label
-                htmlFor="confirmPassword"
-                className="absolute left-12 -top-2 text-xs text-gray-500 bg-white/90 px-1 transition-all duration-300 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600"
-              >
-                Confirm Password
-              </label>
-              <span
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer select-none"
-                onClick={() => setShowConfirm(!showConfirm)}
-              >
-                {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
-              </span>
-              {errors.confirmPassword && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-xs mt-1"
-                >
-                  {errors.confirmPassword.message}
-                </motion.p>
-              )}
-            </motion.div>
+            <PasswordField
+              name="confirmPassword"
+              label="Confirm Password"
+              show={showConfirm}
+              toggle={() => setShowConfirm(!showConfirm)}
+              register={register}
+              errors={errors}
+              rules={{
+                required: "Please confirm your password",
+                validate: (value: string) =>
+                  value === password || "Passwords do not match",
+              }}
+            />
 
-            {/* Submit Button */}
+            {/* Tenant Name */}
+            <InputField
+              icon={<Building2 size={20} />}
+              name="tenantName"
+              label="Tenant Name"
+              register={register}
+              errors={errors}
+            />
+
+            {/* Submit */}
             <motion.button
-              custom={3}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              whileTap="tap"
               type="submit"
               disabled={isSubmitting}
-              className="relative w-full btn-primary transition-all duration-300 overflow-hidden"
+              className={`w-full btn-primary transition-all duration-300 overflow-hidden ${
+                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              <AnimatePresence>
-                {isSubmitting ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center justify-center"
+              {isSubmitting ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      className="animate-spin h-5 w-5 text-white mr-2"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      />
-                    </svg>
-                    Creating Account...
-                  </motion.div>
-                ) : (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    Register
-                  </motion.span>
-                )}
-              </AnimatePresence>
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    />
+                  </svg>
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                "Register"
+              )}
             </motion.button>
           </form>
 
-          <motion.p
-            custom={4}
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-            className="mt-6 text-center text-sm text-gray-600"
-          >
+          <p className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="text-blue-600 font-medium hover:underline"
             >
               Sign In
-            </a>
-          </motion.p>
+            </Link>
+          </p>
         </div>
       </motion.div>
     </div>
   );
 }
+
+
+

@@ -6,6 +6,7 @@ import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -30,6 +31,7 @@ const Add: React.FC = () => {
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
   const [allCategories, setAllCategories] = useState<never[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const {
     register,
@@ -61,13 +63,16 @@ const Add: React.FC = () => {
 
       const response = await fetch("http://localhost:3000/product", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
       const result = await response.json();
 
       if (response.ok) {
-       toast.success("Product added successfully!");
+        toast.success("Product added successfully!");
         reset();
       } else {
         toast.error("Failed to add product!");
@@ -89,7 +94,11 @@ const Add: React.FC = () => {
   useEffect(() => {
     generateNumber();
     axios
-      .get("http://localhost:3000/category")
+      .get("http://localhost:3000/category", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setAllCategories(res.data);
       })
@@ -163,8 +172,8 @@ const Add: React.FC = () => {
               {...register("category", { required: "Category is required" })}
               className="mt-1 w-full input"
             >
-              {allCategories.map((category) => (
-                <option value={category.categoryName}>
+              {allCategories.map((category,i) => (
+                <option key={i} value={category.categoryName}>
                   {category.categoryName}
                 </option>
               ))}

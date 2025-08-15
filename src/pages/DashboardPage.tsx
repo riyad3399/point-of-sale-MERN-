@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
+import { useAuth } from "../context/AuthContext";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -61,12 +62,17 @@ const DashboardPage: React.FC = () => {
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
+  const {token} = useAuth()
 
   const { t } = useTranslation();
 
   const fetchTodaySales = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/invoice/today-sales");
+      const res = await axios.get("http://localhost:3000/invoice/today-sales", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data;
       setTodaySales(data);
     } catch (error) {
@@ -75,7 +81,11 @@ const DashboardPage: React.FC = () => {
   };
   const fetchTotalSales = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/invoice/total-sales");
+      const res = await axios.get("http://localhost:3000/invoice/total-sales", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data;
       setTotalSales(data);
     } catch (error) {
@@ -86,13 +96,22 @@ const DashboardPage: React.FC = () => {
 
 
   const fetchOverviewData = async () => {
-    const res = await axios.get("http://localhost:3000/invoice/sales-7-days");
+    const res = await axios.get("http://localhost:3000/invoice/sales-7-days", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setChartData(res.data);
   };
 
   const fetchRecentTransactions = async () => {
     const res = await axios.get(
-      "http://localhost:3000/invoice/recent-transactions"
+      "http://localhost:3000/invoice/recent-transactions",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     const data = res.data;
     setRecentTransactions(data);
@@ -111,7 +130,12 @@ const DashboardPage: React.FC = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:3000/invoice/due-customers"
+          "http://localhost:3000/invoice/due-customers",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setDueCustomers(response.data);
       } catch (error) {
@@ -160,16 +184,24 @@ const DashboardPage: React.FC = () => {
       let response;
 
       if (selectedDate) {
-        const formattedDate = formatDateToYYYYMMDD(selectedDate); // "YYYY-MM-DD"
+        const formattedDate = formatDateToYYYYMMDD(selectedDate); 
         response = await axios.get(
           "http://localhost:3000/invoice/due-customers",
           {
             params: { dueDate: formattedDate },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
       } else {
         response = await axios.get(
-          "http://localhost:3000/invoice/due-customers"
+          "http://localhost:3000/invoice/due-customers",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
       }
 

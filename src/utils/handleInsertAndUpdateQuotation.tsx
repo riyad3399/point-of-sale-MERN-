@@ -1,12 +1,17 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import { QuotationType } from "../types";
+import { useAuth } from "../context/AuthContext";
 
 export const handleInsertAndUpdateQuotation = async (quotation: QuotationType) => {
+
+  const {token} =useAuth()
+
     try {
       const response = await axios.post(
         "http://localhost:3000/quotations/add",
-        quotation
+        quotation,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.status === 201) {

@@ -13,6 +13,7 @@ import { clearCart } from "../utils/clearCart";
 import { handleInsertAndUpdateQuotation } from "../utils/handleInsertAndUpdateQuotation";
 import { addToCart } from "../utils/cartUtils";
 import { handleGetProduct } from "../utils/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function RetailSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -29,6 +30,8 @@ export default function RetailSalePage() {
   const [selectValues, setSelectValues] = useState<{
     [productId: string]: string;
   }>({});
+
+  const {token} = useAuth()
 
   const location = useLocation();
   const editQuotation = location.state;
@@ -204,27 +207,33 @@ export default function RetailSalePage() {
   const totalAmount = total + shippingCost - selectReturnSale;
 
   useEffect(() => {
-    handleGetProduct(setAllProduct);
+    handleGetProduct(setAllProduct, token);
 
-    axios.get("http://localhost:3000/customer").then((res) => {
-      const options = res.data.map((customer: any) => ({
-        value: customer.customerId,
-        label: `${customer.customerName} | ${customer.phone}`,
-        customerName: customer.customerName.toLowerCase(),
-        phone: customer.phone,
-      }));
-
-      const optionsWithWalkingCustomer = [
-        {
-          value: "walking",
-          label: "🚶 Walking Customer",
-          phone: "",
-          customerName: "",
+    axios
+      .get("http://localhost:3000/customer", {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        ...options,
-      ];
-      setCustomers(optionsWithWalkingCustomer);
-    });
+      })
+      .then((res) => {
+        const options = res.data.map((customer: any) => ({
+          value: customer.customerId,
+          label: `${customer.customerName} | ${customer.phone}`,
+          customerName: customer.customerName.toLowerCase(),
+          phone: customer.phone,
+        }));
+
+        const optionsWithWalkingCustomer = [
+          {
+            value: "walking",
+            label: "🚶 Walking Customer",
+            phone: "",
+            customerName: "",
+          },
+          ...options,
+        ];
+        setCustomers(optionsWithWalkingCustomer);
+      });
   }, []);
 
   const quotationProduct = [...productsInCart];

@@ -46,8 +46,6 @@ export default function LoginPage() {
     }),
   };
 
-
-
   return (
     <div className="min-h-screen h-full flex items-center justify-center bg-gray-100 overflow-hidden">
       {/* Dynamic Background Animation */}
@@ -137,7 +135,12 @@ export default function LoginPage() {
                 id="userName"
                 type="text"
                 {...register("userName", { required: true })}
-                className="peer w-full rounded-xl border border-gray-200 pl-12 pr-4 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                className={`peer w-full rounded-xl border pl-12 pr-4 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:outline-none focus:ring-2 transition-all duration-300
+                  ${
+                    errors.userName
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                  }`}
                 placeholder="Username"
                 autoComplete="username"
               />
@@ -147,15 +150,6 @@ export default function LoginPage() {
               >
                 Username
               </label>
-              {errors.userName && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-xs mt-1"
-                >
-                  Username is required
-                </motion.p>
-              )}
             </motion.div>
 
             {/* Password */}
@@ -174,7 +168,12 @@ export default function LoginPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 {...register("password", { required: true, minLength: 6 })}
-                className="peer w-full rounded-xl border border-gray-200 pl-12 pr-12 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                className={`peer w-full rounded-xl border pl-12 pr-12 py-3 text-sm text-gray-900 placeholder-transparent bg-white/70 shadow-sm focus:outline-none focus:ring-2 transition-all duration-300
+                  ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                  }`}
                 placeholder="Password"
                 autoComplete="current-password"
               />
@@ -190,15 +189,6 @@ export default function LoginPage() {
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </span>
-              {errors.password && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-xs mt-1"
-                >
-                  Password must be at least 6 characters
-                </motion.p>
-              )}
             </motion.div>
 
             {/* Submit Button */}

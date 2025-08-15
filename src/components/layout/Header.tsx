@@ -23,15 +23,18 @@ const Header: React.FC = () => {
   const [smsBalance, setSmsBalance] = useState<SmsBalanceType>();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  const token: string | null = localStorage.getItem("token");
   const location = useLocation();
   const hasWelcomed = useRef(false);
 
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const fetchLowStockItems = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/product/low-stock");
+      const res = await axios.get("http://localhost:3000/product/low-stock", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data;
       setProducts(data);
     } catch (error) {

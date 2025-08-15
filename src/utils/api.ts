@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const URI = `http://localhost:3000`;
+const URI = import.meta.env.VITE_BASE_URI
 
 export const fetchSupplierDetails = async (
   supplierId: string
@@ -76,26 +76,6 @@ export const useHandleLogout = () => {
 };
 
 // Login
-// export const handleLogin = async (
-//   data: UserInfo,
-//   navigate: any,
-//   login: (token: string) => void
-// ) => {
-//   try {
-//     const response = await axios.post(`${URI}/auth/login`, data);
-//     const token = response.data.token;
-
-//     // Token set এবং context login
-//     localStorage.setItem("token", token);
-//     login(token); // context auth update
-
-//     toast.success(response.data.message || "Login successful!");
-//     navigate("/");
-//   } catch (err: any) {
-//     toast.error(err.response?.data?.message || "Login failed");
-//     navigate("/login");
-//   }
-// };
 export const handleLogin = async (
   data: { userName: string; password: string },
   navigate: (path: string) => void,
@@ -121,27 +101,22 @@ export const handleLogin = async (
 };
 
 
-
 // Register
 export const handleRegister = async (data, navigate) => {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-  await axios
-    .post(`${URI}/user/register`, data, {
-      headers: {
-        Authorization: `${token}`,
-      },
-    })
-    .then((res) => {
-      toast.success(res.data.message);
-      navigate("/login");
-    })
-    .catch((err) => {
-      const msg =
-        err.response?.data?.message || err.message || "Registration failed";
-      toast.error(msg);
-      navigate("/register");
+    const res = await axios.post(`${URI}/auth/register`, data, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
+    const successMsg = res.data.message || "Registration successful!";
+    toast.success(successMsg);
+    navigate("/login");
+  } catch (err) {
+    const msg = err.response?.data?.message || "Registration failed";
+    toast.error(msg);
+    navigate("/register");
+  }
 };
 
 // User profile
@@ -209,7 +184,7 @@ export const getAllUsers = async (token: string| null) => {
   try {
     const response = await axios.get(`${URI}/user`, {
       headers: {
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -232,12 +207,11 @@ export const handleUpdateUserRoles = async ({
   await axios.post(
     `http://localhost:3000/user/${userId}/roles`,
     { roles },
-    { headers: { Authorization: token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
 };
 
 // update user permission
-
 export const handleUpdateUserPermission = async ({
   permissions,
   token,
@@ -247,16 +221,20 @@ export const handleUpdateUserPermission = async ({
   const res = await axios.post(
     `http://localhost:3000/user/${userId}/permissions`,
     { permissions },
-    { headers: { Authorization: token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   onUpdated(res.data.user);
 };
 
 // ---------------------- PRODUCT ----------------------//
 // GET - ALL Products
-export const handleGetProduct = async (setAllProduct) => {
+export const handleGetProduct = async (setAllProduct, token) => {
   try {
-    const res = await axios.get(`${URI}/product`);
+    const res = await axios.get(`${URI}/product`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setAllProduct(res.data);
   } catch (error) {
     setAllProduct([]);

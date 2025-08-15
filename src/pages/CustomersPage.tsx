@@ -7,6 +7,7 @@ import { Box, Search } from "lucide-react";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../hooks/usePermission";
+import { useAuth } from "../context/AuthContext";
 
 interface Customer {
   customerId: number;
@@ -33,16 +34,23 @@ export default function CustomerTabs() {
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
+  const {token} = useAuth()
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
     if (canView) {
-      axios.get("http://localhost:3000/customer").then((res) => {
-        setCustomers(res.data);
-        setCurrentPage(1);
-      });
+      axios
+        .get("http://localhost:3000/customer", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setCustomers(res.data);
+          setCurrentPage(1);
+        });
     }
   }, [activeTab]);
 

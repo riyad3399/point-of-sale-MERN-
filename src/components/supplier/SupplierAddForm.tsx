@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 interface SupplierFormData {
   name: string;
@@ -16,6 +17,7 @@ interface SupplierFormData {
 const SupplierAddForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const {
     register,
@@ -27,7 +29,15 @@ const SupplierAddForm = () => {
   const onSubmit = async (data: SupplierFormData) => {
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/suppliers/add", data);
+      const res = await axios.post(
+        "http://localhost:3000/suppliers/add",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (res.status === 201) {
         toast.success(res.data?.message || "Supplier Added!");

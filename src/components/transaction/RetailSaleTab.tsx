@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
+import { useAuth } from "../../context/AuthContext";
 
 export default function WholeSaleTab() {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
@@ -30,12 +31,16 @@ export default function WholeSaleTab() {
   const [storeInfo, setStoreInfo] = useState({});
 
   const navigate = useNavigate();
-    const {hasPermission} = usePermission()
-  
+  const { hasPermission } = usePermission();
+  const { token } = useAuth();
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/invoice/retailsale")
+      .get("http://localhost:3000/invoice/retailsale", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setTransactions(res.data);
         setLoading(false);
@@ -77,7 +82,11 @@ export default function WholeSaleTab() {
   // Handle Delete
   const handleDelete = (id: string) => {
     axios
-      .delete(`http://localhost:3000/invoice/${id}`)
+      .delete(`http://localhost:3000/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => {
         setTransactions(transactions.filter((tx) => tx._id !== id));
       })
@@ -86,9 +95,15 @@ export default function WholeSaleTab() {
 
   // handle invoice view
   const handleInvoiceView = async (id: string) => {
-    await axios.get(`http://localhost:3000/invoice/${id}`).then((res) => {
-      navigate("/invoiceView", { state: { invoice: res.data } });
-    });
+    await axios
+      .get(`http://localhost:3000/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        navigate("/invoiceView", { state: { invoice: res.data } });
+      });
   };
 
   // Edit modal open handler
@@ -99,7 +114,11 @@ export default function WholeSaleTab() {
 
   useEffect(() => {
     const fetchStoreInfo = async () => {
-      const res = await axios.get("http://localhost:3000/setting");
+      const res = await axios.get("http://localhost:3000/setting", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data.data;
       setStoreInfo(data);
     };
@@ -112,7 +131,12 @@ export default function WholeSaleTab() {
     try {
       const res = await axios.put(
         `http://localhost:3000/invoice/${editingInvoice._id}`,
-        updatedData
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       // 🧠 update local state:

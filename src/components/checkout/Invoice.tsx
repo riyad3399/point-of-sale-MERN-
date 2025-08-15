@@ -5,6 +5,8 @@ import axios from "axios";
 import { CompanyType } from "../../types";
 import Swal from "sweetalert2";
 import ThermalPrintButton from "../printButton/ThermalPrintButton";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface Product {
   productId: string;
@@ -53,6 +55,7 @@ const Invoice: React.FC<InvoiceProps> = ({
 
   const invoicePostedRef = useRef(false);
   const [companyInfo, setCompanyInfo] = useState<CompanyType | null>();
+  const { token } = useAuth();
 
   useEffect(() => {
     if (!selectWalking || products.length === 0 || invoicePostedRef.current)
@@ -66,51 +69,45 @@ const Invoice: React.FC<InvoiceProps> = ({
       const change = balance > 0 ? balance : 0;
 
       try {
-        const response = await axios.post("http://localhost:3000/invoice", {
-          saleSystem: saleSystemValue,
-          customer: {
-            name: selectWalking.customerName || "Walking Customer",
-            phone: selectWalking.phone || "N/A",
-          },
-          paymentMethod,
-          items: products.map((item) => ({
-            productId: item.productId,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            purchasePrice: item.purchasePrice,
-            total: item.quantity * item.price,
-            status: item.status,
-          })),
-          totals: {
-            total: totalAmount,
-            discount,
-            payable,
-            paid: paidAmount,
-            due,
-            change,
-          },
-          dueDate: due > 0 ? dueDate : null,
-        });
+        const response = await axios.post(
+          "http://localhost:3000/invoice",
+          {
+            saleSystem: saleSystemValue,
 
-        Swal.fire({
-          icon: "success",
-          title: "Invoice Created!",
-          text: `Invoice #${response.data.transactionId} Created successful!`,
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-        });
+            customer: {
+              name: selectWalking.customerName || "Walking Customer",
+              phone: selectWalking.phone || "N/A",
+            },
+            paymentMethod,
+            items: products.map((item) => ({
+              productId: item.productId,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              purchasePrice: item.purchasePrice,
+              total: item.quantity * item.price,
+              status: item.status,
+            })),
+            totals: {
+              total: totalAmount,
+              discount,
+              payable,
+              paid: paidAmount,
+              due,
+              change,
+            },
+            dueDate: due > 0 ? dueDate : null,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        toast.success(
+          `Invoice #${response.data.transactionId} Created successful!`
+        );
       } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Failed!",
-          text:
-            error.response?.data?.message || "ইনভয়েস তৈরি করতে সমস্যা হয়েছে।",
-          timer: 2500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
+        toast.error(
+          error.response?.data?.message || "Failed to create invoice."
+        );
 
         invoicePostedRef.current = false;
       }
@@ -120,7 +117,11 @@ const Invoice: React.FC<InvoiceProps> = ({
   }, [selectWalking, products]);
 
   const fetchCompanyInfo = async () => {
-    const res = await axios.get("http://localhost:3000/setting");
+    const res = await axios.get("http://localhost:3000/setting", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = res.data.data;
     setCompanyInfo(data);
   };

@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
+import { useAuth } from "../../context/AuthContext";
 
 export default function AllTransactions() {
   const [transactions, setTransactions] = useState<InvoiceType[]>([]);
@@ -30,11 +31,16 @@ export default function AllTransactions() {
   const [storeInfo, setStoreInfo]=useState({})
 
   const navigate = useNavigate();
-  const {hasPermission} = usePermission()
+  const { hasPermission } = usePermission()
+  const {token} = useAuth()
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/invoice")
+      .get("http://localhost:3000/invoice", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setTransactions(res.data);
         setLoading(false);
@@ -76,7 +82,11 @@ export default function AllTransactions() {
   // Handle Delete
   const handleDelete = (id: string) => {
     axios
-      .delete(`http://localhost:3000/invoice/${id}`)
+      .delete(`http://localhost:3000/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => {
         setTransactions(transactions.filter((tx) => tx._id !== id));
       })
@@ -85,9 +95,15 @@ export default function AllTransactions() {
 
   // handle invoice view
   const handleInvoiceView = async (id: string) => {
-    await axios.get(`http://localhost:3000/invoice/${id}`).then((res) => {
-      navigate("/invoiceView", { state: { invoice: res.data } });
-    });
+    await axios
+      .get(`http://localhost:3000/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        navigate("/invoiceView", { state: { invoice: res.data } });
+      });
   };
 
   // Edit modal open handler
@@ -102,7 +118,12 @@ export default function AllTransactions() {
     try {
       const res = await axios.put(
         `http://localhost:3000/invoice/${editingInvoice._id}`,
-        updatedData
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       // 🧠 update local state:
@@ -125,7 +146,11 @@ export default function AllTransactions() {
 
   useEffect(() => {
     const fetchStoreInfo = async () => {
-      const res = await axios.get("http://localhost:3000/setting");
+      const res = await axios.get("http://localhost:3000/setting", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data.data
       setStoreInfo(data)
     }

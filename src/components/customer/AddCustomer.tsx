@@ -5,6 +5,7 @@ import { Loader } from "lucide-react";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
 
 
 interface Customer {
@@ -21,6 +22,7 @@ export default function AddCustomer() {
     formState: { errors },
   } = useForm<Customer>();
   const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   const onSubmit = async (data: Customer) => {
     setLoading(true);
@@ -29,6 +31,7 @@ export default function AddCustomer() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           ...data,

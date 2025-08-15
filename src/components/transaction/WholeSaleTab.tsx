@@ -31,14 +31,18 @@ export default function WholeSaleTab() {
   const [modalOpen, setModalOpen] = useState(false);
   const [storeInfo, setStoreInfo] = useState({})
   
-  const {user} = useAuth()
+  const {token} = useAuth()
   
 
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/invoice/wholesale")
+      .get("http://localhost:3000/invoice/wholesale", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setTransactions(res.data);
         setLoading(false);
@@ -80,7 +84,11 @@ export default function WholeSaleTab() {
   // Handle Delete
   const handleDelete = (id: string) => {
     axios
-      .delete(`http://localhost:3000/invoice/${id}`)
+      .delete(`http://localhost:3000/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => {
         setTransactions(transactions.filter((tx) => tx._id !== id));
       })
@@ -89,9 +97,15 @@ export default function WholeSaleTab() {
 
   // handle invoice view
   const handleInvoiceView = async (id: string) => {
-    await axios.get(`http://localhost:3000/invoice/${id}`).then((res) => {
-      navigate("/invoiceView", { state: { invoice: res.data } });
-    });
+    await axios
+      .get(`http://localhost:3000/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        navigate("/invoiceView", { state: { invoice: res.data } });
+      });
   };
 
   // Edit modal open handler
@@ -106,7 +120,12 @@ export default function WholeSaleTab() {
     try {
       const res = await axios.put(
         `http://localhost:3000/invoice/${editingInvoice._id}`,
-        updatedData
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       // 🧠 update local state:
@@ -128,7 +147,11 @@ export default function WholeSaleTab() {
 
     useEffect(() => {
       const fetchStoreInfo = async () => {
-        const res = await axios.get("http://localhost:3000/setting");
+        const res = await axios.get("http://localhost:3000/setting", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = res.data.data
         setStoreInfo(data)
       }

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { X, CreditCard, DollarSign, Receipt, CheckCircle } from "lucide-react";
 import { Product } from "../../types";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 interface CheckoutModalProps {
   onClose: () => void;
@@ -13,6 +15,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
   const [isComplete, setIsComplete] = useState(false);
   const [transaction, setTransaction] = useState<any>(null);
   const [allProduct, setAllProduct] = useState<Product[]>([]);
+  const {token} = useAuth()
 
   const handleCheckout = async () => {
     if (!paymentMethod) return;
@@ -55,7 +58,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
   ];
   useEffect(() => {
     const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/product");
+      const res = await axios.get("http://localhost:3000/product", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.data;
       setAllProduct(data);
     };

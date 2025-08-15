@@ -8,6 +8,7 @@ import { Box, Search } from "lucide-react";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../hooks/usePermission";
+import { useAuth } from "../context/AuthContext";
 
 
 const ProductesPage: React.FC = () => {
@@ -20,7 +21,8 @@ const ProductesPage: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const {hasPermission}=usePermission()
+  const { hasPermission } = usePermission()
+  const {token} =useAuth()
 
   const tabVariants = {
     initial: { opacity: 0, y: 10 },
@@ -31,21 +33,30 @@ const ProductesPage: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/product")
+      .get("http://localhost:3000/product", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setAllProduct(res.data);
         setCurrentPage(1);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
-      }).finally(() => {
-        setLoading(false)
       })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [activeTab]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/category")
+      .get("http://localhost:3000/category", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setCategories(res.data);
       })

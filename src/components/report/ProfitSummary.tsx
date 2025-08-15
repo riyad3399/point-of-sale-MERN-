@@ -85,7 +85,6 @@ const ProfitSummary = () => {
         </motion.div>
       </div>
 
-      {/* Top Invoice */}
       {data.topInvoice && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}

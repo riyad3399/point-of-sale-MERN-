@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import Invoice from "./Invoice";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface Product {
   productId: string;
@@ -49,6 +50,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [discount, setDiscount] = useState<number | "">("");
   const [dueAmount, setDueAmount] = useState<number>(0);
   const [dueDate, setDueDate] = useState<string>("");
+  const {token} = useAuth()
 
   useEffect(() => {
     const paid = typeof paidAmount === "number" ? paidAmount : 0;
@@ -66,11 +68,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
 
     try {
-      const res = await axios.post("http://localhost:3000/customer", {
-        customerName,
-        phone,
-        address,
-      });
+      const res = await axios.post(
+        "http://localhost:3000/customer",
+        {
+          customerName,
+          phone,
+          address,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (res.status === 201 || res.status === 200) {
         return true;
@@ -79,23 +85,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       return false;
     } catch (err: any) {
       if (err.response?.status === 409) {
-        Swal.fire({
-          icon: "error",
-          title: "এই ফোন নম্বরটি ইতিমধ্যে আছে",
-          text: err.response?.data?.message || "Customer already exists.",
-          timer: 2500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
+      
+        toast.error(err.response?.data?.message || "Customer already exists.");
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Customer Add ব্যর্থ হয়েছে",
-          text: err.response?.data?.message || "দয়া করে পরে আবার চেষ্টা করুন।",
-          timer: 2500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
+       
+        toast.error(err.response?.data?.message || "Please try again later.");
       }
       return false;
     }
@@ -115,7 +109,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     const customerAdded = await handleAddWalkingCustomer();
 
     if (!customerAdded) {
-      // Customer add হয় নাই, মানে conflict হয়েছে — checkout e যাওয়া যাবে না
       return;
     }
 

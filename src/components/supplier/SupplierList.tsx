@@ -20,6 +20,7 @@ import ViewSupplierDetailsModal from "./ViewSupplierDetailsModal";
 import { Supplier } from "../../types";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../../hooks/usePermission";
+import { useAuth } from "../../context/AuthContext";
 
 const SupplierList = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -39,12 +40,17 @@ const SupplierList = () => {
   const { hasPermission } = usePermission();
 
   const { t } = useTranslation();
+  const {token} = useAuth()
 
   useEffect(() => {
     const fetchSuppliers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:3000/suppliers");
+        const res = await axios.get("http://localhost:3000/suppliers", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = res.data;
         setSuppliers(data.data);
       } catch (err) {

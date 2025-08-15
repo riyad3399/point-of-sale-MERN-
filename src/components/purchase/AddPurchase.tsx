@@ -12,6 +12,7 @@ import {
   handleInsertPurchase,
 } from "../../utils/api";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 interface Supplier {
   _id: string;
@@ -97,9 +98,10 @@ const PurchaseForm = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const { t } = useTranslation();
+  const {token} = useAuth()
 
   useEffect(() => {
-    handleGetProduct(setProducts);
+    handleGetProduct(setProducts, token);
     handleGetSupplier(setSuppliers);
   }, []);
 
@@ -163,7 +165,6 @@ const PurchaseForm = () => {
     <div className="max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Purchase Entry</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Supplier, Invoice */}
         <div className="grid grid-cols-2 gap-4 items-center mb-8">
           <div>
             <Controller
