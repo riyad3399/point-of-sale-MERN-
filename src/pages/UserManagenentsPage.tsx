@@ -1,83 +1,50 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import Loading from "../components/Loading";
-import { Helmet } from "react-helmet-async";
-import toast from "react-hot-toast";
-import RolePermissionForm from "../components/roleAndPermission/RolePermissionForm";
-import { UserPermissions } from "../types";
-import { useAuth } from "../context/AuthContext";
-
-interface UserInfo {
-  _id: string;
-  userName: string;
-  role: string; 
-  permissions: UserPermissions;
-}
-
-export default function UserManagenentsPage() {
-  const [users, setUsers] = useState<UserInfo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { user: currentUser, token } = useAuth();
 
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUsers(res.data.users);
-      } catch (err) {
-        toast.error("Failed to load users");
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchUsers();
-  }, []);
+import { useState } from "react";
+import TenantUserList from "../components/tenantUser/TenantUserList";
+import CreateTenantUser from "../components/tenantUser/CreateTenantUser";
+import TenantUserRoleAndPermissions from "../components/tenantUser/TenantUserRoleAndPermissions";
 
-  const canAccess = ["admin", "developer"].includes(currentUser?.role || "");
-
-  if (!canAccess) {
-    return (
-      <div className="text-center text-red-600 mt-10 text-lg">
-        ❌ Access Denied
-      </div>
-    );
-  }
+export default function UserManagementPage() {
+  const [activeTab, setActiveTab] = useState("list"); // default tab
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      <Helmet>
-        <title>User Management | POS System</title>
-      </Helmet>
-      <h2 className="text-2xl mb-6 font-bold text-center">
-        User Role & Permission
-      </h2>
+    <div className="p-2">
+      {/* Tabs */}
+      <div className="flex border-b mb-4">
+        <button
+          onClick={() => setActiveTab("list")}
+          className={`px-4 py-2 font-semibold ${
+            activeTab === "list" ? "border-b-2 border-blue-600" : ""
+          }`}
+        >
+          Users List
+        </button>
+        <button
+          onClick={() => setActiveTab("create")}
+          className={`px-4 py-2 font-semibold ${
+            activeTab === "create" ? "border-b-2 border-blue-600" : ""
+          }`}
+        >
+          Create User
+        </button>
+        <button
+          onClick={() => setActiveTab("roles")}
+          className={`px-4 py-2 font-semibold ${
+            activeTab === "roles" ? "border-b-2 border-blue-600" : ""
+          }`}
+        >
+          Roles / Permissions
+        </button>
+      </div>
 
-      {loading ? (
-        <Loading />
-      ) : (
-        <div className="space-y-6">
-          {users.map((u) => (
-            <RolePermissionForm
-              key={u._id}
-              user={u}
-              onUpdated={(updatedUser) =>
-                setUsers((prev) =>
-                  prev.map((usr) =>
-                    usr._id === updatedUser._id ? updatedUser : usr
-                  )
-                )
-              }
-            />
-          ))}
-        </div>
-      )}
+      {/* Tab Content */}
+      <div>
+        {activeTab === "list" && <TenantUserList />}
+        {activeTab === "create" && <CreateTenantUser />}
+        {activeTab === "roles" && <TenantUserRoleAndPermissions/>}
+      </div>
     </div>
   );
 }
