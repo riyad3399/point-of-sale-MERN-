@@ -28,7 +28,7 @@ export default function CreateTenantUser() {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/auth/${decodedUser.tenantId}/users`,
+        `http://localhost:3000/user/${decodedUser.tenantId}`,
         data,
         {
           headers: {

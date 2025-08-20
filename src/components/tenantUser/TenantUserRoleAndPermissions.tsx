@@ -25,7 +25,7 @@ export default function TenantUserRoleAndPermissions() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/auth/${decodedUser.tenantId}/users`,
+          `http://localhost:3000/user/${decodedUser.tenantId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

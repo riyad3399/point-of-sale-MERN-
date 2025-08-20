@@ -22,7 +22,7 @@ export default function UserList() {
       if (!decodedUser?.tenantId) return;
       try {
         const res = await axios.get(
-          `http://localhost:3000/auth/${decodedUser.tenantId}/users`,
+          `http://localhost:3000/user/${decodedUser.tenantId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUsers(res.data.users);
