@@ -205,6 +205,7 @@ export interface UserInfo {
   userName: string;
   password: string;
   confirmPassword?: string;
+  tenantId?: string;
 }
 
 export type PermissionsProps = {

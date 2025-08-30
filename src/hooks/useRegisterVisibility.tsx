@@ -9,10 +9,11 @@ export const useRegisterVisibility = () => {
 
 
 
+
   useEffect(() => {
     const checkUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/user/count", {
+        const res = await axios.get("http://localhost:3000/auth/count", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

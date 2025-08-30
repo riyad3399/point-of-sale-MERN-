@@ -7,6 +7,7 @@ const PrivateRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const baseURI = import.meta.env.VITE_BASE_URI;
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -18,14 +19,18 @@ const PrivateRoute = () => {
       }
 
       try {
-        await axios.get("http://localhost:3000/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ correct format
-          },
+        const res = await axios.get("http://localhost:3000/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Unauthorized:", error);
+
+        if (res.data.success) {
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem("token");
+          navigate("/login", { replace: true });
+        }
+      } catch (err) {
+        console.error("Unauthorized:", err);
         localStorage.removeItem("token");
         navigate("/login", { replace: true });
       } finally {
@@ -34,16 +39,14 @@ const PrivateRoute = () => {
     };
 
     checkAuth();
-  }, [navigate]);
-  
+  }, [navigate, baseURI]);
 
-  if (loading) {
+  if (loading)
     return (
       <div className="flex items-center justify-center h-screen">
         <Loading />
       </div>
     );
-  }
 
   return isAuthenticated ? <Outlet /> : null;
 };

@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const URI = import.meta.env.VITE_BASE_URI
+// const URI = import.meta.env.VITE_BASE_URI;
+const URI = "http://localhost:3000";
 
 export const fetchSupplierDetails = async (
   supplierId: string
@@ -54,7 +55,7 @@ export const useHandleLogout = () => {
       }
 
       const res = await axios.post(
-        `${URI}/user/logout`,
+        `${URI}/auth/logout`,
         {},
         {
           headers: {
@@ -75,21 +76,18 @@ export const useHandleLogout = () => {
   return handleLogout;
 };
 
-// Login
+// Login handleLogin
 export const handleLogin = async (
-  data: { userName: string; password: string },
+  data: { userName: string; password: string; tenantId?: string },
   navigate: (path: string) => void,
   login: (token: string, refreshToken: string, user: any) => void
 ) => {
   try {
-    const response = await axios.post(
-      `${URI}/auth/login`,
-      data
-    );
-
+    const response = await axios.post(`${URI}/auth/login`, data);
     const { token, refreshToken, user, message } = response.data;
+    console.log(response);
 
-    // Context update করো এবং localStorage-এ সেভ হবে (context এর login ফাংশনে)
+    // 1️⃣ Context update
     login(token, refreshToken, user);
 
     toast.success(message || "Login successful!");
@@ -99,7 +97,6 @@ export const handleLogin = async (
     navigate("/login");
   }
 };
-
 
 // Register
 export const handleRegister = async (data, navigate) => {
@@ -180,7 +177,7 @@ export const getHandleProfile = async (token: string) => {
 };
 
 // GET - all users
-export const getAllUsers = async (token: string| null) => {
+export const getAllUsers = async (token: string | null) => {
   try {
     const response = await axios.get(`${URI}/user`, {
       headers: {
