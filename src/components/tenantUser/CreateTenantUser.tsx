@@ -20,16 +20,21 @@ export default function CreateTenantUser() {
     formState: { errors, isSubmitting },
   } = useForm<UserForm>();
 
-  const onSubmit = async (data: UserForm) => {
+  const onSubmit = async (formData: UserForm) => {
     if (!token || !decodedUser?.tenantId) {
       toast.error("Unauthorized! Please login again.");
       return;
     }
 
+    const dataToSend = {
+      ...formData,
+      tenantId: decodedUser.tenantId, // add tenantId from logged-in user
+    };
+
     try {
       const res = await axios.post(
-        `http://localhost:3000/user/${decodedUser.tenantId}`,
-        data,
+        "http://localhost:3000/auth/create-tenant-user",
+        dataToSend,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,13 +42,14 @@ export default function CreateTenantUser() {
         }
       );
 
-      toast.success(res.data.message);
-      reset();
+      toast.success(res.data.message || "Tenant user created successfully!");
+      reset({ role: "staff" }); // optional: reset role to default
     } catch (err: any) {
-      console.error(err);
+      console.error("Tenant user creation error:", err);
       toast.error(err.response?.data?.message || "User creation failed");
     }
   };
+
 
   return (
     <motion.div

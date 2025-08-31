@@ -1,6 +1,3 @@
-
-
-
 import { useState } from "react";
 import TenantUserList from "../components/tenantUser/TenantUserList";
 import CreateTenantUser from "../components/tenantUser/CreateTenantUser";
