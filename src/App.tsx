@@ -40,10 +40,13 @@ import { AuthProvider } from "./context/AuthContext";
 import UserListPage from "./pages/UserManagenentsPage";
 import ProtectedRoute from "./components/roleAndPermission/ProtectedRoute";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import ShortcutListener from "./components/shortcuts/ShortcutListener";
 
 function App() {
+  
   return (
     <AuthProvider>
+      <ShortcutListener/>
       <HelmetProvider>
         <AnimatePresence mode="wait">
           <Routes>

@@ -14,6 +14,7 @@ import { handleInsertAndUpdateQuotation } from "../utils/handleInsertAndUpdateQu
 import { addToCart } from "../utils/cartUtils";
 import { handleGetProduct } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
+import ProductSearch from "../components/product/ProductSearch";
 
 export default function RetailSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -31,7 +32,8 @@ export default function RetailSalePage() {
     [productId: string]: string;
   }>({});
 
-  const {token} = useAuth()
+
+  const { token } = useAuth();
 
   const location = useLocation();
   const editQuotation = location.state;
@@ -137,7 +139,6 @@ export default function RetailSalePage() {
       .includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-
 
   const handleReturnSale = (
     product: Product,
@@ -268,13 +269,8 @@ export default function RetailSalePage() {
         {/* Product List */}
         <div className="flex-1">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products..."
-              className="border px-4 py-2 rounded-lg w-full shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-            />
+            <ProductSearch search={search} setSearch={setSearch} />
+
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
