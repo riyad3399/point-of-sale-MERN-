@@ -1,63 +1,64 @@
-// src/utils/shortcutConfig.ts
+// src/utils/sidebarShortcutConfig.ts
 
-export type ShortcutAction =
-  | "newOrderTab"
-  | "todayOrderTab"
-  | "placeOrder"
-  | "searchProduct"
-  | "selectCustomerType"
-  | "editServiceCharge"
-  | "selectTable"
-  | "searchTodayOrder"
-  | "updateSelectCustomerType"
-  | "updateServiceCharge"
-  | "updateSubmitForm"
-  | "payAndPrintBill"
-  | "onGoingTab"
-  | "onlineOrderTab"
-  | "quickOrder"
-  | "selectCustomer"
-  | "editDiscount"
-  | "selectWaiter"
-  | "cookingTime"
-  | "goEdit"
-  | "searchOnlineOrder"
-  | "updateSelectedCustomer"
-  | "updateDiscount"
-  | "updateSelectTable"
-  | "selectPaymentType"
-  | "paidAmountTyping";
+export type SidebarShortcutAction =
+  | "dashboard"
+  | "retailSale"
+  | "wholeSale"
+  | "transactions"
+  | "quotations"
+  | "categories"
+  | "products"
+  | "alertItems"
+  | "purchase"
+  | "customers"
+  | "supplier"
+  | "expense"
+  | "accounts"
+  | "employee"
+  | "report"
+  | "settings"
+  | "userManagement";
 
-const shortcutConfig: Record<string, ShortcutAction> = {
-  // Left side
-  "Shift+N": "newOrderTab",
-  "Shift+T": "todayOrderTab",
-  "Shift+P": "placeOrder",
-  "Shift+S": "searchProduct",
-  "Shift+Y": "selectCustomerType",
-  "Shift+R": "editServiceCharge",
-  "Shift+B": "selectTable",
-  "Shift+X": "searchTodayOrder",
-  "Alt+Y": "updateSelectCustomerType",
-  "Alt+R": "updateServiceCharge",
-  "Alt+U": "updateSubmitForm",
-  "Alt+P": "payAndPrintBill",
+const sidebarShortcutConfig: Record<string, SidebarShortcutAction> = {
+  "Shift+D": "dashboard",
 
-  // Right side
-  "Shift+G": "onGoingTab",
-  "Shift+O": "onlineOrderTab",
-  "Shift+Q": "quickOrder",
-  "Shift+C": "selectCustomer",
-  "Shift+D": "editDiscount",
-  "Shift+W": "selectWaiter",
-  "Alt+K": "cookingTime",
-  "Alt+E": "goEdit",
-  "Shift+V": "searchOnlineOrder",
-  "Alt+C": "updateSelectedCustomer",
-  "Alt+D": "updateDiscount",
-  "Alt+B": "updateSelectTable",
-  "Alt+M": "selectPaymentType",
-  "Alt+A": "paidAmountTyping",
+  // Sales
+  "Shift+R": "retailSale",
+  "Shift+W": "wholeSale",
+  "Shift+T": "transactions",
+  "Shift+Q": "quotations",
+
+  // Inventory
+  "Shift+C": "categories",
+  "Shift+P": "products",
+  "Shift+A": "alertItems",
+
+  // Purchase
+  "Shift+U": "purchase",
+
+  // Customers
+  "Shift+M": "customers",
+
+  // Supplier
+  "Shift+L": "supplier",
+
+  // Expense
+  "Shift+E": "expense",
+
+  // Accounts
+  "Shift+O": "accounts",
+
+  // Employee
+  "Shift+Y": "employee",
+
+  // Report
+  "Shift+X": "report",
+
+  // Settings
+  "Shift+S": "settings",
+
+  // Users & Permission
+  "Shift+G": "userManagement",
 };
 
-export default shortcutConfig;
+export default sidebarShortcutConfig;

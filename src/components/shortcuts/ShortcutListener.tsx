@@ -1,47 +1,76 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import usePOSShortcuts from "../../hooks/usePOSShortcuts";
-import { ShortcutAction } from "../../utils/shortcutConfig";
+import sidebarShortcutConfig, {
+  SidebarShortcutAction,
+} from "../../utils/shortcutConfig";
 
+export default function SidebarShortcutListener() {
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      let combo = "";
+      if (e.shiftKey) combo += "Shift+";
+      if (e.altKey) combo += "Alt+";
+      combo += e.key.toUpperCase();
 
-export default function ShortcutListener() {
-    const navigate = useNavigate();
-    
-   
+      const actionName = sidebarShortcutConfig[combo];
 
-  const actions: Partial<Record<ShortcutAction, () => void>> = {
-    searchProduct: () => {
-      window.dispatchEvent(new Event("focusProductSearch")); 
-    },
-    newOrderTab: () => navigate("/retailSale"),
-    todayOrderTab: () => alert("📅 Today Order Tab"),
-    placeOrder: () => alert("✅ Place Order"),
-    selectCustomerType: () => alert("👤 Select Customer Type"),
-    editServiceCharge: () => alert("💰 Edit Service Charge"),
-    selectTable: () => alert("🍽️ Select Table"),
-    searchTodayOrder: () => alert("🔎 Search Today Order"),
-    updateSelectCustomerType: () => alert("♻️ Update Select Customer Type"),
-    updateServiceCharge: () => alert("♻️ Update Service Charge"),
-    updateSubmitForm: () => alert("📤 Update Submit Form"),
-    payAndPrintBill: () => alert("🖨️ Pay & Print Bill"),
+      if (actionName) {
+        e.preventDefault();
 
-    onGoingTab: () => alert("🔄 On Going Tab"),
-    onlineOrderTab: () => alert("🌐 Online Order Tab"),
-    quickOrder: () => alert("⚡ Quick Order"),
-    selectCustomer: () => alert("👥 Select Customer"),
-    editDiscount: () => alert("💸 Edit Discount"),
-    selectWaiter: () => alert("🙋 Select Waiter"),
-    cookingTime: () => alert("⏱️ Cooking Time"),
-    goEdit: () => alert("✏️ Go Edit"),
-    searchOnlineOrder: () => alert("🔍 Search Online Order"),
-    updateSelectedCustomer: () => alert("♻️ Update Selected Customer"),
-    updateDiscount: () => alert("♻️ Update Discount"),
-    updateSelectTable: () => alert("♻️ Update Select Table"),
-    selectPaymentType: () => alert("💳 Select Payment Type"),
-    paidAmountTyping: () => alert("💵 Paid Amount Typing"),
-  };
+        // map sidebar shortcut actions -> routes
+        const routeMap: Record<SidebarShortcutAction, string> = {
+          dashboard: "/",
 
-  usePOSShortcuts(actions);
+          // Sales
+          retailSale: "/retailSale",
+          wholeSale: "/wholeSale",
+          transactions: "/transactions",
+          quotations: "/quotation",
 
-  return null;
+          // Inventory
+          categories: "/categories",
+          products: "/productes",
+          alertItems: "/alertItems",
+
+          // Purchase
+          purchase: "/purchase",
+
+          // Customers
+          customers: "/customers",
+
+          // Supplier
+          supplier: "/supplier",
+
+          // Expense
+          expense: "/expense",
+
+          // Accounts
+          accounts: "/accounts",
+
+          // Employee
+          employee: "/employees",
+
+          // Report
+          report: "/report",
+
+          // Settings
+          settings: "/settings",
+
+          // User Management
+          userManagement: "/users-management",
+        };
+
+        navigate(routeMap[actionName]);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [navigate]);
+
+  return null; // এটা শুধু listener, UI render করবে না
 }
