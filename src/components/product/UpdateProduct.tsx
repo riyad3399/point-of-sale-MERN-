@@ -4,13 +4,12 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { Product } from "../../types";
+import { useAuth } from "../../context/AuthContext";
 
 interface CategoryType {
   categoryId: string;
   categoryName: string;
 }
-
-
 
 interface UpdateProductProps {
   product: Product;
@@ -69,8 +68,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
-
+  const { token } = useAuth();
 
   const onSubmit = async (data: any) => {
     try {
@@ -91,9 +89,14 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
         `http://localhost:3000/product/${product._id}`,
         {
           method: "PATCH",
-          body: formData,
+          body: JSON.stringify(formData),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
+
 
       const result = await response.json();
 

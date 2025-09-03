@@ -133,7 +133,7 @@ export default function RolePermissionForm({
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/user/${user._id}`,
+        `http://localhost:3000/auth/${user._id}`,
         {
           role,
           permissions,

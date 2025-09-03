@@ -4,6 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
 
 interface Customer {
   _id: string;
@@ -36,6 +37,8 @@ export default function UpdateCustomerModal({
     },
   });
 
+  const { token } = useAuth();
+
   // Escape key to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,7 +52,11 @@ export default function UpdateCustomerModal({
   const onSubmit = async (data: any) => {
     try {
       await axios
-        .patch(`http://localhost:3000/customer/${customer._id}`, data)
+        .patch(`http://localhost:3000/customer/${customer._id}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((res) => {
           const updatedCustomer = res.data;
 

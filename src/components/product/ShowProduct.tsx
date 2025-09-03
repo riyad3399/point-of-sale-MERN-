@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { Product } from "../../types";
 import { usePermission } from "../../hooks/usePermission";
+import { useAuth } from "../../context/AuthContext";
 
 
 
@@ -31,7 +32,8 @@ const ShowProduct: React.FC<ShowProductProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const {hasPermission}= usePermission()
+  const { hasPermission } = usePermission()
+  const {token}= useAuth()
 
   const navigate = useNavigate();
 
@@ -65,7 +67,11 @@ const ShowProduct: React.FC<ShowProductProps> = ({
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/product/${id}`);
+        await axios.delete(`http://localhost:3000/product/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setAllProduct((prev) => prev.filter((p) => p._id !== id));
 
         Swal.fire({
