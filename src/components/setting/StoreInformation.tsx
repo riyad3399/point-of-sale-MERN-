@@ -4,7 +4,6 @@ import { Save, Store } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -100,8 +99,15 @@ export default function StoreInformation() {
                 <InputField
                   id="phone"
                   label="Phone Number"
+                  type="text"
                   register={register}
-                  type="number"
+                  rules={{
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^01[3-9]\d{8}$/,
+                      message: "Invalid Bangladesh phone number",
+                    },
+                  }}
                 />
               </div>
 
@@ -194,12 +200,14 @@ const InputField = ({
   id,
   label,
   register,
+  rules,
   type = "text",
   disabled = false,
 }: {
   id: keyof FormValues;
   label: string;
   register: ReturnType<typeof useForm<FormValues>>["register"];
+  rules?: Parameters<ReturnType<typeof useForm<FormValues>>["register"]>[1];
   type?: string;
   disabled?: boolean;
 }) => (
@@ -213,9 +221,10 @@ const InputField = ({
     <input
       id={id}
       type={type}
-      {...register(id)}
+      {...register(id, rules)}
       className="input"
       disabled={disabled}
     />
   </div>
 );
+

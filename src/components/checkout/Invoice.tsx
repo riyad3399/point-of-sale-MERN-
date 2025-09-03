@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Printer } from "lucide-react";
 import axios from "axios";
 import { CompanyType } from "../../types";
-import Swal from "sweetalert2";
 import ThermalPrintButton from "../printButton/ThermalPrintButton";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
@@ -55,7 +54,7 @@ const Invoice: React.FC<InvoiceProps> = ({
 
   const invoicePostedRef = useRef(false);
   const [companyInfo, setCompanyInfo] = useState<CompanyType | null>();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   useEffect(() => {
     if (!selectWalking || products.length === 0 || invoicePostedRef.current)
@@ -188,7 +187,7 @@ const Invoice: React.FC<InvoiceProps> = ({
                 <th className="p-2 text-left">Name</th>
                 <th className="p-2 text-left">Qty</th>
                 <th className="p-2 text-center">Price</th>
-                <th className="p-2 text-right">Status</th>
+                {user.tenantId !== "riyad" ? <th className="p-2 text-right">Status</th> : ""}
               </tr>
             </thead>
             <tbody>
@@ -197,7 +196,7 @@ const Invoice: React.FC<InvoiceProps> = ({
                   <td className="p-2 text-left">{item.name}</td>
                   <td className="p-2 text-left">{item.quantity}</td>
                   <td className="p-2 text-center">৳ {item.price}</td>
-                  <td className="p-2 text-right">{item.status}</td>
+                  {user.tenantId !== "riyad" ? <td className="p-2 text-right">{item.status}</td> : ""}
                 </tr>
               ))}
             </tbody>
