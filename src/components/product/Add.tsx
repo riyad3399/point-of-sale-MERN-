@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
@@ -74,22 +73,24 @@ const Add: React.FC = () => {
       if (response.ok) {
         toast.success("Product added successfully!");
         reset();
+        console.log("Saved product:", result);
       } else {
-        toast.error("Failed to add product!");
+        toast.error(result.message || "Failed to add product!");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error("Something went wrong!");
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
+  //  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //    const file = e.target.files?.[0];
+  //    if (file) {
+  //      const reader = new FileReader();
+  //      reader.onloadend = () => setPreview(reader.result as string);
+  //      reader.readAsDataURL(file);
+  //    }
+  //  };
 
   useEffect(() => {
     generateNumber();
@@ -172,7 +173,7 @@ const Add: React.FC = () => {
               {...register("category", { required: "Category is required" })}
               className="mt-1 w-full input"
             >
-              {allCategories.map((category,i) => (
+              {allCategories.map((category, i) => (
                 <option key={i} value={category.categoryName}>
                   {category.categoryName}
                 </option>
@@ -360,11 +361,16 @@ const Add: React.FC = () => {
             accept="image/*"
             {...register("photo")}
             onChange={(e) => {
-              handleImageChange(e);
-              register("photo").onChange(e); // keep react-hook-form working
+              const file = e.target.files?.[0];
+              if (file) {
+                setPreview(URL.createObjectURL(file));
+              }
+
+              register("photo").onChange(e);
             }}
-            className=""
+            className="block"
           />
+
           {preview && (
             <img
               src={preview}

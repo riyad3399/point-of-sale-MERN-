@@ -38,6 +38,8 @@ export default function RetailSalePage() {
   const location = useLocation();
   const editQuotation = location.state;
 
+  console.log(allProduct);
+
   useEffect(() => {
     if (editQuotation) {
       const cartItems = editQuotation.items.map((item) => ({
@@ -330,7 +332,7 @@ export default function RetailSalePage() {
                       {/* ✅ Stock Image and Stock Out Badge */}
                       <div className="relative overflow-hidden inline-block w-full h-28">
                         <img
-                          src={`http://localhost:3000/product/image/${product._id}`}
+                          src={`http://localhost:3000${product.photo}`}
                           alt={product.productName}
                           className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md"
                         />

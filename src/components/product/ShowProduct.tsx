@@ -106,7 +106,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
               loading="lazy"
-              src={`http://localhost:3000/product/image/${product._id}`}
+              src={`http://localhost:3000${product.photo}`}
               alt={product.productName}
               className="object-cover w-full h-full"
             />

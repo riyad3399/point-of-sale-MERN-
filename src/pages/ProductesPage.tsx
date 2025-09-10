@@ -50,6 +50,8 @@ const ProductesPage: React.FC = () => {
       });
   }, [activeTab]);
 
+  console.log(allProduct);
+
   useEffect(() => {
     axios
       .get("http://localhost:3000/category", {

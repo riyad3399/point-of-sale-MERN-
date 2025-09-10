@@ -20,6 +20,7 @@ export interface Product {
   color?: string;
   createdAt: string;
   updatedAt: string;
+  photo?:string
   fifoStock: {
     purchasePrice: number;
     remainingQuantity: number;

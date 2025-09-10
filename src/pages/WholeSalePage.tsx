@@ -333,7 +333,7 @@ export default function WholeSalePage() {
                       {/* ✅ Stock Image and Stock Out Badge */}
                       <div className="relative overflow-hidden inline-block w-full h-28">
                         <img
-                          src={`http://localhost:3000/product/image/${product._id}`}
+                          src={`http://localhost:3000${product.photo}`}
                           alt={product.productName}
                           className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md"
                         />
