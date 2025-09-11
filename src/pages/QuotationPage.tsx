@@ -6,18 +6,23 @@ import { Helmet } from "react-helmet-async";
 import { QuotationType } from "../types";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function QuotationPage() {
   const [quotation, setQuotation] = useState<QuotationType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const fetchAllQuotations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/quotations");
+      const res = await axios.get("http://localhost:3000/quotations", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data;
       setQuotation(data);
     } catch (err) {
@@ -35,21 +40,19 @@ export default function QuotationPage() {
     const selected = quotation.find((q) => q._id === id);
     if (!selected) return;
 
-
     if (selected.saleType === "retailSale") {
-      navigate("/retailSale", {state: selected});
+      navigate("/retailSale", { state: selected });
     } else if (selected.saleType === "wholeSale") {
       navigate("/wholeSale", { state: selected });
     }
   };
-
 
   const handleDeleteQuotation = async (id: string) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
-      
+
       showCancelButton: true,
       confirmButtonColor: "#e3342f",
       cancelButtonColor: "#6c757d",
@@ -59,26 +62,19 @@ export default function QuotationPage() {
     if (!confirm.isConfirmed) return;
 
     try {
-      const res = await axios.delete(`http://localhost:3000/quotations/${id}`);
-
-      Swal.fire({
-        icon: "success",
-        title: "Deleted!",
-        timerProgressBar: true,
-        iconColor: "#3085d6",
-        confirmButtonColor: "#3085d6",
-        timer: 2500,
-        showConfirmButton: false,
-        text: res.data.message || "Quotation deleted successfully!",
+      const res = await axios.delete(`http://localhost:3000/quotations/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      toast.success(res.data.message || "Quotation deleted successfully!");
 
       setQuotation((prev) => prev.filter((q) => q._id !== id));
     } catch (error: any) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: error.response?.data?.message || "Failed to delete quotation.",
-      });
+      toast.error(
+        error.response?.data?.message || "Failed to delete quotation."
+      );
     }
   };
 
@@ -93,7 +89,11 @@ export default function QuotationPage() {
           <Loading />
         </div>
       ) : (
-        <ShowQuotation quotations={quotation} onEdit={handleEditQuotation} onDelete={handleDeleteQuotation} />
+        <ShowQuotation
+          quotations={quotation}
+          onEdit={handleEditQuotation}
+          onDelete={handleDeleteQuotation}
+        />
       )}
     </div>
   );

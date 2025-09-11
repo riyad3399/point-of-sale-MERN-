@@ -48,9 +48,8 @@ const ProductesPage: React.FC = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [activeTab]);
+  }, [activeTab, token]);
 
-  console.log(allProduct);
 
   useEffect(() => {
     axios
@@ -63,7 +62,7 @@ const ProductesPage: React.FC = () => {
         setCategories(res.data);
       })
       .catch((err) => console.error("Error fetching categories:", err));
-  }, []);
+  }, [token]);
 
   // 🧠 Filter logic with search + category
   const filteredProducts = allProduct.filter((product) => {

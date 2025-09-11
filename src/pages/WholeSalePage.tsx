@@ -419,7 +419,7 @@ export default function WholeSalePage() {
                       <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
-                        src={`http://localhost:3000/product/image/${product._id}`}
+                        src={`http://localhost:3000${product.photo}`}
                         alt={product.productName}
                         className="object-cover w-full h-full"
                       />

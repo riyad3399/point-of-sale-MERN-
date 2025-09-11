@@ -104,7 +104,7 @@ const Add: React.FC = () => {
         setAllCategories(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [token]);
 
   const { t } = useTranslation();
 

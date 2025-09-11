@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
-
+import toast from "react-hot-toast";
 
 interface Customer {
   customerName: string;
@@ -44,20 +44,10 @@ export default function AddCustomer() {
       const result = await response.json();
 
       if (response.ok) {
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Customer added successfully!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        toast.success("Customer added successfully!");
         reset();
       } else {
-        Swal.fire({
-          icon: "error",
-          title: response.statusText,
-          text: result.message,
-        });
+        toast.error(result.message || "Failed to add customer.");
       }
     } catch (err) {
       console.log(err);

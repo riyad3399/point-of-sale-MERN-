@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface Customer {
   _id: string;
@@ -65,16 +66,14 @@ export default function UpdateCustomerModal({
               cus._id === customer._id ? updatedCustomer : cus
             )
           );
-          Swal.fire({
-            title: "Customer Update Successfull!",
-            icon: "success",
-            draggable: true,
-          });
+         
+          toast.success("Customer updated successfully!");
           onClose();
           reset();
         });
     } catch (err) {
       console.error("Error updating customer:", err);
+      toast.error("Failed to update customer. Please try again.");
     }
   };
 

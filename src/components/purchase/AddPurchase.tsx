@@ -103,7 +103,7 @@ const PurchaseForm = () => {
   useEffect(() => {
     handleGetProduct(setProducts, token);
     handleGetSupplier(setSuppliers);
-  }, []);
+  }, [token]);
 
   const onSubmit = async (data: PurchaseFormData) => {
     // Calculate total from items
@@ -157,6 +157,8 @@ const PurchaseForm = () => {
       dueDate: data.dueDate,
       purchaseDate: data.purchaseDate || new Date(),
     };
+
+    console.log(transformed);
 
     handleInsertPurchase(reset, transformed);
   };

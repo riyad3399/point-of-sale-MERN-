@@ -164,7 +164,6 @@ export const getHandleProfile = async (token: string) => {
     const res = await axios.get(`${URI}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(res.data);
 
     return res.data;
   } catch (err: any) {
@@ -243,7 +242,9 @@ export const handleGetProduct = async (setAllProduct, token) => {
 // POST
 export const handleInsertPurchase = async (reset, transformed) => {
   try {
-    const res = await axios.post(`${URI}/purchases/add`, transformed);
+    const res = await axios.post(`${URI}/purchases/add`,  transformed, {headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },});
     toast.success(res.data.message || "Purchase Successfully");
     reset();
   } catch (err) {
@@ -285,7 +286,9 @@ export const handleGetSinglePurchase = async (id: string, navigate) => {
 // GET - All supplier
 export const handleGetSupplier = async (setSuppliers) => {
   try {
-    const res = await axios.get(`${URI}/suppliers`);
+    const res = await axios.get(`${URI}/suppliers`, {headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },});
     setSuppliers(res.data.data);
   } catch (error) {
     setSuppliers([]);

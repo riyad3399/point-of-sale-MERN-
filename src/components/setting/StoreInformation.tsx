@@ -13,6 +13,31 @@ export default function StoreInformation() {
   const [hasStoreData, setHasStoreData] = useState(false);
   const { token } = useAuth();
 
+useEffect(() => {
+  const fetchSettings = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/setting", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const storeData = res.data?.data;
+      if (storeData) {
+        setHasStoreData(true);
+        reset(storeData);
+
+        if (storeData.logoUrl) {
+          setLogoPreview(`http://localhost:3000/${storeData.logoUrl}`);
+        }
+      }
+    } catch (err) {
+      setHasStoreData(false);
+    }
+  };
+
+  fetchSettings();
+}, [reset, token]);
+
   const onSubmit = async (data: FormValues) => {
     try {
       const formData = new FormData();
@@ -32,12 +57,12 @@ export default function StoreInformation() {
       const url = "http://localhost:3000/setting";
       const method = hasStoreData ? "patch" : "post";
 
-      await axios[method](url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+     await axios[method](url, formData, {
+       headers: {
+         Authorization: `Bearer ${token}`,
+       },
+     });
+
 
       toast.success(
         hasStoreData
@@ -53,31 +78,7 @@ export default function StoreInformation() {
     }
   };
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/setting", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const storeData = res.data?.data;
-        if (storeData) {
-          setHasStoreData(true);
-          reset(storeData);
-
-          // ঠিক এইখানে logoUrl কে পুরো URL বানিয়ে preview করাও
-          if (storeData.logoUrl) {
-            setLogoPreview(`http://localhost:3000/${storeData.logoUrl}`);
-          }
-        }
-      } catch (err) {
-        setHasStoreData(false);
-      }
-    };
-
-    fetchSettings();
-  }, [reset]);
+  
 
   return (
     <>

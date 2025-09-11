@@ -32,6 +32,8 @@ const ShowProduct: React.FC<ShowProductProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
+
   const { hasPermission } = usePermission()
   const {token}= useAuth()
 
@@ -44,7 +46,11 @@ const ShowProduct: React.FC<ShowProductProps> = ({
   const handleSingleProduct = async (id: string) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/product/${id}`);
+      const res = await axios.get(`http://localhost:3000/product/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       handleViewProduct(res.data);
     } catch (err) {
       console.error(err);
@@ -180,13 +186,13 @@ const ShowProduct: React.FC<ShowProductProps> = ({
       </motion.tr>
 
       {/* Modal render outside of <tr> */}
-      {open && (
+      { open && (
         <Modal
           isOpen={open}
           onClose={() => setOpen(false)}
           title="Update Product"
         >
-          <UpdateProduct product={product} />
+          <UpdateProduct product={product} setIsOpen={setOpen} />
         </Modal>
       )}
     </>

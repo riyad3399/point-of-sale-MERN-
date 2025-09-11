@@ -155,7 +155,7 @@ export default function AllTransactions() {
       setStoreInfo(data)
     }
     fetchStoreInfo()
-  }, [])
+  }, [token])
   
   
 

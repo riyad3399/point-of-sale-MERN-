@@ -8,6 +8,7 @@ import UpdateCustomerModal from "./UpdateCustomerModal";
 import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
+import { useAuth } from "../../context/AuthContext";
 
 interface Customer {
   _id: string;
@@ -31,6 +32,7 @@ const buttonVariants = {
 export default function ShowCustomerList({ customer, setCustomers }: Props) {
   const [editing, setEditing] = useState(false);
   const { hasPermission } = usePermission();
+  const { token } = useAuth();
 
   const handleDeleteCustomer = async (id: string) => {
     const result = await Swal.fire({
@@ -45,7 +47,11 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/customer/${id}`);
+        await axios.delete(`http://localhost:3000/customer/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         setCustomers((prev) => prev.filter((cus) => cus._id !== id));
 

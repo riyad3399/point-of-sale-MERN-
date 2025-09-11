@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
 import axios from "axios";
 import { Product } from "../../types";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface CategoryType {
   categoryId: string;
@@ -13,18 +13,8 @@ interface CategoryType {
 
 interface UpdateProductProps {
   product: Product;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-// Enhanced animation variants
-const containerVariants = {
-  hidden: { opacity: 0, scale: 0.9, y: 50 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
 
 const cardVariants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -33,16 +23,6 @@ const cardVariants = {
     y: 0,
     scale: 1,
     transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
-
-const fieldVariants = {
-  hidden: { opacity: 0, x: -20, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: "easeOut" },
   },
 };
 
@@ -56,96 +36,21 @@ const buttonVariants = {
   },
 };
 
-const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
+const UpdateProduct: React.FC<UpdateProductProps> = ({
+  product,
+  setIsOpen,
+}) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-    watch,
   } = useForm();
 
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const { token } = useAuth();
-
-  const onSubmit = async (data: any) => {
-    try {
-      setLoading(true);
-      const formData = new FormData();
-
-      for (const key in data) {
-        if (key !== "photo") {
-          formData.append(key, data[key]);
-        }
-      }
-
-      if (data.photo && data.photo[0]) {
-        formData.append("photo", data.photo[0]);
-      }
-
-      const response = await fetch(
-        `http://localhost:3000/product/${product._id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify(formData),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-
-      const result = await response.json();
-
-      if (response.ok) {
-        await Swal.fire({
-          title: "Success!",
-          text: result.message || "Product updated successfully.",
-          icon: "success",
-          confirmButtonColor: "#10B981",
-          showClass: {
-            popup: "animate__animated animate__fadeInUp animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutDown animate__faster",
-          },
-        });
-        reset(data);
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: result.message || "Failed to update product.",
-          icon: "error",
-          confirmButtonColor: "#EF4444",
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      Swal.fire({
-        title: "Network Error!",
-        text: "Please check your connection and try again.",
-        icon: "error",
-        confirmButtonColor: "#EF4444",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/category");
-        setCategories(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchCategory();
-  }, []);
 
   useEffect(() => {
     if (product) {
@@ -168,6 +73,68 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
       });
     }
   }, [product, reset]);
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/category", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCategories(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCategory();
+  }, [token]);
+
+  const onSubmit = async (data: any) => {
+    console.log(data);
+    try {
+      setLoading(true);
+      const formData = new FormData();
+
+      // normal fields
+      for (const key in data) {
+        if (key !== "photo") {
+          formData.append(key, data[key]);
+        }
+      }
+
+      // file field
+      if (data.photo && data.photo[0]) {
+        formData.append("photo", data.photo[0]);
+      }
+
+      const response = await fetch(
+        `http://localhost:3000/product/${product._id}`,
+        {
+          method: "PATCH",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success("Product updated successfully!");
+        reset(data);
+
+        // modal auto-close
+        setIsOpen(false);
+      } else {
+        toast.error(result.message || "Failed to update product.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className=" min-h-screen bg-white">
@@ -257,7 +224,6 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product }) => {
                         : "border-gray-200 hover:border-gray-300 focus:border-green-400"
                     } focus:outline-none`}
                   >
-                    <option value="">Choose a category</option>
                     {categories.map((cat) => (
                       <option key={cat.categoryId} value={cat.categoryName}>
                         {cat.categoryName}

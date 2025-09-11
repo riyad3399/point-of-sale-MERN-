@@ -38,7 +38,6 @@ export default function RetailSalePage() {
   const location = useLocation();
   const editQuotation = location.state;
 
-  console.log(allProduct);
 
   useEffect(() => {
     if (editQuotation) {
@@ -418,7 +417,7 @@ export default function RetailSalePage() {
                       <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
-                        src={`http://localhost:3000/product/image/${product._id}`}
+                        src={`http://localhost:3000${product.photo}`}
                         alt={product.productName}
                         className="object-cover w-full h-full"
                       />

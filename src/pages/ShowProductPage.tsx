@@ -58,12 +58,8 @@ const ShowProductPage: React.FC = () => {
             animate="visible"
             variants={containerStagger}
           >
-            {fields.map((field) => (
-              <motion.div
-                key={field._id}
-                variants={itemFadeIn}
-                className="space-y-1"
-              >
+            {fields.map((field, i) => (
+              <motion.div key={i} variants={itemFadeIn} className="space-y-1">
                 <div className="text-sm text-gray-500 font-medium">
                   {field.label}
                 </div>
@@ -83,9 +79,10 @@ const ShowProductPage: React.FC = () => {
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             <img
-              src={`http://localhost:3000/product/image/${singleProduct?._id}`}
+              src={`http://localhost:3000${singleProduct?.photo}`}
               alt="Product"
-              className="w-32 h-32 object-cover rounded-xl border border-gray-300 shadow-sm"
+                className="w-32 h-32 object-cover rounded-xl border border-gray-300 shadow-sm"
+                loading="lazy"
             />
           </motion.div>
         </motion.div>
