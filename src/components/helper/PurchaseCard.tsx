@@ -35,13 +35,13 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
   const navigate = useNavigate();
   const { hasPermission } = usePermission();
 
+
   const handlePayment = (id: string) => {
     handleGetSinglePurchase(id, navigate);
   };
 
   const handleDelete = () => {
     console.log("Delete Purchase:", purchase._id);
-    // delete confirmation / logic here
   };
 
   return (

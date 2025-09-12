@@ -74,7 +74,11 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/product")
+      .get("http://localhost:3000/product", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
       .then((res) => {
         const data = res.data;
         const filterData = data.filter(

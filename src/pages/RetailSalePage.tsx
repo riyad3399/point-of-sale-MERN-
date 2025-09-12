@@ -39,6 +39,7 @@ export default function RetailSalePage() {
   const editQuotation = location.state;
 
 
+
   useEffect(() => {
     if (editQuotation) {
       const cartItems = editQuotation.items.map((item) => ({
@@ -132,14 +133,20 @@ export default function RetailSalePage() {
 
   const categories = ["All", ...new Set(allProduct.map((p) => p.category))];
 
-  const filteredProducts = allProduct.filter((product) => {
-    const matchesCategory =
-      selectedCategory === "All" || product.category === selectedCategory;
-    const matchesSearch = product.productName
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+const filteredProducts = allProduct.filter((product) => {
+  // category match (case-insensitive)
+  const matchesCategory =
+    selectedCategory === "All" ||
+    product.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+  // search match (null/empty safe)
+  const matchesSearch = product.productName
+    ?.toLowerCase()
+    .includes(search.toLowerCase());
+
+  return matchesCategory && matchesSearch;
+});
+
 
   const handleReturnSale = (
     product: Product,
@@ -305,13 +312,13 @@ export default function RetailSalePage() {
                   </p>
                 </motion.div>
               ) : (
-                filteredProducts.map((product) => {
+                  filteredProducts.map((product) => {
                   // FIFO stock থেকে মোট পরিমাণ স্টক বের করো
-                  const totalQuantity =
-                    product.fifoStock?.reduce(
-                      (sum, stock) => sum + stock.remainingQuantity,
-                      0
-                    ) || 0;
+                const totalQuantity =
+                  product.fifoStock?.reduce(
+                    (sum, stock) => sum + (stock.remainingQuantity || 0),
+                    0
+                  ) || 0;
 
                   // FIFO অনুযায়ী প্রোডাক্টের বর্তমান বিক্রয় মূল্য
                   const currentRetailPrice =
@@ -349,7 +356,7 @@ export default function RetailSalePage() {
                         </h2>
                         <p className="text-sm font-semibold text-gray-800">
                           Stock:{" "}
-                          <span className="text-blue-600">{totalQuantity}</span>
+                          <span className="text-blue-600">{totalQuantity }</span>
                         </p>
                         <strong className="text-blue-600 text-sm flex items-center gap-1">
                           <TbCurrencyTaka size={20} />

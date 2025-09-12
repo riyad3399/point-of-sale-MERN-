@@ -20,6 +20,7 @@ import FilterDropdown from "../helper/FilterDropdown";
 import { Purchase } from "../../types";
 import PurchaseCard from "../helper/PurchaseCard";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
 
 
 type PaymentStatus = "all" | "paid" | "due";
@@ -39,13 +40,18 @@ export default function PurchaseList() {
     end: "",
   });
   const { t } = useTranslation();
+  const {token} = useAuth()
 
   useEffect(() => {
     const fetchPurchases = async () => {
       setLoading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        const res = await axios.get("http://localhost:3000/purchases");
+        const res = await axios.get("http://localhost:3000/purchases", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const sortedData = res.data.data.sort(
           (a: Purchase, b: Purchase) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -58,7 +64,7 @@ export default function PurchaseList() {
       }
     };
     fetchPurchases();
-  }, []);
+  }, [token]);
 
   // Get unique payment methods for the filter dropdown
   const paymentMethods = useMemo(() => {

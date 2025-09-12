@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function UploadCsvFile() {
   const [file, setFile] = useState<File | null>(null);
@@ -8,7 +9,7 @@ export default function UploadCsvFile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return alert("ফাইল দিন");
+    if (!file) return toast.error("Please select a file to upload.");
 
     const formData = new FormData();
     formData.append("csv", file);
@@ -24,10 +25,10 @@ export default function UploadCsvFile() {
           },
         }
       );
-      alert(res.data.message);
+      toast.success(res.data.message || "File uploaded successfully!");
     } catch (error) {
       console.error(error);
-      alert("আপলোডে সমস্যা হয়েছে");
+      toast.error("upload failed. Please try again.");
     }
   };
 
