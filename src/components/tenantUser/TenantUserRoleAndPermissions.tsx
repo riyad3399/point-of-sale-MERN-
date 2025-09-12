@@ -19,13 +19,13 @@ export default function TenantUserRoleAndPermissions() {
   const [loading, setLoading] = useState(true);
   const { user: currentUser, token, decodedUser } = useAuth();
 
-  console.log(currentUser);
+  // console.log(currentUser);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/auth/${currentUser.id}`,
+          `http://localhost:3000/user/${currentUser?.tenantId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

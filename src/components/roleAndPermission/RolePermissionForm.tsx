@@ -134,16 +134,15 @@ export default function RolePermissionForm({
     try {
       const res = await axios.put(
         `http://localhost:3000/auth/${user._id}`,
-        {
-          role,
-          permissions,
-        },
+        { role, permissions },
         {
           headers: {
-            Authorization: `${token}`,
+            Authorization: `Bearer ${token}`,
+            "x-tenant-id": localStorage.getItem("tenantId") || "", // ✅ attach tenant ID
           },
         }
       );
+
       toast.success("User updated successfully");
       onUpdated(res.data.user);
     } catch (error: any) {
