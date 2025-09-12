@@ -25,7 +25,7 @@ import Swal from "sweetalert2";
 import { Expense, Item } from "../../types";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../../hooks/usePermission";
-
+import { useAuth } from "../../context/AuthContext";
 
 
 
@@ -51,16 +51,15 @@ const formatDate = (dateString: string): string => {
 
 const getMethodColor = (method: string) => {
   const colors = {
-    CASH: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    CASH: "bg-green-100 text-green-700  ",
     BKASH: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
     BANK: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-    default: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+    default: "bg-gray-100 text-gray-700  dark:text-gray-300",
   };
   return colors[method as keyof typeof colors] || colors.default;
 };
 
 export default function ExpenseList() {
-  // State management
   const [allExpenses, setAllExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState("");
@@ -71,12 +70,15 @@ export default function ExpenseList() {
   const {hasPermission} =usePermission()
 
   const { t } = useTranslation();
+  const {token} = useAuth()
 
   // Fetch expenses
   const fetchAllExpenses = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/expenses");
+      const res = await axios.get("http://localhost:3000/expenses", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setAllExpenses(res.data);
     } catch (err) {
       console.error("Failed to fetch expenses:", err);
@@ -133,7 +135,6 @@ export default function ExpenseList() {
     setSearchTerm("");
   };
 
-  // Delete expense (placeholder)
   const handleDeleteExpense = async (id: string) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -149,7 +150,7 @@ export default function ExpenseList() {
       try {
         await deleteExpense(id);
         Swal.fire("Deleted!", "Expense has been deleted.", "success");
-        fetchAllExpenses(); // or update local state
+        fetchAllExpenses(); 
       } catch (err) {
         console.error("Delete failed:", err);
         Swal.fire("Error", "Failed to delete expense.", "error");
@@ -169,16 +170,16 @@ export default function ExpenseList() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-900 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50   p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header with actions */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <Wallet className="text-blue-600 dark:text-blue-400 h-8 w-8" />
+          <h1 className="text-3xl font-bold text-gray-800  flex items-center gap-2">
+            <Wallet className="text-primary-600  h-8 w-8" />
             {t("expense.title")}
           </h1>
           <div>
-            <button className="flex items-center gap-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors shadow-sm hover:shadow-md">
+            <button className="flex items-center gap-2 bg-white  hover:bg-gray-100  text-gray-700  px-4 py-2 rounded-lg transition-colors shadow-sm hover:shadow-md">
               <BarChart2 size={18} />
               <Link to="/report"> {t("expense.reports")}</Link>
             </button>
@@ -194,83 +195,83 @@ export default function ExpenseList() {
         >
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-lg border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-500  mb-1">
                   {t("expense.totalEntries")}
                 </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                <p className="text-3xl font-bold text-gray-900 ">
                   {stats.totalEntries}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 bg-blue-100  rounded-xl flex items-center justify-center">
+                <Layers className="w-5 h-5 text-primary-600 " />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-lg border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-500  mb-1">
                   {t("expense.totalAmount")}
                 </p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                <p className="text-3xl font-bold text-green-600 ">
                   {formatCurrency(stats.totalAmount)}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                <PiggyBank className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 bg-green-100  rounded-xl flex items-center justify-center">
+                <PiggyBank className="w-5 h-5 text-green-600 " />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-lg border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-500  mb-1">
                   {t("expense.paymentMethods")}
                 </p>
-                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                <p className="text-3xl font-bold text-purple-600 ">
                   {stats.uniqueMethods}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 bg-purple-100  rounded-xl flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-purple-600 " />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-lg border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-500  mb-1">
                   {t("expense.categories")}
                 </p>
-                <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+                <p className="text-3xl font-bold text-orange-600 ">
                   {stats.categories}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
-                <Tag className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <div className="w-10 h-10 bg-orange-100  rounded-xl flex items-center justify-center">
+                <Tag className="w-5 h-5 text-orange-600 " />
               </div>
             </div>
           </motion.div>
         </motion.div>
 
         {/* Search and Filter Controls */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white  rounded-2xl p-5 shadow-lg border border-gray-100  mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -279,7 +280,7 @@ export default function ExpenseList() {
                 placeholder={t("expense.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50  rounded-xl border border-gray-200  focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               {searchTerm && (
                 <button
@@ -297,7 +298,7 @@ export default function ExpenseList() {
                   type="date"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-48"
+                  className="pl-10 pr-4 py-3 bg-gray-50  rounded-xl border border-gray-200  focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-48"
                 />
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               </div>
@@ -306,7 +307,7 @@ export default function ExpenseList() {
                 <select
                   value={methodFilter}
                   onChange={(e) => setMethodFilter(e.target.value)}
-                  className="pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-48 appearance-none"
+                  className="pl-10 pr-4 py-3 bg-gray-50  rounded-xl border border-gray-200  focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-48 appearance-none"
                 >
                   <option value="">All Methods</option>
                   <option value="CASH">Cash</option>
@@ -318,7 +319,7 @@ export default function ExpenseList() {
 
               <button
                 onClick={handleClearFilters}
-                className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-xl transition-colors"
+                className="flex items-center gap-1 bg-gray-100  hover:bg-gray-200  text-gray-700  px-4 py-2 rounded-xl transition-colors"
               >
                 <XCircle className="w-4 h-4" />
                 {t("expense.clear")}
@@ -341,20 +342,20 @@ export default function ExpenseList() {
                 initial="hidden"
                 animate="visible"
                 whileHover="hover"
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden"
+                className="bg-white  rounded-2xl shadow-lg border border-gray-100  overflow-hidden"
               >
                 <div className="p-6">
                   {/* Header */}
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-gray-100 ">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                        <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <div className="p-2 bg-blue-100  rounded-lg">
+                        <Calendar className="w-5 h-5 text-primary-600 " />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                        <h3 className="font-semibold text-gray-900 ">
                           {formatDate(expense.date)}
                         </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 ">
                           {expense.items.length} {t("expense.items")}
                         </p>
                       </div>
@@ -371,14 +372,14 @@ export default function ExpenseList() {
                       {hasPermission("expense", "expense", ["edit"]) && (
                         <button
                           onClick={() => handleEditExpense(expense)}
-                          className="p-1.5 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          className="p-1.5 text-gray-500 hover:text-primary-600  rounded-full hover:bg-gray-100  transition-colors"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                       )}
                       {hasPermission("expense", "expense", ["delete"]) && <button
                         onClick={() => handleDeleteExpense(expense._id)}
-                        className="p-1.5 text-gray-500 hover:text-red-600 dark:hover:text-red-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-red-600  rounded-full hover:bg-gray-100  transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>}
@@ -388,19 +389,19 @@ export default function ExpenseList() {
                   {/* Total Amount */}
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                        <DollarSign className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <div className="p-2 bg-red-100  rounded-lg">
+                        <DollarSign className="w-5 h-5 text-red-600 " />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 ">
                           {t("expense.totalAmount")}
                         </p>
-                        <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                        <p className="text-2xl font-bold text-red-600 ">
                           {formatCurrency(calculateExpenseTotal(expense.items))}
                         </p>
                       </div>
                     </div>
-                    <button className="hidden text-sm text-blue-600 dark:text-blue-400 hover:underline  items-center gap-1">
+                    <button className="hidden text-sm text-primary-600  hover:underline  items-center gap-1">
                       <FileText className="w-4 h-4" />
                       {t("expense.viewDetails")}
                     </button>
@@ -411,15 +412,15 @@ export default function ExpenseList() {
                     {expense.items.map((item, idx) => (
                       <div
                         key={idx}
-                        className="grid grid-cols-1 lg:grid-cols-3 justify-center items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                        className="grid grid-cols-1 lg:grid-cols-3 justify-center items-center gap-3 p-3 bg-gray-50  rounded-lg"
                       >
                         <div className="flex items-center gap-2">
                           <Tag className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium text-gray-800 dark:text-gray-200">
+                          <span className="font-medium text-gray-800 ">
                             {item.category}
                           </span>
                         </div>
-                        <div className=" items-center gap-2 text-gray-600 dark:text-gray-400 hidden sm:flex">
+                        <div className=" items-center gap-2 text-gray-600  hidden sm:flex">
                           <List className="w-4 h-4 text-gray-400" />
                           <span className="text-sm">
                             {item.remarks || "No remarks"}
@@ -427,26 +428,26 @@ export default function ExpenseList() {
                         </div>
                         <div className="flex justify-between sm:justify-end gap-4">
                           <div className="text-right">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 ">
                               {t("expense.unitPrice")}
                             </p>
-                            <p className="font-medium text-gray-800 dark:text-gray-200">
+                            <p className="font-medium text-gray-800 ">
                               {formatCurrency(item.unitPrice)}
                             </p>
                           </div>
                           <div className="text-center">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 ">
                               {t("expense.quantity")}
                             </p>
-                            <p className="font-medium text-gray-800 dark:text-gray-200">
+                            <p className="font-medium text-gray-800 ">
                               {item.quantity}
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 ">
                               {t("expense.total")}
                             </p>
-                            <p className="font-medium text-red-600 dark:text-red-400">
+                            <p className="font-medium text-red-600 ">
                               {formatCurrency(item.unitPrice * item.quantity)}
                             </p>
                           </div>

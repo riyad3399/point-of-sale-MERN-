@@ -5,12 +5,20 @@ import axios from "axios";
 import { HiCurrencyBangladeshi } from "react-icons/hi";
 import SalesOverviewChart from "../components/dashboard/SalesOverviewChart";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
-import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import {
+  fetchDefaultDueCustomers,
+  fetchOverviewData,
+  fetchRecentTransactions,
+  fetchTodaySales,
+  fetchTotalSales,
+} from "../utils/api";
+import Loading from "../components/Loading";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -62,90 +70,16 @@ const DashboardPage: React.FC = () => {
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
-  const {token} = useAuth()
+  const { token } = useAuth();
 
   const { t } = useTranslation();
 
-  const fetchTodaySales = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/invoice/today-sales", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = res.data;
-      setTodaySales(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const fetchTotalSales = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/invoice/total-sales", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = res.data;
-      setTotalSales(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-
-  const fetchOverviewData = async () => {
-    const res = await axios.get("http://localhost:3000/invoice/sales-7-days", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setChartData(res.data);
-  };
-
-  const fetchRecentTransactions = async () => {
-    const res = await axios.get(
-      "http://localhost:3000/invoice/recent-transactions",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const data = res.data;
-    setRecentTransactions(data);
-  };
-
   useEffect(() => {
-    fetchTodaySales();
-    fetchTotalSales();
-    // fetchDueCustomers();
-    fetchOverviewData();
-    fetchRecentTransactions();
-  }, []);
-
-  useEffect(() => {
-    const fetchDefaultDueCustomers = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/invoice/due-customers",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setDueCustomers(response.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDefaultDueCustomers();
+    fetchTodaySales(setTodaySales, setLoading);
+    fetchTotalSales(setTotalSales, setLoading);
+    fetchOverviewData(setChartData, setLoading);
+    fetchRecentTransactions(setRecentTransactions, setLoading);
+    fetchDefaultDueCustomers(setLoading, setDueCustomers);
   }, []);
 
   const sendSMS = async (
@@ -159,7 +93,7 @@ const DashboardPage: React.FC = () => {
 
     try {
       setLoadingIndex(index);
-      const res = await fetch("http://localhost:3000/sms/send", {
+      await fetch("http://localhost:3000/sms/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,9 +103,9 @@ const DashboardPage: React.FC = () => {
           message: message,
         }),
       });
-      Swal.fire("Success", "SMS পাঠানো হয়েছে!", "success");
+      toast.success("SMS পাঠানো হয়েছে!");
     } catch (err) {
-      Swal.fire("Error", "SMS পাঠাতে ব্যার্থ!", "error");
+      toast.error("SMS পাঠাতে ব্যার্থ!");
     } finally {
       setLoadingIndex(null);
     }
@@ -184,7 +118,7 @@ const DashboardPage: React.FC = () => {
       let response;
 
       if (selectedDate) {
-        const formattedDate = formatDateToYYYYMMDD(selectedDate); 
+        const formattedDate = formatDateToYYYYMMDD(selectedDate);
         response = await axios.get(
           "http://localhost:3000/invoice/due-customers",
           {
@@ -208,11 +142,7 @@ const DashboardPage: React.FC = () => {
       setDueCustomers(response.data);
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        title: "ডাটা আনতে সমস্যা হয়েছে",
-        icon: "error",
-        draggable: true,
-      });
+      toast.error("ডাটা আনতে সমস্যা হয়েছে");
     } finally {
       setLoading(false);
     }
@@ -225,13 +155,13 @@ const DashboardPage: React.FC = () => {
     return `${year}-${month}-${day}`;
   }
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <div>
       <Helmet>
         <title>Dashboard | POS System</title>
       </Helmet>
-
-
 
       {/* Stats Grid */}
       <div className="mb-5">
@@ -349,7 +279,6 @@ const DashboardPage: React.FC = () => {
                 key={index}
                 className="flex items-center p-3 bg-gray-50 rounded-lg "
               >
-                {/* <div className="h-10 w-10 bg-gray-200 rounded-md mr-3"></div> */}
                 <div className="flex-1">
                   <h3 className="font-medium">
                     {capitalizeFirstLetter(dueCustomer.name)}

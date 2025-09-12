@@ -401,7 +401,7 @@ const Sidebar: React.FC = () => {
             </motion.div>
           )}
 
-          {hasModuleAccess("accounts") && (
+          {/* {hasModuleAccess("accounts") && (
             <div
               onClick={() => toggleMenu("accounts")}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
@@ -487,7 +487,7 @@ const Sidebar: React.FC = () => {
                 />
               )}
             </motion.div>
-          )}
+          )} */}
           {hasModuleAccess("report") && (
             <div
               onClick={() => toggleMenu("report")}

@@ -37,7 +37,7 @@ const SupplierList = () => {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
-  const { hasPermission } = usePermission();
+  // const { hasPermission } = usePermission();
 
   const { t } = useTranslation();
   const {token} = useAuth()
@@ -60,7 +60,7 @@ const SupplierList = () => {
       }
     };
     fetchSuppliers();
-  }, []);
+  }, [token]);
 
   // Memoize filtered and sorted suppliers
   const filteredAndSortedSuppliers = useMemo(() => {
@@ -143,11 +143,11 @@ const SupplierList = () => {
   }
 
   return (
-    <div className="min-h-screen dark:bg-gray-900">
+    <div className="min-h-screen " >
       <div className="max-w-7xl mx-auto">
         {/* Header Title */}
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center md:text-left flex items-center gap-2">
-          <Truck className="text-blue-500 h-8 w-8" />{" "}
+        <h2 className="text-3xl font-bold text-gray-800  mb-6 text-center md:text-left flex items-center gap-2">
+          <Truck className="text-primary-500 h-8 w-8" />{" "}
           {t("supplier.supplierDirectory")}
         </h2>
 
@@ -160,76 +160,76 @@ const SupplierList = () => {
         >
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-sm border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.totalSuppliers")}
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-bold  ">
                   {stats.total}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 bg-primary-100  rounded-xl flex items-center justify-center">
+                <Users className="w-5 h-5 text-primary-600 " />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-sm border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.withEmail")}
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-bold  ">
                   {stats.withEmail}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                <Mail className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 bg-green-100  rounded-xl flex items-center justify-center">
+                <Mail className="w-5 h-5 text-green-600 " />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-sm border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.withPhone")}
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-bold  ">
                   {stats.withPhone}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                <Phone className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 bg-purple-100  rounded-xl flex items-center justify-center">
+                <Phone className="w-5 h-5 text-purple-600 " />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             variants={cardVariants}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-6 shadow-sm border border-gray-100 "
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.withAddress")}
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-bold  ">
                   {stats.withAddress}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <div className="w-10 h-10 bg-orange-100  rounded-xl flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-orange-600 " />
               </div>
             </div>
           </motion.div>
@@ -240,7 +240,7 @@ const SupplierList = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-4"
+          className="bg-white  rounded-2xl p-4 shadow-sm border border-gray-100  mb-4"
         >
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="relative flex-1 w-full">
@@ -252,12 +252,12 @@ const SupplierList = () => {
                 placeholder={t("supplier.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500"
+                className="w-full pl-12 pr-10 py-3 bg-gray-50  border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500   placeholder-gray-500"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600  transition-colors"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>
@@ -265,7 +265,7 @@ const SupplierList = () => {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium w-full sm:w-auto" // Added w-full sm:w-auto
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors font-medium w-full sm:w-auto" // Added w-full sm:w-auto
             >
               <Filter className="w-4 h-4" />
               {showFilters ? "Hide Filters" : "Show Filters"}
@@ -281,38 +281,38 @@ const SupplierList = () => {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6 overflow-hidden"
+              className="bg-white  rounded-2xl p-6 shadow-sm border border-gray-100  mb-6 overflow-hidden"
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Contact Info Filters */}
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  <h4 className="font-semibold   mb-3">
                     {t("supplier.contactInfo")}
                   </h4>
-                  <label className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 cursor-pointer">
+                  <label className="flex items-center gap-2 mb-2 text-gray-700 bg-primary cursor-pointer">
                     <input
                       type="checkbox"
                       checked={filterByEmail}
                       onChange={(e) => setFilterByEmail(e.target.checked)}
-                      className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                      className="form-checkbox h-5 w-5 text-primary-600  rounded border-gray-300  focus:ring-primary-500"
                     />
                     {t("supplier.hasEmail")}
                   </label>
-                  <label className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300 cursor-pointer">
+                  <label className="flex items-center gap-2 mb-2 text-gray-700 bg-primary cursor-pointer">
                     <input
                       type="checkbox"
                       checked={filterByPhone}
                       onChange={(e) => setFilterByPhone(e.target.checked)}
-                      className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                      className="form-checkbox h-5 w-5 text-primary-600  rounded border-gray-300  focus:ring-primary-500"
                     />
                     {t("supplier.hasPhone")}
                   </label>
-                  <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer">
+                  <label className="flex items-center gap-2 text-gray-700 bg-primary cursor-pointer">
                     <input
                       type="checkbox"
                       checked={filterByAddress}
                       onChange={(e) => setFilterByAddress(e.target.checked)}
-                      className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                      className="form-checkbox h-5 w-5 text-primary-600  rounded border-gray-300  focus:ring-primary-500"
                     />
                     {t("supplier.hasAddress")}
                   </label>
@@ -320,29 +320,29 @@ const SupplierList = () => {
 
                 {/* Sort Options */}
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  <h4 className="font-semibold   mb-3">
                     {t("supplier.sortBy")}
                   </h4>
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <label className="flex items-center gap-2 text-gray-700 bg-primary cursor-pointer">
                       <input
                         type="radio"
                         name="sortBy"
                         value="name"
                         checked={sortBy === "name"}
                         onChange={() => setSortBy("name")}
-                        className="form-radio h-4 w-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                        className="form-radio h-4 w-4 text-primary-600  border-gray-300  focus:ring-primary-500"
                       />
                       {t("supplier.sortNameAZ")}
                     </label>
-                    <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <label className="flex items-center gap-2 text-gray-700 bg-primary cursor-pointer">
                       <input
                         type="radio"
                         name="sortBy"
                         value="date"
                         checked={sortBy === "date"}
                         onChange={() => setSortBy("date")}
-                        className="form-radio h-4 w-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                        className="form-radio h-4 w-4 text-primary-600  border-gray-300  focus:ring-primary-500"
                       />
                       {t("supplier.sortDateNewest")}
                     </label>
@@ -350,10 +350,10 @@ const SupplierList = () => {
                 </div>
 
                 {/* Clear Filters Button */}
-                <div className="md:col-span-3 flex justify-end border-t border-gray-100 dark:border-gray-700 pt-4 mt-4">
+                <div className="md:col-span-3 flex justify-end border-t border-gray-100  pt-4 mt-4">
                   <button
                     onClick={handleClearFilters}
-                    className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm"
+                    className="flex items-center gap-1 text-gray-600  hover:text-gray-800  transition-colors text-sm"
                   >
                     <XCircle className="w-4 h-4" />
                     {t("supplier.clearFilters")}
@@ -373,13 +373,13 @@ const SupplierList = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center shadow-sm border border-gray-100 dark:border-gray-700"
+            className="bg-white  rounded-2xl p-12 text-center shadow-sm border border-gray-100 "
           >
             <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold   mb-2">
               No suppliers found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 ">
               {searchTerm || filterByEmail || filterByPhone || filterByAddress
                 ? "Try adjusting your search or filter criteria"
                 : "Start by adding your first supplier"}
@@ -399,10 +399,10 @@ const SupplierList = () => {
                   variants={cardVariants}
                   layout
                   whileHover="hover"
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-200 relative overflow-hidden"
+                  className="bg-white  rounded-2xl p-6 shadow-sm border border-gray-100  transition-all duration-200 relative overflow-hidden"
                 >
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-blue-50 dark:from-blue-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute inset-0 bg-gradient-to-br from-blue-50  to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     initial={{ opacity: 0 }}
                     whileHover={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
@@ -411,15 +411,15 @@ const SupplierList = () => {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                        <h3 className="text-lg font-bold   mb-1">
                           {supplier.name}
                         </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 ">
                           <Calendar className="w-4 h-4" />
                           {new Date(supplier.createdAt).toLocaleDateString()}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
+                      <div className="flex items-center gap-1 text-xs text-gray-500  bg-gray-100  px-2 py-1 rounded-lg">
                         <Hash className="w-3 h-3" />
                         {supplier.supplierId}
                       </div>
@@ -428,13 +428,13 @@ const SupplierList = () => {
                     {/* Contact Info */}
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                          <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <div className="w-8 h-8 bg-primary-100  rounded-lg flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-primary-600 " />
                         </div>
                         <span
                           className={`text-sm ${
                             supplier.phone
-                              ? "text-gray-700 dark:text-gray-300"
+                              ? "text-gray-700 bg-primary"
                               : "text-gray-400 italic"
                           }`}
                         >
@@ -443,13 +443,13 @@ const SupplierList = () => {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                          <Mail className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        <div className="w-8 h-8 bg-green-100  rounded-lg flex items-center justify-center">
+                          <Mail className="w-4 h-4 text-green-600 " />
                         </div>
                         <span
                           className={`text-sm truncate ${
                             supplier.email
-                              ? "text-gray-700 dark:text-gray-300"
+                              ? "text-gray-700 bg-primary"
                               : "text-gray-400 italic"
                           }`}
                         >
@@ -458,13 +458,13 @@ const SupplierList = () => {
                       </div>
 
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <MapPin className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                        <div className="w-8 h-8 bg-orange-100  rounded-lg flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-orange-600 " />
                         </div>
                         <span
                           className={`text-sm line-clamp-2 ${
                             supplier.address
-                              ? "text-gray-700 dark:text-gray-300"
+                              ? "text-gray-700 bg-primary"
                               : "text-gray-400 italic"
                           }`}
                         >
@@ -474,7 +474,7 @@ const SupplierList = () => {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 ">
                       <div className="flex items-center gap-2">
                         {supplier.email && (
                           <div
@@ -484,7 +484,7 @@ const SupplierList = () => {
                         )}
                         {supplier.phone && (
                           <div
-                            className="w-2 h-2 bg-blue-500 rounded-full"
+                            className="w-2 h-2 bg-primary-500 rounded-full"
                             title="Has phone"
                           ></div>
                         )}
@@ -504,13 +504,12 @@ const SupplierList = () => {
                       </div>
                       <button
                         onClick={() => handleViewDetails(supplier._id)}
-                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                        className="text-xs text-primary-600  hover:underline"
                       >
                         {t("supplier.viewDetails")}
                       </button>
                     </div>
                   </div>{" "}
-                  {/* End relative z-10 */}
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -532,7 +531,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05 }, // Reduced stagger for faster appearance
+    transition: { staggerChildren: 0.05 }, 
   },
 };
 
@@ -544,8 +543,8 @@ const cardVariants = {
     transition: { duration: 0.4, ease: "easeOut" },
   },
   hover: {
-    y: -5, // Lift slightly on hover
-    boxShadow: "0 8px 15px rgba(0,0,0,0.08)", // Subtle shadow increase
+    y: -5, 
+    boxShadow: "0 8px 15px rgba(0,0,0,0.08)", 
     transition: { duration: 0.2 },
   },
 };

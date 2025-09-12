@@ -3,8 +3,9 @@ import CreatableSelect from "react-select/creatable";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusCircle, Trash2 } from "lucide-react";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const defaultItem = {
   category: null,
@@ -20,7 +21,7 @@ const categories = [
 ];
 
 export default function AddExpense() {
-  const { control, register, handleSubmit, watch, setValue, reset } = useForm({
+  const { control, register, handleSubmit, watch, reset } = useForm({
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
       method: "CASH",
@@ -28,6 +29,7 @@ export default function AddExpense() {
     },
   });
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -51,15 +53,12 @@ export default function AddExpense() {
     try {
       const response = await axios.post(
         "http://localhost:3000/expenses",
-        payload
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.status === 201) {
-        Swal.fire({
-          icon: "success",
-          title: `${response.data?.message || "Expense Added"}`,
-          confirmButtonColor: "#3085d6",
-        });
+        toast.success("Expense added successfully");
 
         reset({
           date: new Date().toISOString().split("T")[0],
@@ -69,12 +68,7 @@ export default function AddExpense() {
       }
     } catch (err) {
       console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Oops!",
-        text: "Failed to submit expense. Please try again.",
-        confirmButtonColor: "#d33",
-      });
+      toast.error("Failed to add expense");
     }
   };
 
@@ -105,7 +99,7 @@ export default function AddExpense() {
           <input
             type="date"
             {...register("date")}
-            className="w-full  rounded-md p-2 ring-1 ring-blue-500 focus:ring-2 outline-none"
+            className="w-full  rounded-md p-2 ring-1 ring-primary-500 focus:ring-2 outline-none"
           />
         </div>
         <div>
@@ -114,7 +108,7 @@ export default function AddExpense() {
           </label>
           <select
             {...register("method")}
-            className="w-full  rounded-md p-2.5 ring-1 ring-blue-500 focus:ring-2 outline-none"
+            className="w-full  rounded-md p-2.5 ring-1 ring-primary-500 focus:ring-2 outline-none"
           >
             <option value="CASH">Cash</option>
             <option value="BKASH">Bkash</option>
@@ -152,7 +146,7 @@ export default function AddExpense() {
                   <td className="px-3 py-2 text-center font-semibold text-gray-500">
                     {index + 1}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 ">
                     <Controller
                       name={`items.${index}.category`}
                       control={control}
@@ -163,6 +157,20 @@ export default function AddExpense() {
                           placeholder={t("expense.selectOrType")}
                           classNamePrefix="react-select"
                           isClearable
+                          styles={{
+                            control: (base, state) => ({
+                              ...base,
+                              borderColor: state.isFocused
+                                ? "#4171b4"
+                                : base.borderColor, 
+                              boxShadow: state.isFocused
+                                ? "0 0 0 1px #4171b4"
+                                : base.boxShadow, 
+                              "&:hover": {
+                                borderColor: "#4171b4",
+                              },
+                            }),
+                          }}
                         />
                       )}
                     />
@@ -171,21 +179,21 @@ export default function AddExpense() {
                     <input
                       {...register(`items.${index}.remarks`)}
                       placeholder={t("expense.optionalNote")}
-                      className="w-full border rounded-md p-2 ring-1 ring-blue-500 focus:ring-2 outline-none "
+                      className="w-full border rounded-md p-2 ring-1 ring-primary-500 focus:ring-2 outline-none "
                     />
                   </td>
                   <td className="px-3 py-2 text-center">
                     <input
                       type="number"
                       {...register(`items.${index}.unitPrice`)}
-                      className="w-20 border rounded-md p-1 text-right ring-1 ring-blue-500 focus:ring-2 outline-none"
+                      className="w-20 border rounded-md p-1 text-right ring-1 ring-primary-500 focus:ring-2 outline-none"
                     />
                   </td>
                   <td className="px-3 py-2 text-center">
                     <input
                       type="number"
                       {...register(`items.${index}.quantity`)}
-                      className="w-16 border rounded-md p-1 text-right ring-1 ring-blue-500 focus:ring-2 outline-none"
+                      className="w-16 border rounded-md p-1 text-right ring-1 ring-primary-500 focus:ring-2 outline-none"
                     />
                   </td>
                   <td className="px-3 py-2 text-center font-semibold">
@@ -216,7 +224,7 @@ export default function AddExpense() {
         <button
           type="button"
           onClick={() => append(defaultItem)}
-          className="mt-3 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition font-medium"
+          className="mt-3 flex items-center gap-2 text-primary-600 hover:text-primary-800 transition font-medium"
         >
           <PlusCircle className="w-5 h-5" /> {t("expense.addItem")}
         </button>

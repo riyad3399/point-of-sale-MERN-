@@ -1,24 +1,27 @@
 import axios from "axios";
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function UploadCsvFile() {
-    const [file, setFile] = useState<File | null>(null);
-
-
+  const [file, setFile] = useState<File | null>(null);
+  const { token } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) return alert("ফাইল দিন");
 
     const formData = new FormData();
-    formData.append("csv", file); 
+    formData.append("csv", file);
 
     try {
       const res = await axios.post(
         "http://localhost:3000/product/upload-csv",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       alert(res.data.message);
@@ -34,13 +37,13 @@ export default function UploadCsvFile() {
         <input
           type="file"
           accept=".csv"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
         <button
           type="submit"
           className="ml-2 btn-primary text-white px-3 py-1 rounded"
         >
-        Upload
+          Upload
         </button>
       </form>
     </div>

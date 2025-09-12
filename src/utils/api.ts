@@ -135,22 +135,16 @@ export const handleProfile = async (token: string, navigate: any) => {
   try {
     const res = await axios.get(`${URI}/auth/me`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Bearer টোকেন ফরম্যাট
+        Authorization: `Bearer ${token}`,
       },
     });
 
     console.log("handle profile", res.data);
 
-    // আপনার /me route success হলে message নেই, তাই যেটা দরকার সেটা নিন
-    // উদাহরণস্বরূপ, ইউজার নাম বা অন্য যেকোনো তথ্য থেকে success দেখাতে পারেন
-    toast.success("Profile loaded successfully");
+    toast.success(res.data.message || "Profile loaded");
 
-    // প্রয়োজন মতো response থেকে ডাটা নিয়ে কাজ করতে পারেন
-    // const userData = res.data.user;
-
-    navigate("/"); // প্রয়োজনমতো রিডাইরেক্ট করুন
+    navigate("/");
   } catch (err: any) {
-    // err.message বা err.response.data.message থেকে error দেখাতে পারেন
     toast.error(
       err.response?.data?.message || err.message || "Failed to load profile"
     );
@@ -242,9 +236,11 @@ export const handleGetProduct = async (setAllProduct, token) => {
 // POST
 export const handleInsertPurchase = async (reset, transformed) => {
   try {
-    const res = await axios.post(`${URI}/purchases/add`,  transformed, {headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },});
+    const res = await axios.post(`${URI}/purchases/add`, transformed, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     toast.success(res.data.message || "Purchase Successfully");
     reset();
   } catch (err) {
@@ -286,11 +282,117 @@ export const handleGetSinglePurchase = async (id: string, navigate) => {
 // GET - All supplier
 export const handleGetSupplier = async (setSuppliers) => {
   try {
-    const res = await axios.get(`${URI}/suppliers`, {headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },});
+    const res = await axios.get(`${URI}/suppliers`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     setSuppliers(res.data.data);
   } catch (error) {
     setSuppliers([]);
+  }
+};
+
+// --------------------------INVOICE-----------------------//
+
+// GET - Total Sales
+export const fetchTotalSales = async (setTotalSales, setLoading) => {
+  setLoading(true);
+  try {
+    const res = await axios.get("http://localhost:3000/invoice/total-sales", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    const data = res.data;
+    setTotalSales(data);
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message || "something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// GET - Today Sales
+export const fetchTodaySales = async (setTodaySales, setLoading) => {
+  setLoading(true);
+  try {
+    const res = await axios.get("http://localhost:3000/invoice/today-sales", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    const data = res.data;
+    setTodaySales(data);
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message || "something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// GET - Sales in last 7 days
+export const fetchOverviewData = async (setChartData, setLoading) => {
+  setLoading(true);
+  try {
+    const res = await axios.get("http://localhost:3000/invoice/sales-7-days", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setChartData(res.data);
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message || "something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// GET - Recent Transactions
+export const fetchRecentTransactions = async (
+  setRecentTransactions,
+  setLoading
+) => {
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      "http://localhost:3000/invoice/recent-transactions",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const data = res.data;
+    setRecentTransactions(data);
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message || "something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// GET- Default Due Customers
+export const fetchDefaultDueCustomers = async (setLoading, setDueCustomers) => {
+  setLoading(true);
+  try {
+    const response = await axios.get(
+      "http://localhost:3000/invoice/due-customers",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setDueCustomers(response.data);
+  } catch (error) {
+    console.error(error);
+    toast.error(error.message || "something went wrong");
+  } finally {
+    setLoading(false);
   }
 };

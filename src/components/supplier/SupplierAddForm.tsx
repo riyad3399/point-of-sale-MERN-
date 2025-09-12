@@ -58,7 +58,7 @@ const SupplierAddForm = () => {
 
   return (
     <motion.div
-      className="max-w-lg w-full mx-auto p-8 bg-white dark:bg-gray-800 rounded-xl shadow-xl flex flex-col items-center justify-center"
+      className="max-w-lg w-full mx-auto p-8 bg-white  rounded-xl  flex flex-col items-center justify-center"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -71,12 +71,12 @@ const SupplierAddForm = () => {
           variants={inputVariants}
           custom={0}
         >
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-semibold text-gray-700  mb-1.5">
             {t("supplier.supplierName")} <span className="text-red-500">*</span>
           </label>
           <input
             {...register("name", { required: "Name is required" })}
-            className="px-4 py-3 input dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
+            className="px-4 py-3 input     transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
             placeholder={t("supplier.enterSupplierName")}
             aria-invalid={errors.name ? "true" : "false"}
           />
@@ -93,7 +93,7 @@ const SupplierAddForm = () => {
           variants={inputVariants}
           custom={1}
         >
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-semibold text-gray-700  mb-1.5">
             {t("supplier.phoneNumber")}
           </label>
           <input
@@ -104,7 +104,7 @@ const SupplierAddForm = () => {
                 message: "Invalid Bangladeshi phone number",
               },
             })}
-            className="px-4 py-3 input dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
+            className="px-4 py-3 input     transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
             placeholder={t("supplier.enterPhoneNumber")}
           />
           {/* Optionally display phone validation errors */}
@@ -120,7 +120,7 @@ const SupplierAddForm = () => {
           variants={inputVariants}
           custom={1}
         >
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-semibold text-gray-700  mb-1.5">
             {t("supplier.email")}
           </label>
           <input
@@ -131,7 +131,7 @@ const SupplierAddForm = () => {
                 message: "Please enter a valid email",
               },
             })}
-            className="px-4 py-3 input dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
+            className="px-4 py-3 input     transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
             placeholder={t("supplier.enterEmail")}
           />
           {/* Optionally display phone validation errors */}
@@ -148,14 +148,14 @@ const SupplierAddForm = () => {
           variants={inputVariants}
           custom={2}
         >
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-semibold text-gray-700  mb-1.5">
             {t("supplier.address")}
           </label>
           <textarea
             {...register("address")}
             rows={3}
             className="px-4 py-3 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0
-           disabled:cursor-not-allowed disabled:opacity-50 rounded-md border border-gray-300 dark:focus:ring-blue-600 dark:focus:border-blue-600 dark:bg-gray-700 dark:text-white resize-none transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
+           disabled:cursor-not-allowed disabled:opacity-50 rounded-md border border-gray-300     resize-none transition-all duration-300 ease-in-out outline-none shadow-sm hover:shadow-md"
             placeholder={t("supplier.enterAddress")}
           />
         </motion.div>
@@ -203,7 +203,6 @@ const SupplierAddForm = () => {
 
 export default SupplierAddForm;
 
-// Animation variants for framer-motion
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -217,11 +216,10 @@ const containerVariants = {
 const inputVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: (i: number) => ({
-    // i is the index for delay
     opacity: 1,
     y: 0,
     transition: {
-      delay: 0.2 + i * 0.1, // Staggered delay
+      delay: 0.2 + i * 0.1, 
       duration: 0.3,
       ease: "easeIn",
     },
