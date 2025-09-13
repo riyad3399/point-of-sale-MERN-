@@ -47,7 +47,7 @@ const CategoriesPage: React.FC = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [activeTab]);
+  }, [activeTab, token]);
   
 
   const filteredCategories = categories.filter((cat: any) => {
@@ -221,7 +221,7 @@ const CategoriesPage: React.FC = () => {
         </AnimatePresence>
 
         {/* Pagination */}
-        {activeTab !== "add" && filteredCategories.length > 0 && (
+        {activeTab !== "add" && filteredCategories.length > 10 && (
           <div className="flex justify-end">
             <Pagination
               page={currentPage}

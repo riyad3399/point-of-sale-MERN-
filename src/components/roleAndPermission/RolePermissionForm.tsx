@@ -1,8 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion";
-import { Save, User } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, ChevronUp, Loader, User } from "lucide-react";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
 interface PermissionActions {
@@ -10,11 +10,11 @@ interface PermissionActions {
   add: boolean;
   edit: boolean;
   delete: boolean;
-  trigger: boolean; // সাবমডিউল লেভেলের trigger
+  trigger: boolean; 
 }
 
 interface PermissionGroup {
-  trigger: boolean; // parent গ্রুপ লেভেলের trigger
+  trigger: boolean; 
   [subModule: string]: PermissionActions | boolean;
 }
 
@@ -32,7 +32,6 @@ interface RolePermissionFormProps {
   onUpdated: (updatedUser: any) => void;
 }
 
-const AVAILABLE_ROLES = ["user", "manager", "admin", "developer"];
 
 export default function RolePermissionForm({
   user,
@@ -42,6 +41,10 @@ export default function RolePermissionForm({
   const [permissions, setPermissions] = useState<Permissions>(
     user.permissions || {}
   );
+  const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+
+
   const isDeveloper = role === "developer";
 
   // CRUD action toggle
@@ -71,7 +74,6 @@ export default function RolePermissionForm({
     setPermissions((prev) => {
       const newTrigger = !prev[group]?.trigger;
 
-      // যদি parent trigger off হয়, তবে সব সাবমডিউল trigger ও actions false হবে
       const updatedModules = Object.entries(prev[group])
         .filter(([key]) => key !== "trigger")
         .reduce((acc, [moduleKey, actions]) => {
@@ -131,6 +133,7 @@ export default function RolePermissionForm({
       return;
     }
 
+    setLoading(true); // ✅ start loading
     try {
       const res = await axios.put(
         `http://localhost:3000/auth/${user._id}`,
@@ -138,7 +141,7 @@ export default function RolePermissionForm({
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "x-tenant-id": localStorage.getItem("tenantId") || "", // ✅ attach tenant ID
+            "x-tenant-id": localStorage.getItem("tenantId") || "",
           },
         }
       );
@@ -149,149 +152,174 @@ export default function RolePermissionForm({
       const message = error?.response?.data?.message || "Failed to update user";
       toast.error(message);
       console.error(error);
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white border rounded shadow-lg p-6 mb-6"
-    >
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <User className="text-blue-600" size={24} />
-          <h2 className="text-xl font-bold text-gray-800">
+    <div className="border rounded-lg shadow-sm bg-white mb-4">
+      {/* Header row */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition"
+      >
+        <div className="flex items-center gap-3">
+          <User className="text-primary-600" size={20} />
+          <span className="font-medium text-gray-800">
             {capitalizeFirstLetter(user.userName)}
-          </h2>
+          </span>
+          <span className="text-sm text-gray-500">({role})</span>
         </div>
-        <label className="block text-sm font-medium text-gray-600 mb-2">
-          Role
-        </label>
+        {open ? (
+          <ChevronUp className="text-gray-500" />
+        ) : (
+          <ChevronDown className="text-gray-500" />
+        )}
+      </button>
 
-        <input
-          type="text"
-          value={role}
-          disabled={isDeveloper}
-          onChange={(e) => setRole(e.target.value)}
-          className={`w-full border rounded-md px-3 py-2 ${
-            isDeveloper
-              ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-              : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          }`}
-        />
-      </div>
-
-      <h3 className="text-lg font-semibold mb-4 text-gray-800">Permissions</h3>
-
-      {Object.entries(permissions).map(([groupKey, groupValue]) => {
-        const { trigger, ...modules } = groupValue;
-
-        return (
+      {/* Collapsible body */}
+      <AnimatePresence initial={false}>
+        {open && (
           <motion.div
-            key={groupKey}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 bg-gray-50 p-4 rounded-lg"
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden px-6 pb-6"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-semibold capitalize text-blue-700">
-                {groupKey}
-              </h4>
-              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={trigger}
-                  disabled={isDeveloper}
-                  onChange={() => handleToggleTrigger(groupKey)}
-                  className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                />
-                Enable
+            {/* Role */}
+            <div className="mb-6 mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Role
               </label>
+              <input
+                type="text"
+                value={role}
+                disabled={isDeveloper}
+                onChange={(e) => setRole(e.target.value)}
+                className={`w-full rounded-md border px-3 py-2 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm ${
+                  isDeveloper
+                    ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                    : "border-gray-300"
+                }`}
+              />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(modules).map(([moduleKey, actions]) => (
-                <motion.div
-                  key={moduleKey}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-white p-4 rounded-md shadow-sm border border-gray-200"
-                >
-                  <div className="flex items-center gap-2 mb-2 bg-gradient-to-r from-success-200  to-primary-200  rounded ">
-                    <label className="flex pr-1 pt-1 pb-1 items-center gap-2 text-sm cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={(actions as PermissionActions).trigger}
-                        disabled={isDeveloper || !trigger}
-                        onChange={() =>
-                          handleToggleModuleTrigger(groupKey, moduleKey)
-                        }
-                        className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                      />
-                    </label>
-                    <p className="capitalize font-medium text-gray-700">
-                      {moduleKey}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 ">
-                    {["view", "add", "edit", "delete"].map((action) => (
-                      <label
-                        key={action}
-                        className="flex items-center gap-2 text-sm mb-2 cursor-pointer"
-                      >
+            {/* Permissions */}
+            <h3 className="text-md font-semibold mb-4 text-gray-900">
+              Permissions
+            </h3>
+            <div className="space-y-5">
+              {Object.entries(permissions).map(([groupKey, groupValue]) => {
+                const { trigger, ...modules } = groupValue;
+                return (
+                  <div
+                    key={groupKey}
+                    className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium capitalize text-primary-700">
+                        {groupKey}
+                      </h4>
+                      <label className="flex items-center gap-2 text-sm text-gray-700">
                         <input
                           type="checkbox"
-                          checked={
-                            (actions as PermissionActions)[
-                              action as keyof PermissionActions
-                            ]
-                          }
-                          disabled={
-                            !trigger ||
-                            !(actions as PermissionActions).trigger ||
-                            isDeveloper
-                          }
-                          onChange={() =>
-                            handleToggle(
-                              groupKey,
-                              moduleKey,
-                              action as keyof PermissionActions
-                            )
-                          }
-                          className={`form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 ${
-                            !trigger || !(actions as PermissionActions).trigger
-                              ? "cursor-not-allowed opacity-50"
-                              : ""
-                          }`}
+                          checked={trigger}
+                          disabled={isDeveloper}
+                          onChange={() => handleToggleTrigger(groupKey)}
+                          className="h-5 w-5 text-primary-600 rounded focus:ring-primary-500"
                         />
-                        <span className="text-gray-700">{action}</span>
+                        Enable
                       </label>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        );
-      })}
+                    </div>
 
-      <motion.button
-        onClick={handleSave}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        disabled={isDeveloper}
-        className={`mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors ${
-          isDeveloper ? "opacity-60 cursor-not-allowed" : ""
-        }`}
-      >
-        <Save size={20} />
-        Save
-      </motion.button>
-    </motion.div>
+                    {/* Modules */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {Object.entries(modules).map(([moduleKey, actions]) => (
+                        <div
+                          key={moduleKey}
+                          className="bg-white border p-3 rounded shadow-sm"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <input
+                              type="checkbox"
+                              checked={(actions as PermissionActions).trigger}
+                              disabled={isDeveloper || !trigger}
+                              onChange={() =>
+                                handleToggleModuleTrigger(groupKey, moduleKey)
+                              }
+                              className="h-5 w-5 text-primary-600 rounded focus:ring-primary-500"
+                            />
+                            <span className="capitalize font-medium text-gray-800">
+                              {moduleKey}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            {["view", "add", "edit", "delete"].map((action) => (
+                              <label
+                                key={action}
+                                className="flex items-center gap-2 text-sm text-gray-700"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    (actions as PermissionActions)[
+                                      action as keyof PermissionActions
+                                    ]
+                                  }
+                                  disabled={
+                                    !trigger ||
+                                    !(actions as PermissionActions).trigger ||
+                                    isDeveloper
+                                  }
+                                  onChange={() =>
+                                    handleToggle(
+                                      groupKey,
+                                      moduleKey,
+                                      action as keyof PermissionActions
+                                    )
+                                  }
+                                  className="h-4 w-4 text-primary-600 rounded focus:ring-primary-500"
+                                />
+                                {action}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Save button */}
+            <motion.button
+              onClick={handleSave}
+              whileHover={{ scale: !loading && !isDeveloper ? 1.05 : 1 }}
+              whileTap={{ scale: !loading && !isDeveloper ? 0.95 : 1 }}
+              disabled={isDeveloper || loading}
+              className={`mt-6 w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors text-white ${
+                isDeveloper || loading
+                  ? "bg-primary-400 cursor-not-allowed opacity-60"
+                  : "bg-primary-600 hover:bg-primary-700"
+              }`}
+            >
+              {loading ? (
+                <>
+                  <Loader className="animate-spin h-5 w-5" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

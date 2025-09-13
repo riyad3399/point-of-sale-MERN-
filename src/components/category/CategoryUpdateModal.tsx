@@ -1,8 +1,11 @@
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import { Loader } from "lucide-react";
 
 // interface Category {
 //   id: number;
@@ -32,34 +35,39 @@ export default function CategoryUpdateModal({
       status: product?.status || "Pending",
     },
   });
-  const {token} = useAuth()
+  const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      await await axios
-        .patch(`http://localhost:3000/category/${product._id}`, data, {
+      const res = await axios.patch(
+        `http://localhost:3000/category/${product._id}`,
+        data,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        .then((res) => {
-          const updatedCategory = res.data;
+        }
+      );
 
-          setCategories((prev) =>
-            prev.map((cat) => (cat._id === product._id ? updatedCategory : cat))
-          );
-          Swal.fire({
-            title: "Category Update Successfull!",
-            icon: "success",
-            draggable: true,
-          });
-          onClose();
-          reset();
-        });
+      const updatedCategory = res.data;
+
+      setCategories((prev) =>
+        prev.map((cat) => (cat._id === product._id ? updatedCategory : cat))
+      );
+
+      toast.success("Category updated successfully!");
+      onClose();
+      reset();
     } catch (err) {
       console.error("Error updating category:", err);
+      toast.error("Failed to update category.");
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <AnimatePresence>
@@ -108,14 +116,27 @@ export default function CategoryUpdateModal({
                   type="button"
                   onClick={onClose}
                   className="px-4 py-2 border rounded text-gray-600"
+                  disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  disabled={loading}
+                  className={`px-4 py-2 rounded text-white ${
+                    loading
+                      ? "bg-primary-400 cursor-not-allowed"
+                      : "bg-primary-600 hover:bg-primary-700"
+                  }`}
                 >
-                  Update
+                  {loading ? (
+                    <span className="flex justify-center items-center gap-2">
+                      <Loader className="animate-spin h-5 w-5" />
+                      Updating...
+                    </span>
+                  ) : (
+                    "Update"
+                  )}
                 </button>
               </div>
             </form>

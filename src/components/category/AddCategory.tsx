@@ -79,6 +79,7 @@ const AddCategory: React.FC = () => {
             <input
               type="number"
               readOnly
+            disabled
               {...register("categoryId")}
               value={randomNumber}
               className="mt-2 w-full p-3 input transition duration-300"

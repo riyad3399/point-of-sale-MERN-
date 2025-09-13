@@ -55,7 +55,7 @@ export default function TenantUserRoleAndPermissions() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div className="max-w-full mx-auto p-4">
       <Helmet>
         <title>Role & Permissions | POS System</title>
       </Helmet>
