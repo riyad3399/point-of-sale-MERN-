@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { Loader } from "lucide-react";
 
 const fieldVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -30,7 +31,9 @@ const Add: React.FC = () => {
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
   const [allCategories, setAllCategories] = useState<never[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const {
     register,
@@ -45,17 +48,16 @@ const Add: React.FC = () => {
   };
 
   const onSubmit = async (data: any) => {
+    setLoading(true);
     try {
       const formData = new FormData();
 
-      // Append regular fields
       for (const key in data) {
         if (key !== "photo") {
           formData.append(key, data[key]);
         }
       }
 
-      // Append file if exists
       if (data.photo && data.photo[0]) {
         formData.append("photo", data.photo[0]);
       }
@@ -80,17 +82,12 @@ const Add: React.FC = () => {
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  //  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //    const file = e.target.files?.[0];
-  //    if (file) {
-  //      const reader = new FileReader();
-  //      reader.onloadend = () => setPreview(reader.result as string);
-  //      reader.readAsDataURL(file);
-  //    }
-  //  };
+
 
   useEffect(() => {
     generateNumber();
@@ -104,9 +101,7 @@ const Add: React.FC = () => {
         setAllCategories(res.data);
       })
       .catch((err) => console.log(err));
-  }, [token]);
-
-  const { t } = useTranslation();
+  }, []);
 
   return (
     <div>
@@ -383,12 +378,22 @@ const Add: React.FC = () => {
         {/* Submit Button */}
         <motion.div variants={fieldVariants}>
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: loading ? 1 : 1.02 }}
+            whileTap={{ scale: loading ? 1 : 0.96 }}
             type="submit"
-            className="w-full  text-white py-3 rounded-xl font-semibold btn-primary transition duration-200"
+            disabled={loading}
+            className={`w-full text-white py-3 rounded-xl font-semibold btn-primary transition duration-200 flex items-center justify-center gap-2 ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            {t("addProduct.submitButton")}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Loader className="w-5 h-5 animate-spin" />
+                {t("addProduct.saving")}
+              </span>
+            ) : (
+              t("addProduct.submitButton")
+            )}
           </motion.button>
         </motion.div>
       </motion.form>

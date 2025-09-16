@@ -11,16 +11,17 @@ interface RoleBasedRouteProps {
 export default function RoleBasedRoute({
   allowedRoles = [],
 }: RoleBasedRouteProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, token } = useAuth();
   const [userCount, setUserCount] = useState<number | null>(null);
   const [countLoading, setCountLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/auth/count");
+        const res = await axios.get("http://localhost:3000/auth/count", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setUserCount(res.data.userCount);
-        console.log(res.data.userCount);
       } catch (error) {
         console.error("Failed to fetch user count:", error);
         setUserCount(null);

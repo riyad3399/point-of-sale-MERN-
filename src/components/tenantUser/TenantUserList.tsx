@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Loading from "../Loading";
 import { Key, Loader, Trash } from "lucide-react";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 interface TenantUser {
   _id: string;
@@ -20,6 +21,7 @@ export default function UserList() {
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<TenantUser | null>(null);
   const [newPassword, setNewPassword] = useState("");
+  const [open, setOpen] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [deletingUsers, setDeletingUsers] = useState<string[]>([]);
 
@@ -138,30 +140,42 @@ export default function UserList() {
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => {
-                      setSelectedUser(u);
-                      setShowModal(true);
-                    }}
-                    className="px-3 py-1 btn-outline text-sm"
-                  >
-                    <Key className="h-5 w-5 text-primary-500" />
-                  </button>
-                  <button
-                    disabled={deletingUsers.includes(u._id)}
-                    onClick={() => handleDeleteUser(u)}
-                    className="px-3 py-1 btn-outline text-sm "
-                  >
-                    {deletingUsers.includes(u._id) ? (
-                      <span className="flex items-center gap-2">
-                        <Loader className="animate-spin h-5 w-5" />
-                      </span>
-                    ) : (
-                      <Trash className="h-5 w-5 text-danger-500" />
-                    )}
-                  </button>
-                </td>
+                {u.role !== "developer" ? (
+                  <td className="px-4 py-2">
+                    {/* <div>
+                      <button
+                        title="Change Password"
+                        onClick={() => {
+                          setOpen(true);
+                        }}
+                        className="px-3 py-1 btn-outline text-sm"
+                      >
+                        <Key className="h-5 w-5 text-primary-500" />
+                      </button>
+                      <ChangePasswordModal
+                        open={open}
+                        onClose={() => setOpen(false)}
+                        userName={u.userName} 
+                      />
+                    </div> */}
+                    <button
+                      title="Delete User"
+                      disabled={deletingUsers.includes(u._id)}
+                      onClick={() => handleDeleteUser(u)}
+                      className="px-3 py-1 btn-outline text-sm "
+                    >
+                      {deletingUsers.includes(u._id) ? (
+                        <span className="flex items-center gap-2">
+                          <Loader className="animate-spin h-5 w-5" />
+                        </span>
+                      ) : (
+                        <Trash className="h-5 w-5 text-danger-500" />
+                      )}
+                    </button>
+                  </td>
+                ) : (
+                  <td className="px-5 text-gray-400 ">N/A</td>
+                )}
               </motion.tr>
             ))}
           </AnimatePresence>

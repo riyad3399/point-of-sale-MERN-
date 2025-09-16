@@ -15,6 +15,7 @@ import { addToCart } from "../utils/cartUtils";
 import { handleGetProduct } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import ProductSearch from "../components/product/ProductSearch";
+import Loading from "../components/Loading";
 
 export default function RetailSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -23,6 +24,7 @@ export default function RetailSalePage() {
   const [allProduct, setAllProduct] = useState<Product[]>([]);
   const [shippingCost, setShippingCost] = useState<number>(0);
   const [selectReturnSale, setSelectReturnSale] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [customers, setCustomers] = useState<OptionType[]>([]);
@@ -33,7 +35,7 @@ export default function RetailSalePage() {
   }>({});
 
 
-  const { token } = useAuth();
+  const { token  } = useAuth();
 
   const location = useLocation();
   const editQuotation = location.state;
@@ -216,7 +218,7 @@ const filteredProducts = allProduct.filter((product) => {
   const totalAmount = total + shippingCost - selectReturnSale;
 
   useEffect(() => {
-    handleGetProduct(setAllProduct, token);
+    handleGetProduct(setAllProduct, token, setLoading);
 
     axios
       .get("http://localhost:3000/customer", {
@@ -243,7 +245,7 @@ const filteredProducts = allProduct.filter((product) => {
         ];
         setCustomers(optionsWithWalkingCustomer);
       });
-  }, []);
+  }, [token]);
 
   const quotationProduct = [...productsInCart];
   const retailSale = "retailSale";
@@ -293,81 +295,93 @@ const filteredProducts = allProduct.filter((product) => {
           </div>
 
           <div className="max-h-screen overflow-y-auto py-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredProducts.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="col-span-full text-center py-20 text-gray-400"
-                >
-                  <img
-                    src="/images/empty-box.png"
-                    alt="No products"
-                    className="mx-auto mb-4 h-24 opacity-70"
-                  />
-                  <p className="text-lg font-medium">No products found</p>
-                  <p className="text-sm text-gray-500">
-                    Try changing the search or category filter
-                  </p>
-                </motion.div>
-              ) : (
+            {loading ? (
+              <Loading />
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredProducts.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="col-span-full text-center py-20 text-gray-400"
+                  >
+                    <img
+                      src="/images/empty-box.png"
+                      alt="No products"
+                      className="mx-auto mb-4 h-24 opacity-70"
+                    />
+                    <p className="text-lg font-medium">No products found</p>
+                    <p className="text-sm text-gray-500">
+                      Try changing the search or category filter
+                    </p>
+                  </motion.div>
+                ) : (
                   filteredProducts.map((product) => {
-                  // FIFO stock থেকে মোট পরিমাণ স্টক বের করো
-                const totalQuantity =
-                  product.fifoStock?.reduce(
-                    (sum, stock) => sum + (stock.remainingQuantity || 0),
-                    0
-                  ) || 0;
+                    // FIFO stock থেকে মোট পরিমাণ স্টক বের করো
+                    const totalQuantity =
+                      product.fifoStock?.reduce(
+                        (sum, stock) => sum + (stock.remainingQuantity || 0),
+                        0
+                      ) || 0;
 
-                  // FIFO অনুযায়ী প্রোডাক্টের বর্তমান বিক্রয় মূল্য
-                  const currentRetailPrice =
-                    product.fifoStock?.[0]?.retailPrice ?? product.retailPrice;
+                    // FIFO অনুযায়ী প্রোডাক্টের বর্তমান বিক্রয় মূল্য
+                    const currentRetailPrice =
+                      product.fifoStock?.[0]?.retailPrice ??
+                      product.retailPrice;
 
-                  return (
-                    <motion.div
-                      key={product._id}
-                      className="bg-white rounded-xl shadow-md w-full transform transition-all duration-300"
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
-                      onClick={() =>
-                        totalQuantity > 0 && handleAddToCart(product._id)
-                      }
-                    >
-                      {/* ✅ Stock Image and Stock Out Badge */}
-                      <div className="relative overflow-hidden inline-block w-full h-28">
-                        <img
-                          src={`http://localhost:3000${product.photo}`}
-                          alt={product.productName}
-                          className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md"
-                        />
-                        {totalQuantity === 0 && (
-                          <div className="absolute top-0 left-0 bg-primary-900 text-sm px-2 py-1 rounded z-0 font-bold w-full h-full flex items-center justify-center opacity-80">
-                            <span className="text-white">Stock Out</span>
-                          </div>
-                        )}
-                      </div>
+                    return (
+                      <motion.div
+                        key={product._id}
+                        className="bg-white rounded-xl shadow-md w-full transform transition-all duration-300"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                        onClick={() =>
+                          totalQuantity > 0 && handleAddToCart(product._id)
+                        }
+                      >
+                        {/* ✅ Stock Image and Stock Out Badge */}
+                        <div className="relative overflow-hidden inline-block w-full h-28">
+                          <img
+                            src={
+                              product.photo
+                                ? `http://localhost:3000${product.photo}`
+                                : "/images/no-image.png"
+                            }
+                            alt={product.productName}
+                            loading="lazy"
+                            className="hover:scale-110 duration-500 transition-transform object-cover w-full h-full rounded-t-md"
+                          />
+                          {totalQuantity === 0 && (
+                            <div className="absolute top-0 left-0 bg-primary-900 text-sm px-2 py-1 rounded z-0 font-bold w-full h-full flex items-center justify-center opacity-80">
+                              <span className="text-white">Stock Out</span>
+                            </div>
+                          )}
+                        </div>
 
-                      {/* ✅ Product Info */}
-                      <div className="p-2 space-y-1">
-                        <h2 className="font-semibold text-sm text-gray-800">
-                          {product.productName}
-                        </h2>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Stock:{" "}
-                          <span className="text-blue-600">{totalQuantity }</span>
-                        </p>
-                        <strong className="text-blue-600 text-sm flex items-center gap-1">
-                          <TbCurrencyTaka size={20} />
-                          {currentRetailPrice.toFixed(2)}
-                        </strong>
-                      </div>
-                    </motion.div>
-                  );
-                })
-              )}
-            </div>
+                        {/* ✅ Product Info */}
+                        <div className="p-2 space-y-1">
+                          <h2 className="font-semibold text-sm text-gray-800">
+                            {product.productName}
+                          </h2>
+                          <p className="text-sm font-semibold text-gray-800">
+                            Stock:{" "}
+                            <span className="text-blue-600">
+                              {totalQuantity}
+                            </span>
+                          </p>
+                          <strong className="text-blue-600 text-sm flex items-center gap-1">
+                            <TbCurrencyTaka size={20} />
+                            {currentRetailPrice.toFixed(2)}
+                          </strong>
+                        </div>
+                      </motion.div>
+                    );
+                  })
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -424,8 +438,13 @@ const filteredProducts = allProduct.filter((product) => {
                       <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
-                        src={`http://localhost:3000${product.photo}`}
+                        src={
+                          product.photo
+                            ? `http://localhost:3000${product.photo}`
+                            : "/images/no-image.png"
+                        }
                         alt={product.productName}
+                        loading="lazy"
                         className="object-cover w-full h-full"
                       />
                     </div>

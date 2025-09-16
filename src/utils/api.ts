@@ -216,20 +216,55 @@ export const handleUpdateUserPermission = async ({
   onUpdated(res.data.user);
 };
 
+// change password
+export const changePassword = async (userName: string, newPassword: string) => {
+  try {
+    const res = await axios.put(
+      `http://localhost:3000/auth/change-password/${userName}`,
+      { newPassword },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
+    if (res.data.success) {
+      toast.success(res.data.message);
+      return true;
+    } else {
+      toast.error(res.data.message);
+      return false;
+    }
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || "Server error");
+    return false;
+  }
+};
 
 // ---------------------- PRODUCT ----------------------//
 // GET - ALL Products
-export const handleGetProduct = async (setAllProduct, token) => {
+export const handleGetProduct = async (
+  setAllProduct: (products: any[]) => void,
+  token: string | null,
+  setLoading?: (loading: boolean) => void
+) => {
   try {
+    if (setLoading) setLoading(true);
+
     const res = await axios.get(`${URI}/product`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    setAllProduct(res.data);
-  } catch (error) {
+
+    setAllProduct(res.data || []);
+  } catch (error: any) {
+    console.error("Failed to fetch products:", error);
     setAllProduct([]);
+    toast.error(error.response?.data?.message || "Failed to load products!");
+  } finally {
+    if (setLoading) setLoading(false);
   }
 };
 
