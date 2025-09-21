@@ -4,24 +4,32 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function ReportStatementPage() {
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+  const {token} = useAuth()
+
 
   const handleSearch = async () => {
     if (!fromDate || !toDate) {
-      alert("Please select both dates");
+      toast.error("Please select both dates");
       return;
     }
 
     try {
-      const res = await axios.get("http://localhost:3000/invoice/report", {
+      const res = await axios.get(`${BASE_URL}/invoice/report`, {
         params: {
           fromDate: fromDate.toISOString().split("T")[0],
           toDate: toDate.toISOString().split("T")[0],
         },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
       });
 
       if (res.data) {
@@ -31,7 +39,7 @@ export default function ReportStatementPage() {
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to fetch report");
+      toast.error("Failed to fetch report");
     }
   };
 

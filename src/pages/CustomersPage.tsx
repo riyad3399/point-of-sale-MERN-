@@ -34,7 +34,9 @@ export default function CustomerTabs() {
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -42,7 +44,7 @@ export default function CustomerTabs() {
   useEffect(() => {
     if (canView) {
       axios
-        .get("http://localhost:3000/customer", {
+        .get(`${BASE_URL}/customer`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

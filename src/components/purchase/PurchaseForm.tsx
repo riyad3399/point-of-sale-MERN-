@@ -10,6 +10,7 @@ import SupplierAddForm from "../supplier/SupplierAddForm";
 // import FloatingInput from "./FloatingInput";
 import { useTranslation } from "react-i18next";
 import FloatingInput from "./FloatingInput";
+import toast from "react-hot-toast";
 
 interface Supplier {
   _id: string;
@@ -84,10 +85,12 @@ const PurchaseForm = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const { t } = useTranslation();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
-    axios.get("http://localhost:3000/product").then((res) => setProducts(res.data));
-    axios.get("http://localhost:3000/suppliers").then((res) => setSuppliers(res.data.data));
+    axios.get(`${BASE_URL}/product`).then((res) => setProducts(res.data));
+    axios.get(`${BASE_URL}/suppliers`).then((res) => setSuppliers(res.data.data));
   }, []);
 
   const onSubmit = async (data: PurchaseFormData) => {
@@ -128,11 +131,11 @@ const PurchaseForm = () => {
     };
 
     try {
-      await axios.post("http://localhost:3000/purchases/add", transformed);
-      Swal.fire({ icon: "success", title: "Purchase Completed" });
+      await axios.post(`${BASE_URL}/purchases/add`, transformed);
+      toast.success("Purchase Completed");
       reset();
     } catch (err) {
-      Swal.fire({ icon: "error", title: "Error", text: "Purchase Failed" });
+      toast.error("Purchase Failed");
     }
   };
 

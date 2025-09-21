@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Store, Receipt, Upload } from "lucide-react";
+import { Store, Upload } from "lucide-react";
 import StoreInformation from "../components/setting/StoreInformation";
 import UploadCsvFile from "../components/setting/UploadCsvFile";
 import { Helmet } from "react-helmet-async";

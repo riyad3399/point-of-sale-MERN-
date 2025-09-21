@@ -32,11 +32,13 @@ export default function AllTransactions() {
 
   const navigate = useNavigate();
   const { hasPermission } = usePermission()
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/invoice", {
+      .get(`${BASE_URL}/invoice`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -82,7 +84,7 @@ export default function AllTransactions() {
   // Handle Delete
   const handleDelete = (id: string) => {
     axios
-      .delete(`http://localhost:3000/invoice/${id}`, {
+      .delete(`${BASE_URL}/invoice/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -96,7 +98,7 @@ export default function AllTransactions() {
   // handle invoice view
   const handleInvoiceView = async (id: string) => {
     await axios
-      .get(`http://localhost:3000/invoice/${id}`, {
+      .get(`${BASE_URL}/invoice/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -117,7 +119,7 @@ export default function AllTransactions() {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/invoice/${editingInvoice._id}`,
+        `${BASE_URL}/invoice/${editingInvoice._id}`,
         updatedData,
         {
           headers: {
@@ -146,7 +148,7 @@ export default function AllTransactions() {
 
   useEffect(() => {
     const fetchStoreInfo = async () => {
-      const res = await axios.get("http://localhost:3000/setting", {
+      const res = await axios.get(`${BASE_URL}/setting`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

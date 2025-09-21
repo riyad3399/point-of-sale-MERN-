@@ -30,6 +30,8 @@ export default function AddExpense() {
   });
   const { t } = useTranslation();
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -52,7 +54,7 @@ export default function AddExpense() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/expenses",
+        `${BASE_URL}/expenses`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -15,7 +15,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
   const [isComplete, setIsComplete] = useState(false);
   const [transaction, setTransaction] = useState<any>(null);
   const [allProduct, setAllProduct] = useState<Product[]>([]);
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const handleCheckout = async () => {
     if (!paymentMethod) return;
@@ -58,7 +60,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
   ];
   useEffect(() => {
     const handleGetProduct = async () => {
-      const res = await axios.get("http://localhost:3000/product", {
+      const res = await axios.get(`${BASE_URL}/product`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

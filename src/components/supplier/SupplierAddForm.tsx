@@ -18,6 +18,8 @@ const SupplierAddForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const {
     register,
@@ -30,7 +32,7 @@ const SupplierAddForm = () => {
     setIsLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:3000/suppliers/add",
+        `${BASE_URL}/suppliers/add`,
         data,
         {
           headers: {

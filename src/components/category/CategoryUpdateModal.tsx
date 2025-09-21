@@ -1,17 +1,11 @@
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 
-// interface Category {
-//   id: number;
-//   categoryName: string;
-//   status: "Active" | "Inactive" | "Pending";
-// }
 
 interface CategoryUpdateModalProps {
   open: boolean;
@@ -37,12 +31,15 @@ export default function CategoryUpdateModal({
   });
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
+
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
       const res = await axios.patch(
-        `http://localhost:3000/category/${product._id}`,
+        `${BASE_URL}/category/${product._id}`,
         data,
         {
           headers: {

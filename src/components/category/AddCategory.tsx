@@ -18,7 +18,8 @@ const AddCategory: React.FC = () => {
   const [randomNumber, setRandomNumber] = useState<number | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   const handleGenerateNumber = () => {
     const number = Math.floor(Math.random() * 900000) + 100000;
@@ -33,7 +34,7 @@ const AddCategory: React.FC = () => {
   const handleCategorySubmit = async (data: FormValues) => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/category", {
+      const response = await fetch(`${BASE_URL}/category`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

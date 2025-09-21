@@ -42,7 +42,9 @@ export default function RolePermissionForm({
     user.permissions || {}
   );
   const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
 
   const isDeveloper = role === "developer";
@@ -136,7 +138,7 @@ export default function RolePermissionForm({
     setLoading(true); // ✅ start loading
     try {
       const res = await axios.put(
-        `http://localhost:3000/auth/${user._id}`,
+        `${BASE_URL}/auth/${user._id}`,
         { role, permissions },
         {
           headers: {

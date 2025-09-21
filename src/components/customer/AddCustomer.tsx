@@ -23,11 +23,13 @@ export default function AddCustomer() {
   } = useForm<Customer>();
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const onSubmit = async (data: Customer) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/customer", {
+      const response = await fetch(`${BASE_URL}/customer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

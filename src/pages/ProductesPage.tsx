@@ -22,7 +22,9 @@ const ProductesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const { hasPermission } = usePermission()
-  const {token} =useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const tabVariants = {
     initial: { opacity: 0, y: 10 },
@@ -33,7 +35,7 @@ const ProductesPage: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/product", {
+      .get(`${BASE_URL}/product`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +55,7 @@ const ProductesPage: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/category", {
+      .get(`${BASE_URL}/category`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

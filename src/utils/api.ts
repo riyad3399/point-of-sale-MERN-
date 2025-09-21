@@ -1,17 +1,16 @@
 import axios from "axios";
-import { PermissionsProps, RoleProps, Supplier, UserInfo } from "../types";
+import { PermissionsProps, RoleProps, Supplier } from "../types";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-// const URI = import.meta.env.VITE_BASE_URI;
-const URI = "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_BASE_URI;
 
 export const fetchSupplierDetails = async (
   supplierId: string
 ): Promise<Supplier | null> => {
   try {
-    const response = await axios.get(`${URI}/suppliers/${supplierId}`);
+    const response = await axios.get(`${BASE_URL}/suppliers/${supplierId}`);
     if (response.status === 200) {
       return response.data;
     }
@@ -25,7 +24,7 @@ export const fetchSupplierDetails = async (
 // Expense
 export const updateExpense = async (id: string, data: any) => {
   try {
-    const response = await axios.put(`${URI}/expenses/${id}`, data);
+    const response = await axios.put(`${BASE_URL}/expenses/${id}`, data);
     return response.data;
   } catch (error) {
     throw error?.response?.data || error;
@@ -33,7 +32,7 @@ export const updateExpense = async (id: string, data: any) => {
 };
 
 export const deleteExpense = async (id: string) => {
-  const response = await axios.delete(`${URI}/expenses/${id}`);
+  const response = await axios.delete(`${BASE_URL}/expenses/${id}`);
   return response.data;
 };
 
@@ -55,7 +54,7 @@ export const useHandleLogout = () => {
       }
 
       const res = await axios.post(
-        `${URI}/auth/logout`,
+        `${BASE_URL}/auth/logout`,
         {},
         {
           headers: {
@@ -83,7 +82,7 @@ export const handleLogin = async (
   login: (token: string, refreshToken: string, user: any) => void
 ) => {
   try {
-    const response = await axios.post(`${URI}/auth/login`, data);
+    const response = await axios.post(`${BASE_URL}/auth/login`, data);
     const { token, refreshToken, user, message } = response.data;
     console.log(response);
 
@@ -103,7 +102,7 @@ export const handleRegister = async (data, navigate) => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await axios.post(`${URI}/auth/register`, data, {
+    const res = await axios.post(`${BASE_URL}/auth/register`, data, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     const successMsg = res.data.message || "Registration successful!";
@@ -119,7 +118,7 @@ export const handleRegister = async (data, navigate) => {
 // User profile
 // export const handleProfile = async (token: string, navigate) => {
 //   await axios
-//     .get(`${URI}/auth/me`, {
+//     .get(`${BASE_URL}/auth/me`, {
 //       headers: { Authorization: token },
 //     })
 //     .then((res) => {
@@ -133,7 +132,7 @@ export const handleRegister = async (data, navigate) => {
 // };
 export const handleProfile = async (token: string, navigate: any) => {
   try {
-    const res = await axios.get(`${URI}/auth/me`, {
+    const res = await axios.get(`${BASE_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -155,7 +154,7 @@ export const handleProfile = async (token: string, navigate: any) => {
 // get User profile
 export const getHandleProfile = async (token: string) => {
   try {
-    const res = await axios.get(`${URI}/auth/me`, {
+    const res = await axios.get(`${BASE_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -172,7 +171,7 @@ export const getHandleProfile = async (token: string) => {
 // GET - all users
 export const getAllUsers = async (token: string | null) => {
   try {
-    const response = await axios.get(`${URI}/user`, {
+    const response = await axios.get(`${BASE_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -195,7 +194,7 @@ export const handleUpdateUserRoles = async ({
   token,
 }: RoleProps) => {
   await axios.post(
-    `http://localhost:3000/user/${userId}/roles`,
+    `${BASE_URL}/user/${userId}/roles`,
     { roles },
     { headers: { Authorization: `Bearer ${token}` } }
   );
@@ -209,7 +208,7 @@ export const handleUpdateUserPermission = async ({
   userId,
 }: PermissionsProps) => {
   const res = await axios.post(
-    `http://localhost:3000/user/${userId}/permissions`,
+    `${BASE_URL}/user/${userId}/permissions`,
     { permissions },
     { headers: { Authorization: `Bearer ${token}` } }
   );
@@ -220,7 +219,7 @@ export const handleUpdateUserPermission = async ({
 export const changePassword = async (userName: string, newPassword: string) => {
   try {
     const res = await axios.put(
-      `http://localhost:3000/auth/change-password/${userName}`,
+      `${BASE_URL}/auth/change-password/${userName}`,
       { newPassword },
       {
         headers: {
@@ -252,7 +251,7 @@ export const handleGetProduct = async (
   try {
     if (setLoading) setLoading(true);
 
-    const res = await axios.get(`${URI}/product`, {
+    const res = await axios.get(`${BASE_URL}/product`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -273,7 +272,7 @@ export const handleGetProduct = async (
 // POST
 export const handleInsertPurchase = async (reset, transformed) => {
   try {
-    const res = await axios.post(`${URI}/purchases/add`, transformed, {
+    const res = await axios.post(`${BASE_URL}/purchases/add`, transformed, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -293,7 +292,7 @@ export const handleUpdatePurchasePayment = async (
   id: string
 ) => {
   try {
-    const res = await axios.put(`${URI}/purchases/${id}/pay`, {
+    const res = await axios.put(`${BASE_URL}/purchases/${id}/pay`, {
       amount: amount,
       method: method,
       note: note,
@@ -307,7 +306,7 @@ export const handleUpdatePurchasePayment = async (
 // GET
 export const handleGetSinglePurchase = async (id: string, navigate) => {
   try {
-    const res = await axios.get(`${URI}/purchases/${id}`);
+    const res = await axios.get(`${BASE_URL}/purchases/${id}`);
     navigate("/purchasePayment", { state: res.data });
   } catch (error) {
     console.log(error);
@@ -319,7 +318,7 @@ export const handleGetSinglePurchase = async (id: string, navigate) => {
 // GET - All supplier
 export const handleGetSupplier = async (setSuppliers) => {
   try {
-    const res = await axios.get(`${URI}/suppliers`, {
+    const res = await axios.get(`${BASE_URL}/suppliers`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -336,7 +335,7 @@ export const handleGetSupplier = async (setSuppliers) => {
 export const fetchTotalSales = async (setTotalSales, setLoading) => {
   setLoading(true);
   try {
-    const res = await axios.get("http://localhost:3000/invoice/total-sales", {
+    const res = await axios.get(`${BASE_URL}/invoice/total-sales`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -355,7 +354,7 @@ export const fetchTotalSales = async (setTotalSales, setLoading) => {
 export const fetchTodaySales = async (setTodaySales, setLoading) => {
   setLoading(true);
   try {
-    const res = await axios.get("http://localhost:3000/invoice/today-sales", {
+    const res = await axios.get(`${BASE_URL}/invoice/today-sales`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -374,7 +373,7 @@ export const fetchTodaySales = async (setTodaySales, setLoading) => {
 export const fetchOverviewData = async (setChartData, setLoading) => {
   setLoading(true);
   try {
-    const res = await axios.get("http://localhost:3000/invoice/sales-7-days", {
+    const res = await axios.get(`${BASE_URL}/invoice/sales-7-days`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -396,7 +395,7 @@ export const fetchRecentTransactions = async (
   setLoading(true);
   try {
     const res = await axios.get(
-      "http://localhost:3000/invoice/recent-transactions",
+      `${BASE_URL}/invoice/recent-transactions`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -418,7 +417,7 @@ export const fetchDefaultDueCustomers = async (setLoading, setDueCustomers) => {
   setLoading(true);
   try {
     const response = await axios.get(
-      "http://localhost:3000/invoice/due-customers",
+      `${BASE_URL}/invoice/due-customers`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

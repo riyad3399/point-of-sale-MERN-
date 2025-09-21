@@ -46,6 +46,8 @@ const Add: React.FC = () => {
     const number = Math.floor(Math.random() * 900000) + 100000;
     setRandomNumber(number);
   };
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -62,7 +64,7 @@ const Add: React.FC = () => {
         formData.append("photo", data.photo[0]);
       }
 
-      const response = await fetch("http://localhost:3000/product", {
+      const response = await fetch(`${BASE_URL}/product`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -92,7 +94,7 @@ const Add: React.FC = () => {
   useEffect(() => {
     generateNumber();
     axios
-      .get("http://localhost:3000/category", {
+      .get(`${BASE_URL}/category`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

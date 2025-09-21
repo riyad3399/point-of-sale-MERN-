@@ -7,7 +7,7 @@ const PrivateRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const baseURI = import.meta.env.VITE_BASE_URI;
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -19,7 +19,7 @@ const PrivateRoute = () => {
       }
 
       try {
-        const res = await axios.get("http://localhost:3000/auth/me", {
+        const res = await axios.get(`${BASE_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -39,7 +39,7 @@ const PrivateRoute = () => {
     };
 
     checkAuth();
-  }, [navigate, baseURI]);
+  }, [navigate, BASE_URL]);
 
   if (loading)
     return (

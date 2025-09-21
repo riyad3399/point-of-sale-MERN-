@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface Customer {
   _id: string;
@@ -33,6 +34,7 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
   const [editing, setEditing] = useState(false);
   const { hasPermission } = usePermission();
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   const handleDeleteCustomer = async (id: string) => {
     const result = await Swal.fire({
@@ -47,7 +49,7 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/customer/${id}`, {
+        await axios.delete(`${BASE_URL}/customer/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -55,23 +57,9 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
 
         setCustomers((prev) => prev.filter((cus) => cus._id !== id));
 
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your Customer has been deleted.",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-        });
+        toast.success("Customer deleted successfully");
       } catch (err) {
-        Swal.fire({
-          title: "Error!",
-          text: "Failed to delete the Customer.",
-          icon: "error",
-          timer: 2500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
+        toast.error("Failed to delete the Customer. Please try again.");
       }
     }
   };

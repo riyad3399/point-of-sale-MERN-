@@ -21,16 +21,17 @@ export default function UserList() {
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<TenantUser | null>(null);
   const [newPassword, setNewPassword] = useState("");
-  const [open, setOpen] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [deletingUsers, setDeletingUsers] = useState<string[]>([]);
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     const fetchUsers = async () => {
       if (!user?.tenantId) return;
       try {
         const res = await axios.get(
-          `http://localhost:3000/user/${user.tenantId}`,
+          `${BASE_URL}/user/${user.tenantId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUsers(res.data.users);
@@ -50,7 +51,7 @@ export default function UserList() {
     console.log(token);
     try {
       await axios.patch(
-        `http://localhost:3000/auth/${selectedUser._id}/password`,
+        `${BASE_URL}/auth/${selectedUser._id}/password`,
         { newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -70,7 +71,7 @@ export default function UserList() {
     setDeletingUsers((prev) => [...prev, deleteUser._id]);
     try {
       const response = await axios.delete(
-        `http://localhost:3000/user/${user.tenantId}/delete/${deleteUser._id}`,
+        `${BASE_URL}/user/${user.tenantId}/delete/${deleteUser._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           data: { userName: deleteUser.userName },

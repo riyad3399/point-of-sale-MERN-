@@ -1,4 +1,3 @@
-// src/components/shortcuts/ShortcutHelpModal.tsx
 import shortcutConfig from "../../utils/shortcutConfig";
 
 export default function ShortcutHelpModal() {

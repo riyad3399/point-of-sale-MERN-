@@ -19,13 +19,13 @@ export default function TenantUserRoleAndPermissions() {
   const [loading, setLoading] = useState(true);
   const { user: currentUser, token, decodedUser } = useAuth();
 
-  // console.log(currentUser);
+const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/user/${currentUser?.tenantId}`,
+          `${BASE_URL}/user/${currentUser?.tenantId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

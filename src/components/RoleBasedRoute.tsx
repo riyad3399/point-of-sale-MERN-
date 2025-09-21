@@ -14,11 +14,13 @@ export default function RoleBasedRoute({
   const { user, loading: authLoading, token } = useAuth();
   const [userCount, setUserCount] = useState<number | null>(null);
   const [countLoading, setCountLoading] = useState(true);
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/auth/count", {
+        const res = await axios.get(`${BASE_URL}/auth/count`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserCount(res.data.userCount);

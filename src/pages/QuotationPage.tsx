@@ -14,11 +14,13 @@ export default function QuotationPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const { token } = useAuth();
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const fetchAllQuotations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/quotations", {
+      const res = await axios.get(`${BASE_URL}/quotations`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -62,7 +64,7 @@ export default function QuotationPage() {
     if (!confirm.isConfirmed) return;
 
     try {
-      const res = await axios.delete(`http://localhost:3000/quotations/${id}`, {
+      const res = await axios.delete(`${BASE_URL}/quotations/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

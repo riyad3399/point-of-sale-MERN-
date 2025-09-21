@@ -39,6 +39,8 @@ export default function RetailSalePage() {
 
   const location = useLocation();
   const editQuotation = location.state;
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
 
 
@@ -221,7 +223,7 @@ const filteredProducts = allProduct.filter((product) => {
     handleGetProduct(setAllProduct, token, setLoading);
 
     axios
-      .get("http://localhost:3000/customer", {
+      .get(`${BASE_URL}/customer`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -346,7 +348,7 @@ const filteredProducts = allProduct.filter((product) => {
                           <img
                             src={
                               product.photo
-                                ? `http://localhost:3000${product.photo}`
+                                ? `${BASE_URL}${product.photo}`
                                 : "/images/no-image.png"
                             }
                             alt={product.productName}
@@ -440,7 +442,7 @@ const filteredProducts = allProduct.filter((product) => {
                         transition={{ type: "spring", stiffness: 300 }}
                         src={
                           product.photo
-                            ? `http://localhost:3000${product.photo}`
+                            ? `${BASE_URL}${product.photo}`
                             : "/images/no-image.png"
                         }
                         alt={product.productName}

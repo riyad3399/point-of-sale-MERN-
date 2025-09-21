@@ -20,6 +20,8 @@ export default function ProfitStatement() {
   const [profitData, setProfitData] = useState<any[]>([]);
 
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const handleSearch = async () => {
     if (!fromDate || !toDate) {
@@ -27,10 +29,13 @@ export default function ProfitStatement() {
     }
 
     try {
-      const res = await axios.get("http://localhost:3000/invoice/profit", {
+      const res = await axios.get(`${BASE_URL}/invoice/profit`, {
         params: {
           fromDate: formatLocalDate(fromDate),
           toDate: formatLocalDate(toDate),
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       setProfitData(res.data);

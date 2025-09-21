@@ -6,6 +6,8 @@ export const useRegisterVisibility = () => {
   const { user, token } = useAuth();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
 
 
@@ -13,7 +15,7 @@ export const useRegisterVisibility = () => {
   useEffect(() => {
     const checkUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/auth/count", {
+        const res = await axios.get(`${BASE_URL}/auth/count`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

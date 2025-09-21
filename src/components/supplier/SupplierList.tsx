@@ -37,7 +37,7 @@ const SupplierList = () => {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
-  // const { hasPermission } = usePermission();
+const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   const { t } = useTranslation();
   const {token} = useAuth()
@@ -46,7 +46,7 @@ const SupplierList = () => {
     const fetchSuppliers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:3000/suppliers", {
+        const res = await axios.get(`${BASE_URL}/suppliers`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

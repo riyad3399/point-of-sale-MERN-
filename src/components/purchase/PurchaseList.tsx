@@ -40,14 +40,16 @@ export default function PurchaseList() {
     end: "",
   });
   const { t } = useTranslation();
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     const fetchPurchases = async () => {
       setLoading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        const res = await axios.get("http://localhost:3000/purchases", {
+        const res = await axios.get(`${BASE_URL}/purchases`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -7,6 +7,8 @@ import { ArrowLeft } from "lucide-react";
 const ShowProductPage: React.FC = () => {
   const location = useLocation();
   const { singleProduct } = location.state || {};
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const fields = [
     { label: "Product Code", value: singleProduct?.productCode },
@@ -79,7 +81,7 @@ const ShowProductPage: React.FC = () => {
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             <img
-              src={`http://localhost:3000${singleProduct?.photo}`}
+              src={`${BASE_URL}${singleProduct?.photo}`}
               alt="Product"
                 className="w-32 h-32 object-cover rounded-xl border border-gray-300 shadow-sm"
                 loading="lazy"

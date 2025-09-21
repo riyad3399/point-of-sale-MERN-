@@ -36,6 +36,8 @@ export default function WholeSalePage() {
 
   const location = useLocation();
   const editQuotation = location.state;
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     if (editQuotation) {
@@ -210,7 +212,7 @@ export default function WholeSalePage() {
     handleGetProduct(setAllProduct, token, setLoading);
 
     axios
-      .get("http://localhost:3000/customer", {
+      .get(`${BASE_URL}/customer`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -340,7 +342,7 @@ export default function WholeSalePage() {
                           <img
                             src={
                               product.photo
-                                ? `http://localhost:3000${product.photo}`
+                                ? `${BASE_URL}${product.photo}`
                                 : "/images/no-image.png"
                             }
                             alt={product.productName}
@@ -434,7 +436,7 @@ export default function WholeSalePage() {
                         transition={{ type: "spring", stiffness: 300 }}
                         src={
                           product.photo
-                            ? `http://localhost:3000${product.photo}`
+                            ? `${BASE_URL}${product.photo}`
                             : "/images/no-image.png"
                         }
                         alt={product.productName}

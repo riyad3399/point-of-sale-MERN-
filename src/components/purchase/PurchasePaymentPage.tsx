@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -9,17 +8,13 @@ import {
   TbClock,
   TbUser,
   TbPhone,
-  TbCalendar,
   TbInfoCircle,
   TbPercentage,
   TbDownload,
-  TbPrinter,
   TbHistory,
   TbBulb,
   TbShieldCheck,
-  TbArrowLeft,
   TbCalculator,
-  TbDeviceFloppy,
 } from "react-icons/tb";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,7 +29,6 @@ export default function PurchasePaymentPage() {
   const [selectedQuickAmount, setSelectedQuickAmount] = useState(null);
   const [savedDraft, setSavedDraft] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
-  const [paymentHistory, setPaymentHistory] = useState([]);
 
   const location = useLocation();
   const navigate = useNavigate();

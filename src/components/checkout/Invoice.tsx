@@ -55,6 +55,8 @@ const Invoice: React.FC<InvoiceProps> = ({
   const invoicePostedRef = useRef(false);
   const [companyInfo, setCompanyInfo] = useState<CompanyType | null>();
   const { token, user } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     if (!selectWalking || products.length === 0 || invoicePostedRef.current)
@@ -69,7 +71,7 @@ const Invoice: React.FC<InvoiceProps> = ({
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/invoice",
+          `${BASE_URL}/invoice`,
           {
             saleSystem: saleSystemValue,
 
@@ -116,7 +118,7 @@ const Invoice: React.FC<InvoiceProps> = ({
   }, [selectWalking, products]);
 
   const fetchCompanyInfo = async () => {
-    const res = await axios.get("http://localhost:3000/setting", {
+    const res = await axios.get(`${BASE_URL}/setting`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

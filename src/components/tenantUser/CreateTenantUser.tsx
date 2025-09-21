@@ -27,11 +27,14 @@ export default function CreateTenantUser() {
       return;
     }
 
+    const BASE_URL = import.meta.env.VITE_BASE_URI;
+
+
     const dataToSend = { ...formData, tenantId: decodedUser.tenantId };
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/auth/create-tenant-user",
+        `${BASE_URL}/auth/create-tenant-user`,
         dataToSend,
         {
           headers: { Authorization: `Bearer ${token}` },

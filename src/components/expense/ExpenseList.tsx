@@ -70,13 +70,15 @@ export default function ExpenseList() {
   const {hasPermission} =usePermission()
 
   const { t } = useTranslation();
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   // Fetch expenses
   const fetchAllExpenses = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/expenses", {
+      const res = await axios.get(`${BASE_URL}/expenses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllExpenses(res.data);

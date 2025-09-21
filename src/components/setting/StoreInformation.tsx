@@ -12,11 +12,13 @@ export default function StoreInformation() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [hasStoreData, setHasStoreData] = useState(false);
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
 useEffect(() => {
   const fetchSettings = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/setting", {
+      const res = await axios.get(`${BASE_URL}/setting`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -27,7 +29,7 @@ useEffect(() => {
         reset(storeData);
 
         if (storeData.logoUrl) {
-          setLogoPreview(`http://localhost:3000/${storeData.logoUrl}`);
+          setLogoPreview(`${BASE_URL}/${storeData.logoUrl}`);
         }
       }
     } catch (err) {
@@ -54,7 +56,7 @@ useEffect(() => {
         formData.append("logoUrl", logoPreview); // fallback old preview
       }
 
-      const url = "http://localhost:3000/setting";
+      const url = `${BASE_URL}/setting`;
       const method = hasStoreData ? "patch" : "post";
 
      await axios[method](url, formData, {

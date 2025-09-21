@@ -50,7 +50,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [discount, setDiscount] = useState<number | "">("");
   const [dueAmount, setDueAmount] = useState<number>(0);
   const [dueDate, setDueDate] = useState<string>("");
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     const paid = typeof paidAmount === "number" ? paidAmount : 0;
@@ -69,7 +71,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/customer",
+        `${BASE_URL}/customer`,
         {
           customerName,
           phone,

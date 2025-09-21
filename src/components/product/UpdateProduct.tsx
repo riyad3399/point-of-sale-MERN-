@@ -52,6 +52,8 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const { token } = useAuth();
 
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
   useEffect(() => {
     if (product) {
       reset({
@@ -77,7 +79,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/category", {
+        const res = await axios.get(`${BASE_URL}/category`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCategories(res.data);
@@ -107,7 +109,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
       }
 
       const response = await fetch(
-        `http://localhost:3000/product/${product._id}`,
+        `${BASE_URL}/product/${product._id}`,
         {
           method: "PATCH",
           body: formData,

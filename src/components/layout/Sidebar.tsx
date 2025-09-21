@@ -19,8 +19,6 @@ import {
   PackagePlus,
   FileSignature,
   Wrench,
-  CircleDollarSign,
-  Briefcase,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";

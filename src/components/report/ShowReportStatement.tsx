@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Printer } from "lucide-react";
 import ReportQuantityDetailModal from "./ReportQuantityDetailModal";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 // ✅ Interfaces
 interface CustomerDetail {
@@ -40,19 +41,24 @@ export default function ShowReportStatement() {
   );
   const [companyInfo, setCompanyInfo] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const {token} = useAuth()
 
   const [loading, setLoading] = useState(true);
   const printRef = useRef<HTMLDivElement>(null);
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   useEffect(() => {
     const fetchSettingInfo = async () => {
-      const res = await axios.get("http://localhost:3000/setting");
+      const res = await axios.get(`${BASE_URL}/setting`, {
+        headers: {Authorization: `Bearer ${token}`}
+      });
       const data = await res.data.data;
       setCompanyInfo(data);
     };
 
     fetchSettingInfo();
-  }, []);
+  }, [token, BASE_URL]);
 
 
   const handlePrint = () => {

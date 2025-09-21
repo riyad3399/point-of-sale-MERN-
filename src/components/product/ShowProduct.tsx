@@ -12,8 +12,7 @@ import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { Product } from "../../types";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
-
-
+import toast from "react-hot-toast";
 
 interface ShowProductProps {
   product: Product;
@@ -32,12 +31,14 @@ const ShowProduct: React.FC<ShowProductProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState(false);
 
-  const { hasPermission } = usePermission()
-  const {token}= useAuth()
+  const { hasPermission } = usePermission();
+  const { token } = useAuth();
 
   const navigate = useNavigate();
+
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+  console.log(BASE_URL);
 
   const handleViewProduct = (singleProduct: Product) => {
     navigate("/showProduct", { state: { singleProduct, loading } });
@@ -46,7 +47,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
   const handleSingleProduct = async (id: string) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/product/${id}`, {
+      const res = await axios.get(`${BASE_URL}/product/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -73,20 +74,14 @@ const ShowProduct: React.FC<ShowProductProps> = ({
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/product/${id}`, {
+        await axios.delete(`${BASE_URL}/product/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setAllProduct((prev) => prev.filter((p) => p._id !== id));
 
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your product has been deleted.",
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false,
-        });
+        toast.success("Product deleted successfully");
       } catch (err) {
         console.error(err);
         Swal.fire("Error!", "Failed to delete the product.", "error");
@@ -112,7 +107,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
               loading="lazy"
-              src={`http://localhost:3000${product.photo}`}
+              src={`${BASE_URL}${product.photo}`}
               alt={product.productName}
               className="object-cover w-full h-full"
             />
@@ -186,7 +181,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
       </motion.tr>
 
       {/* Modal render outside of <tr> */}
-      { open && (
+      {open && (
         <Modal
           isOpen={open}
           onClose={() => setOpen(false)}

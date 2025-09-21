@@ -73,6 +73,7 @@ const DashboardPage: React.FC = () => {
   const { token } = useAuth();
 
   const { t } = useTranslation();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   useEffect(() => {
     fetchTodaySales(setTodaySales, setLoading);
@@ -93,10 +94,11 @@ const DashboardPage: React.FC = () => {
 
     try {
       setLoadingIndex(index);
-      await fetch("http://localhost:3000/sms/send", {
+      await fetch(`${BASE_URL}/sms/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           to: phone,
@@ -120,7 +122,7 @@ const DashboardPage: React.FC = () => {
       if (selectedDate) {
         const formattedDate = formatDateToYYYYMMDD(selectedDate);
         response = await axios.get(
-          "http://localhost:3000/invoice/due-customers",
+          `${BASE_URL}/invoice/due-customers`,
           {
             params: { dueDate: formattedDate },
             headers: {
@@ -130,7 +132,7 @@ const DashboardPage: React.FC = () => {
         );
       } else {
         response = await axios.get(
-          "http://localhost:3000/invoice/due-customers",
+          `${BASE_URL}/invoice/due-customers`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

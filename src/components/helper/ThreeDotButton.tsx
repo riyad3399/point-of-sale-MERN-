@@ -1,15 +1,7 @@
 import { MoreVertical } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function ThreeDotButton({
-  purchase,
-
-}) {
-  // inside component
-
-
-
-
+export default function ThreeDotButton({ purchase }) {
   return (
     <div>
       <div

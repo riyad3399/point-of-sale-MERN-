@@ -27,6 +27,8 @@ type Props = {
 };
 
 const AlertItemsShow: React.FC<Props> = ({ products }) => {
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -63,7 +65,7 @@ const AlertItemsShow: React.FC<Props> = ({ products }) => {
               <td className="px-4 py-2">
                 {product.photo?.data ? (
                   <img
-                    src={`http://localhost:3000/product/image/${product._id}`}
+                    src={`${BASE_URL}/product/image/${product._id}`}
                     alt={product.productName}
                     className="h-10 w-10 rounded object-cover"
                   />

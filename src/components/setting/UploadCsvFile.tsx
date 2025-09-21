@@ -8,6 +8,8 @@ export default function UploadCsvFile() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ export default function UploadCsvFile() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/product/upload-csv",
+        `${BASE_URL}/product/upload-csv`,
         formData,
         {
           headers: {

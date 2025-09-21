@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface Category {
   categoryId: number;
@@ -33,7 +34,8 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
   const [asignItem, setAsingItem] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const { hasPermission } = usePermission();
-  const {token} = useAuth()
+  const { token } = useAuth()
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   const handleDeleteCategory = async (id: string) => {
     const result = await Swal.fire({
@@ -48,7 +50,7 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/category/${id}`, {
+        await axios.delete(`${BASE_URL}/category/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -56,11 +58,8 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
 
         setCategories((prev) => prev.filter((cat) => cat._id !== id));
 
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your category has been deleted.",
-          icon: "success",
-        });
+       
+        toast.success("Category deleted successfully");
       } catch (err) {
         console.error(err);
         Swal.fire({
@@ -74,7 +73,7 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/product", {
+      .get(`${BASE_URL}/product`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }

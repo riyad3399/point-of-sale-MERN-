@@ -39,6 +39,8 @@ export default function UpdateCustomerModal({
   });
 
   const { token } = useAuth();
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   // Escape key to close
   useEffect(() => {
@@ -53,7 +55,7 @@ export default function UpdateCustomerModal({
   const onSubmit = async (data: any) => {
     try {
       await axios
-        .patch(`http://localhost:3000/customer/${customer._id}`, data, {
+        .patch(`${BASE_URL}/customer/${customer._id}`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

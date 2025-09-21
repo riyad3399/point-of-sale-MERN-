@@ -6,9 +6,11 @@ export const handleInsertAndUpdateQuotation = async (
   quotation: QuotationType
 ) => {
   const { token } = { token: localStorage.getItem("token") || "" };
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
   try {
     const response = await axios.post(
-      "http://localhost:3000/quotations/add",
+      `${BASE_URL}/quotations/add`,
       quotation,
       { headers: { Authorization: `Bearer ${token}` } }
     );

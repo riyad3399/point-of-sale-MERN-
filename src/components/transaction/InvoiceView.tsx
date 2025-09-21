@@ -36,10 +36,12 @@ export default function InvoiceView() {
   const { invoice }: InvoiceType = location.state || {};
   const [isOpen, setIsOpen] = useState(false);
   const [paymentDetailsData, setPaymentDetailsData] = useState([]);
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
+
 
   const handlePaymentDetailsView = async (id: number) => {
     await axios
-      .get(`http://localhost:3000/invoice/${id}/payment-details`)
+      .get(`${BASE_URL}/invoice/${id}/payment-details`)
       .then((res) => {
         const data = res.data;
         setPaymentDetailsData(data);

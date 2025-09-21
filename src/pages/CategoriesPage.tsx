@@ -28,11 +28,12 @@ const CategoriesPage: React.FC = () => {
   };
 
   const token = localStorage.getItem("token")
+  const BASE_URL = import.meta.env.VITE_BASE_URI ;  
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/category", {
+      .get(`${BASE_URL}/category`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
