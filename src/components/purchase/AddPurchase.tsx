@@ -6,6 +6,8 @@ import { Trash2, X } from "lucide-react";
 import SupplierAddForm from "../supplier/SupplierAddForm";
 import FloatingInput from "./FloatingInput";
 import { useTranslation } from "react-i18next";
+import CreatableSelect from "react-select/creatable";
+
 import {
   handleGetProduct,
   handleGetSupplier,
@@ -105,63 +107,64 @@ const PurchaseForm = () => {
     handleGetSupplier(setSuppliers);
   }, [token]);
 
-  const onSubmit = async (data: PurchaseFormData) => {
-    // Calculate total from items
-    const total = data.items.reduce(
-      (acc, item) => acc + item.quantity * item.purchasePrice,
-      0
-    );
+const onSubmit = async (data: PurchaseFormData) => {
+  // 1️⃣ Calculate total
+  const total = data.items.reduce(
+    (acc, item) => acc + item.quantity * item.purchasePrice,
+    0
+  );
 
-    const discountPercent = data.discount || 0;
-    const discountAmount = (total * discountPercent) / 100;
-    const shippingCost = data.shippingCost || 0;
-    const grandTotal = total - discountAmount + shippingCost;
-    const due = grandTotal - (data.paid || 0);
+  // 2️⃣ Discount handling
+  const discountPercent = data.discount || 0;
+  const discount = (total * discountPercent) / 100;
 
-    // Validation
-    if (!data.supplier) {
-      return toast.error("Supplier is required");
-    }
-    if (due < 0) {
-      return toast.error("Paid amount cannot be more than grand total");
-    }
-    if (!data.items.length || data.items.some((item) => !item.product)) {
-      return toast.error("At least one valid product is required");
-    }
+  // 3️⃣ Shipping cost
+  const transportCost = data.shippingCost || 0;
 
-    const transformed = {
-      supplier: {
-        _id: data.supplier._id,
-        name: data.supplier.name,
-        phone: data.supplier.phone,
-        email: data.supplier.email,
-        address: data.supplier.address,
-      },
-      supplierId: data.supplier._id,
-      items: data.items.map((item) => ({
-        product: item.product,
-        quantity: item.quantity,
-        purchasePrice: item.purchasePrice,
-        retailPrice: item.retailPrice,
-        wholesalePrice: item.wholesalePrice,
-      })),
-      total,
-      discountPercent,
-      discount: discountAmount,
-      shippingCost,
-      grandTotal,
-      paid: data.paid,
-      due,
-      paymentMethod: data.paymentMethod,
-      status: data.status,
-      dueDate: data.dueDate,
-      purchaseDate: data.purchaseDate || new Date(),
-    };
+  // 4️⃣ Final total
+  const grandTotal = total - discount + transportCost;
+  const due = grandTotal - (data.paid || 0);
 
-    console.log(transformed);
+  // 5️⃣ Validations
+  if (!data.supplier) {
+    return toast.error("Supplier is required");
+  }
+  if (due < 0) {
+    return toast.error("Paid amount cannot be more than grand total");
+  }
+  if (!data.items.length || data.items.some((item) => !item.product)) {
+    return toast.error("At least one valid product is required");
+  }
 
-    handleInsertPurchase(reset, transformed);
+  // 6️⃣ Transform data for backend
+  const transformed = {
+    supplierId: data.supplier._id, // শুধু ID দরকার backend এ
+    supplierName: data.supplier.name, 
+    items: data.items.map((item) => ({
+      product: item.product,
+      quantity: item.quantity,
+      purchasePrice: item.purchasePrice,
+      retailPrice: item.retailPrice,
+      wholesalePrice: item.wholesalePrice,
+    })),
+    total,
+    discountPercent,
+    discount,
+    transportCost, // backend এর সাথে match
+    grandTotal,
+    paid: data.paid,
+    due,
+    paymentMethod: data.paymentMethod,
+    status: data.status,
+    dueDate: data.dueDate,
+    purchaseDate: data.purchaseDate || new Date(),
   };
+
+  console.log("Purchase payload 👉", transformed);
+
+  handleInsertPurchase(reset, transformed);
+};
+
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -206,46 +209,54 @@ const PurchaseForm = () => {
             key={field.id}
             className="grid lg:grid-cols-7 gap-4 lg:gap-2 items-center"
           >
-            <Controller
-              control={control}
-              name={`items.${index}.product`}
-              render={({ field }) => (
-                <Select
-                  value={
-                    products.find((p) => p._id === field.value)
-                      ? {
-                          label: products.find((p) => p._id === field.value)
-                            ?.productName,
-                          value: field.value,
-                        }
-                      : null
-                  }
-                  onChange={(opt) => {
-                    field.onChange(opt?.value);
-                    const selected = products.find((p) => p._id === opt?.value);
-                    if (selected) {
-                      setValue(
-                        `items.${index}.purchasePrice`,
-                        selected.purchasePrice
-                      );
-                      setValue(
-                        `items.${index}.retailPrice`,
-                        selected.retailPrice || 0
-                      );
-                      setValue(
-                        `items.${index}.wholesalePrice`,
-                        selected.wholesalePrice || 0
-                      );
+            <CreatableSelect
+              value={
+                products.find((p) => p._id === items[index].product)
+                  ? {
+                      label: products.find(
+                        (p) => p._id === items[index].product
+                      )?.productName,
+                      value: items[index].product,
                     }
-                  }}
-                  options={products.map((p) => ({
-                    label: p.productName,
-                    value: p._id,
-                  }))}
-                  className="col-span-2"
-                  placeholder="Select Product"
-                />
-              )}
+                  : null
+              }
+              onChange={(opt) => {
+                setValue(`items.${index}.product`, opt?.value || "");
+                const selected = products.find((p) => p._id === opt?.value);
+                if (selected) {
+                  setValue(
+                    `items.${index}.purchasePrice`,
+                    selected.purchasePrice
+                  );
+                  setValue(
+                    `items.${index}.retailPrice`,
+                    selected.retailPrice || 0
+                  );
+                  setValue(
+                    `items.${index}.wholesalePrice`,
+                    selected.wholesalePrice || 0
+                  );
+                }
+              }}
+              options={products.map((p) => ({
+                label: p.productName,
+                value: p._id,
+              }))}
+              onCreateOption={(inputValue) => {
+                // নতুন product তৈরি
+                const newProduct = {
+                  _id: Date.now().toString(), // temp id
+                  productName: inputValue,
+                  quantity: 1,
+                  purchasePrice: 0,
+                  retailPrice: 0,
+                  wholesalePrice: 0,
+                };
+                setProducts((prev) => [...prev, newProduct]); // state এ যোগ
+                setValue(`items.${index}.product`, newProduct._id); // form এ বসাও
+              }}
+              className="col-span-2"
+              placeholder="Select or Create Product"
             />
             <FloatingInput
               id={`qty-${index}`}

@@ -35,6 +35,8 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
   const navigate = useNavigate();
   const { hasPermission } = usePermission();
 
+  console.log("Rendering PurchaseCard:", purchase);
+
 
   const handlePayment = (id: string) => {
     handleGetSinglePurchase(id, navigate);
@@ -74,7 +76,7 @@ const PurchaseCard: React.FC<PurchaseCardProps> = ({
 
           {/* Supplier & Date */}
           <h3 className="text-xl font-bold text-slate-800 mb-1 pr-16">
-            {purchase.supplier.name}
+            {purchase.supplierName}
           </h3>
           <div className="flex items-center gap-3 text-sm text-slate-500 mb-4">
             <div className="flex items-center gap-1">
