@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AddCategory from "../components/category/AddCategory";
-import axios from "axios";
 import ShowCategories from "../components/category/ShowCategories";
 import { Box, Search } from "lucide-react";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../hooks/usePermission";
-
+import { handleGetCategory } from "../utils/api";
 
 const CategoriesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("categories");
@@ -27,29 +26,11 @@ const CategoriesPage: React.FC = () => {
     exit: { opacity: 0, y: -10 },
   };
 
-  const token = localStorage.getItem("token")
-  const BASE_URL = import.meta.env.VITE_BASE_URI ;  
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${BASE_URL}/category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setCategories(res.data);
-        setCurrentPage(1);
-      })
-      .catch((err) => {
-        console.error("Failed to load categories", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    handleGetCategory({setCategories, setCurrentPage, setLoading});
   }, [activeTab, token]);
-  
 
   const filteredCategories = categories.filter((cat: any) => {
     const matchSearch =

@@ -36,6 +36,37 @@ export const deleteExpense = async (id: string) => {
   return response.data;
 };
 
+// ----------------------Category----------------------//
+// GET - All Categories
+export const handleGetCategory = async ({
+  setCategories,
+  setLoading,
+  setCurrentPage, // optional
+}) => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get(`${BASE_URL}/category`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setCategories(res.data);
+
+    if (typeof setCurrentPage === "function") {
+      setCurrentPage(1);
+    }
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
 // ---------------------- USER ----------------------//
 
 // Logout
@@ -303,11 +334,24 @@ export const handleUpdatePurchasePayment = async (
   }
 };
 
-// GET
+// GET - single purchase
 export const handleGetSinglePurchase = async (id: string, navigate) => {
   try {
     const res = await axios.get(`${BASE_URL}/purchases/${id}`);
     navigate("/purchasePayment", { state: res.data });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// GET - all purchases
+export const getAllPurchases = async (setPurchases) => {
+  try {
+    const res = await axios.get(`${BASE_URL}/purchases`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    const data = res.data.data;
+    setPurchases(data)
   } catch (error) {
     console.log(error);
   }
@@ -394,14 +438,11 @@ export const fetchRecentTransactions = async (
 ) => {
   setLoading(true);
   try {
-    const res = await axios.get(
-      `${BASE_URL}/invoice/recent-transactions`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    const res = await axios.get(`${BASE_URL}/invoice/recent-transactions`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     const data = res.data;
     setRecentTransactions(data);
   } catch (error) {
@@ -416,14 +457,11 @@ export const fetchRecentTransactions = async (
 export const fetchDefaultDueCustomers = async (setLoading, setDueCustomers) => {
   setLoading(true);
   try {
-    const response = await axios.get(
-      `${BASE_URL}/invoice/due-customers`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    const response = await axios.get(`${BASE_URL}/invoice/due-customers`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     setDueCustomers(response.data);
   } catch (error) {
     console.error(error);

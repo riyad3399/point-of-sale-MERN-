@@ -41,12 +41,12 @@ import UserListPage from "./pages/UserManagenentsPage";
 import ProtectedRoute from "./components/roleAndPermission/ProtectedRoute";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import ShortcutListener from "./components/shortcuts/ShortcutListener";
+import PurchaseReturn from "./components/purchase/PurchaseReturn";
 
 function App() {
-  
   return (
     <AuthProvider>
-      <ShortcutListener/>
+      <ShortcutListener />
       <HelmetProvider>
         <AnimatePresence mode="wait">
           <Routes>
@@ -183,6 +183,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="purchaseReturn" element={<PurchaseReturn />} />
                 <Route path="supplier" element={<SupplierPage />} />
                 <Route
                   path="alertItems"

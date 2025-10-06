@@ -19,6 +19,7 @@ import {
   PackagePlus,
   FileSignature,
   Wrench,
+  Undo2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
@@ -265,6 +266,13 @@ const Sidebar: React.FC = () => {
                 text={t("sidebar.purchase")}
                 collapsed={collapsed}
                 title={t("sidebar.purchase")}
+              />
+              <SidebarLink
+                to="/purchaseReturn"
+                icon={<Undo2 size={16} />}
+                text={"Purchase Return"}
+                collapsed={collapsed}
+                title={"Purchase Return"}
               />
             </motion.div>
           )}

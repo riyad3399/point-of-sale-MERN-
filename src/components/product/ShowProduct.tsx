@@ -29,6 +29,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
   product,
   setAllProduct,
 }) => {
+  console.log(product);
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -38,7 +39,6 @@ const ShowProduct: React.FC<ShowProductProps> = ({
   const navigate = useNavigate();
 
   const BASE_URL = import.meta.env.VITE_BASE_URI;
-  console.log(BASE_URL);
 
   const handleViewProduct = (singleProduct: Product) => {
     navigate("/showProduct", { state: { singleProduct, loading } });

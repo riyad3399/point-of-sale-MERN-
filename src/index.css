@@ -77,8 +77,8 @@
            disabled:cursor-not-allowed disabled:opacity-50;
   }
   .input-sm{
-    @apply flex h-10 w-20 rounded-md border border-gray-300 bg-transparent py-2 px-3 text-sm
-    placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0
+    @apply flex h-8 w-20 rounded-md border border-gray-300 bg-transparent py-1.5 px-3 text-sm
+    placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:ring-offset-0
     disabled:cursor-not-allowed disabled:opacity-50 
   }
  
