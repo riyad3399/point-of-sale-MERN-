@@ -20,6 +20,7 @@ import {
   FileSignature,
   Wrench,
   Undo2,
+  Undo,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
@@ -273,6 +274,13 @@ const Sidebar: React.FC = () => {
                 text={"Purchase Return"}
                 collapsed={collapsed}
                 title={"Purchase Return"}
+              />
+              <SidebarLink
+                to="/returnInvoice"
+                icon={<Undo size={16} />}
+                text={"Return Invoice"}
+                collapsed={collapsed}
+                title={"Return Invoice"}
               />
             </motion.div>
           )}
