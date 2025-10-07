@@ -25,7 +25,6 @@ export default function PurchasePage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Smart Tab Header */}
       {tabs.length > 0 && (
         <div className="relative flex border-b border-gray-300 mb-6">
           {tabs.map((tab) => (
@@ -34,15 +33,15 @@ export default function PurchasePage() {
               onClick={() => setActiveTab(tab.key)}
               className={`relative w-full px-4 py-3 text-center font-medium transition-colors duration-300 ${
                 activeTab === tab.key
-                  ? "text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "text-primary-600"
+                  : "text-gray-500 hover:text-primary-700"
               }`}
             >
               {tab.label}
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-500 rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary-500 rounded-full"
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
@@ -51,7 +50,6 @@ export default function PurchasePage() {
         </div>
       )}
 
-      {/* Tab Content */}
       {hasPermission("purchase", "purchase",["trigger"]) && (
         <div className="  min-h-[300px]">
           <AnimatePresence mode="wait">

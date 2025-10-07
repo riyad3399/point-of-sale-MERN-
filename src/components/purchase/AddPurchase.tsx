@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
@@ -16,6 +16,7 @@ import {
 } from "../../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { Helmet } from "react-helmet-async";
 
 interface Supplier {
   _id: string;
@@ -134,7 +135,7 @@ export default function PurchaseFormPhotostyle() {
     if (!data.supplier) return toast.error("Supplier is required");
     if (!data.items.length || data.items.some((item) => !item.category))
       return toast.error(" Category is required");
-    
+
     if (due < 0)
       return toast.error("Paid amount cannot be more than grand total");
     if (!data.items.length || data.items.some((item) => !item.product))
@@ -171,6 +172,9 @@ export default function PurchaseFormPhotostyle() {
 
   return (
     <div className="max-w-full ">
+      <Helmet>
+        <title>Add Purchase | POS System</title>
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Top area: Supplier, Invoice, Dates, Payment Type, Details */}
         <div className="grid grid-cols-12 gap-4 items-center mb-6">

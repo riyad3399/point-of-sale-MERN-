@@ -8,6 +8,9 @@ import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../hooks/usePermission";
 import { useAuth } from "../context/AuthContext";
+import { Helmet } from "react-helmet-async";
+import toast from "react-hot-toast";
+import Loading from "../components/Loading";
 
 interface Customer {
   customerId: number;
@@ -34,27 +37,36 @@ export default function CustomerTabs() {
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
-  const { token } = useAuth()
+  const [loading, setLoading] = useState<boolean>(false);
+  const { token } = useAuth();
   const BASE_URL = import.meta.env.VITE_BASE_URI;
-
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    if (canView) {
-      axios
-        .get(`${BASE_URL}/customer`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setCustomers(res.data);
-          setCurrentPage(1);
-        });
-    }
-  }, [activeTab]);
+    const fetchGetAllCustomers = async () => {
+      try {
+        setLoading(true);
+        if (canView) {
+          const res = await axios.get(`${BASE_URL}/customer`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (res.status === 200) {
+            setCustomers(res.data);
+            setCurrentPage(1);
+          }
+        }
+      } catch (error) {
+        toast.error(error?.message ?? "something went wrong!");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGetAllCustomers();
+  }, [activeTab, BASE_URL, canView, token]);
 
   const searchLower = search.toLowerCase();
 
@@ -84,9 +96,15 @@ export default function CustomerTabs() {
     canAdd && { key: "add", label: t("customers.addCustomer") },
   ].filter(Boolean) as { key: "list" | "add"; label: string }[];
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="w-full mx-auto bg-white rounded-2xl overflow-hidden">
-      {/* Tab Header */}
+      <Helmet>
+        <title>Show Customers | POS System</title>
+      </Helmet>
       {availableTabs.length > 0 && (
         <div className="flex justify-center border-b bg-gray-50">
           {availableTabs.map((tab) => (
@@ -95,8 +113,8 @@ export default function CustomerTabs() {
               onClick={() => setActiveTab(tab.key)}
               className={`w-1/2 py-4 font-semibold transition duration-300 ${
                 activeTab === tab.key
-                  ? "text-blue-600 border-b-4 border-blue-600 bg-white"
-                  : "text-gray-500 hover:text-blue-600"
+                  ? "text-primary-600 border-b-2 border-primary-600 bg-white"
+                  : "text-gray-500 hover:text-primary-600"
               }`}
             >
               {tab.label}

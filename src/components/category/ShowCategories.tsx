@@ -10,6 +10,7 @@ import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import Loading from "../Loading";
 
 interface Category {
   categoryId: number;
@@ -29,7 +30,7 @@ const buttonVariants = {
 
 const ShowCategories: React.FC<ShowCategoriesProps> = ({
   product,
-  setCategories,
+  setCategories
 }) => {
   const [asignItem, setAsingItem] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -87,6 +88,8 @@ const ShowCategories: React.FC<ShowCategoriesProps> = ({
       })
       .catch((err) => console.log(err));
   }, []);
+
+
 
   return (
     <motion.tr

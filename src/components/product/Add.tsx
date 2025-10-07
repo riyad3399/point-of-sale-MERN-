@@ -103,7 +103,7 @@ const Add: React.FC = () => {
         setAllCategories(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [BASE_URL, token]);
 
   return (
     <div>
@@ -124,8 +124,7 @@ const Add: React.FC = () => {
         initial="hidden"
         animate="visible"
       >
-        {/* Product Name and Product Code */}
-        <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
+        <motion.div className="grid grid-cols-2 gap-6 min-w-full" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
               {t("addProduct.productName.label")} *
@@ -160,7 +159,6 @@ const Add: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Category and Brand */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
@@ -196,7 +194,6 @@ const Add: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Prices and Quantity */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">
@@ -255,7 +252,6 @@ const Add: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Alert Quantity and Unit */}
         <motion.div className="grid grid-cols-2 gap-6" variants={fieldVariants}>
           <div>
             <label className="text-sm font-medium text-gray-700">

@@ -2,52 +2,58 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AddCategory from "../components/category/AddCategory";
 import ShowCategories from "../components/category/ShowCategories";
-import { Box, Search } from "lucide-react";
+import { Box, Divide, Search } from "lucide-react";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../hooks/usePermission";
 import { handleGetCategory } from "../utils/api";
+import { Helmet } from "react-helmet-async";
+
+const tabVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+};
 
 const CategoriesPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("categories");
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { hasPermission } = usePermission();
+  const { t } = useTranslation();
+
+  const canView = hasPermission("inventory", "categories", ["view"]);
+  const canAdd = hasPermission("inventory", "categories", ["add"]);
+
+  const defaultTab = canView ? "categories" : "add";
+  const [activeTab, setActiveTab] = useState<"categories" | "add">(defaultTab);
+
+  const [categories, setCategories] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const { hasPermission } = usePermission();
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const tabVariants = {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 },
-  };
-
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
-    handleGetCategory({setCategories, setCurrentPage, setLoading});
-  }, [activeTab, token]);
+    handleGetCategory({ setCategories, setCurrentPage, setLoading });
+  }, [activeTab]);
+
+  const searchLower = search.toLowerCase();
 
   const filteredCategories = categories.filter((cat: any) => {
-    const matchSearch =
-      cat.categoryName.toLowerCase().includes(search.toLowerCase()) ||
-      cat.categoryId.toString().includes(search.toLowerCase());
-
+    const name = String(cat.categoryName || "").toLowerCase();
+    const id = String(cat.categoryId ?? "").toLowerCase();
+    const matchSearch = name.includes(searchLower) || id.includes(searchLower);
     const matchStatus = statusFilter === "all" || cat.status === statusFilter;
-
     return matchSearch && matchStatus;
   });
 
-  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentCategories = filteredCategories.slice(
-    indexOfFirstItem,
-    indexOfLastItem
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentCategories = filteredCategories.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredCategories.length / itemsPerPage)
   );
 
   const nextPage = () => {
@@ -58,164 +64,168 @@ const CategoriesPage: React.FC = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
-  const { t } = useTranslation();
+  const availableTabs = [
+    canView && {
+      key: "categories",
+      label: t("category.title") || "Categories",
+    },
+    canAdd && { key: "add", label: t("category.add") || "Add Category" },
+  ].filter(Boolean) as { key: "categories" | "add"; label: string }[];
 
   return (
-    <div className="mx-auto p-4">
-      {/* Tab Headers */}
-      <div className="flex border-b border-gray-200 mb-4">
-        <button
-          onClick={() => setActiveTab("categories")}
-          className={`px-4 py-2 focus:outline-none ${
-            activeTab === "categories"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-600 hover:text-blue-600"
-          }`}
-        >
-          {t("category.title")}
-        </button>
-        {hasPermission("inventory", "categories", ["add"]) && (
-          <button
-            onClick={() => setActiveTab("add")}
-            className={`px-4 py-2 focus:outline-none ${
-              activeTab === "add"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }`}
-          >
-            {t("category.add")}
-          </button>
-        )}
-      </div>
+    <div className="w-full mx-auto bg-white rounded-2xl overflow-hidden">
+      <Helmet>
+        <title>Categories | POS System</title>
+      </Helmet>
 
-      {/* Tab Content */}
-      <div className="relative min-h-screen">
-        <AnimatePresence mode="wait">
-          {activeTab === "categories" && (
-            <div>
-              <div className="flex justify-between mb-4 mt-6 gap-4 flex-wrap">
-                {/* Search Box */}
-                <div className="relative w-full max-w-md">
-                  <Search
-                    className="absolute left-3 top-2.5 text-gray-400"
-                    size={18}
-                  />
-                  <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder={t("category.search_placeholder")}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 input bg-white"
-                  />
-                </div>
+      {availableTabs.length > 0 && (
+        <div className="flex justify-center border-b bg-gray-50">
+          {availableTabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`w-1/2 py-4 font-semibold transition duration-300 ${
+                activeTab === tab.key
+                  ? "text-primary-600 border-b-2 border-primary-600 bg-white"
+                  : "text-gray-500 hover:text-primary-600"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-                {/* Status Filter */}
-                <div className="flex items-center space-x-2">
-                  <label className="font-medium text-sm">
-                    {t("category.filter")}:
-                  </label>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg input"
-                  >
-                    <option value="all">{t("category.all")}</option>
-                    <option value="Pending">{t("category.pending")}</option>
-                    <option value="Active">{t("category.active")}</option>
-                    <option value="Inactive">{t("category.inactive")}</option>
-                  </select>
-                </div>
-              </div>
-
-              <motion.div
-                key="categories"
-                variants={tabVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-                className="card overflow-hidden"
-              >
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          {t("category.id")}
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          {t("category.name")}
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          {t("category.assign_item")}
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">
-                          {t("category.status")}
-                        </th>
-                        <th className="text-center py-3 px-4 font-medium text-gray-600">
-                          {t("category.actions")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loading ? (
-                        <tr>
-                          <td colSpan={5} className="h-60">
-                            <Loading />
-                          </td>
-                        </tr>
-                      ) : (
-                        currentCategories.length > 0 &&
-                        currentCategories.map((product) => (
-                          <ShowCategories
-                            product={product}
-                            setCategories={setCategories}
-                            key={product._id}
-                          />
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                {!loading && filteredCategories.length === 0 && (
-                  <div className="py-6 text-center text-gray-500">
-                    <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                    <p>{t("category.no_data")}</p>
-                  </div>
-                )}
-              </motion.div>
+      <div className="p-6 bg-white min-h-full">
+        {activeTab === "categories" ? (
+          <div className="flex justify-between items-center">
+            <div className="relative w-full max-w-md mb-4 ">
+              <Search
+                className="absolute left-3 top-2.5 text-gray-400"
+                size={18}
+              />
+              <input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder={
+                  t("category.search_placeholder") || "Search categories"
+                }
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg input bg-white"
+              />
             </div>
-          )}
 
-          {activeTab === "add" && (
+            <div className="mb-4">
+              <label className="mr-2 text-sm font-medium">
+                {t("category.filter") || "Filter"}:
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 bg-white border border-gray-300 rounded-lg"
+              >
+                <option value="all">{t("category.all") || "All"}</option>
+                <option value="Pending">
+                  {t("category.pending") || "Pending"}
+                </option>
+                <option value="Active">
+                  {t("category.active") || "Active"}
+                </option>
+                <option value="Inactive">
+                  {t("category.inactive") || "Inactive"}
+                </option>
+              </select>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+        <AnimatePresence mode="wait">
+          {activeTab === "categories" && canView && (
             <motion.div
-              key="add"
+              key="categories"
               variants={tabVariants}
               initial="initial"
               animate="animate"
               exit="exit"
+              transition={{ duration: 0.3 }}
+              className="card md:overflow-hidden overflow-x-auto"
+            >
+              {loading ? <Loading /> :
+                <table className="w-full border border-gray-300 text-left">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="p-2 border">{t("category.id") || "ID"}</th>
+                      <th className="p-2 border">
+                        {t("category.name") || "Name"}
+                      </th>
+                      <th className="p-2 border">
+                        {t("category.assign_item") || "Assigned Items"}
+                      </th>
+                      <th className="p-2 border">
+                        {t("category.status") || "Status"}
+                      </th>
+                      <th className="p-2 border text-center">
+                        {t("category.actions") || "Actions"}
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {currentCategories.map((cat, idx) => (
+                      <ShowCategories
+                        key={cat._id ?? idx}
+                        product={cat}
+                        setCategories={setCategories}
+                      />
+                    ))}
+                  </tbody>
+                </table>}
+
+              {/* No data message */}
+              {filteredCategories.length === 0 && (
+                <div className="py-6 text-center text-gray-500">
+                  <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                  <p>{t("category.no_data") || "No categories found."}</p>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {filteredCategories.length > itemsPerPage && (
+                <div className="flex justify-end mt-4">
+                  <Pagination
+                    page={currentPage}
+                    totalPages={Math.ceil(
+                      filteredCategories.length / itemsPerPage
+                    )}
+                    pageSize={itemsPerPage}
+                    currentTransactions={currentCategories}
+                    prevPage={prevPage}
+                    nextPage={nextPage}
+                    setPage={setCurrentPage}
+                  />
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {activeTab === "add" && canAdd && (
+            <motion.div
+              key="add"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.4 }}
-              className="relative  bg-white rounded-2xl md:p-6"
             >
               <AddCategory />
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Pagination */}
-        {activeTab !== "add" && filteredCategories.length > 10 && (
-          <div className="flex justify-end">
-            <Pagination
-              page={currentPage}
-              totalPages={totalPages}
-              pageSize={itemsPerPage}
-              currentTransactions={currentCategories}
-              prevPage={prevPage}
-              nextPage={nextPage}
-              setPage={setCurrentPage}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

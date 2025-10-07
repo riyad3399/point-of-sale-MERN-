@@ -1,4 +1,3 @@
-// src/components/purchase/PurchaseList.tsx
 import { useEffect, useState, useMemo } from "react";
 import {
   Package,
@@ -20,6 +19,7 @@ import { useAuth } from "../../context/AuthContext";
 import { usePermission } from "../../hooks/usePermission";
 import PurchaseTable from "../helper/PurchaseTable";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 
 type PaymentStatus = "all" | "paid" | "due";
 type DateFilter = "all" | "today" | "week" | "month" | "custom";
@@ -46,13 +46,11 @@ export default function PurchaseList() {
     const fetchPurchases = async () => {
       setLoading(true);
       try {
-        // small UI delay so loading spinner visible on fast networks
         await new Promise((r) => setTimeout(r, 300));
         const res = await axios.get(`${BASE_URL}/purchases`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data: Purchase[] = res.data?.data ?? res.data ?? [];
-        // sort by date desc
         data.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
@@ -67,13 +65,11 @@ export default function PurchaseList() {
     fetchPurchases();
   }, [token, BASE_URL]);
 
-  // Unique payment methods
   const paymentMethods = useMemo(() => {
     const methods = new Set(purchases.map((p) => p.paymentMethod ?? "Unknown"));
     return Array.from(methods);
   }, [purchases]);
 
-  // Filtering logic (keeps same behavior)
   const filteredPurchases = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return purchases.filter((purchase) => {
@@ -87,18 +83,15 @@ export default function PurchaseList() {
             .includes(q)
         );
 
-      // payment status
       const matchesPaymentStatus =
         paymentStatus === "all" ||
         (paymentStatus === "paid" && purchase.due === 0) ||
         (paymentStatus === "due" && purchase.due > 0);
 
-      // payment method
       const matchesPaymentMethod =
         paymentMethodFilter === "all" ||
         purchase.paymentMethod === paymentMethodFilter;
 
-      // date filter
       const purchaseDate = new Date(purchase.date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -150,7 +143,6 @@ export default function PurchaseList() {
     customDateRange,
   ]);
 
-  // Stats based on filtered purchases
   const stats = useMemo(() => {
     const total = filteredPurchases.reduce((s, p) => s + (p.total ?? 0), 0);
     const paid = filteredPurchases.reduce((s, p) => s + (p.paid ?? 0), 0);
@@ -185,7 +177,6 @@ export default function PurchaseList() {
       await axios.delete(`${BASE_URL}/purchases/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // remove from local list so UI updates instantly
       setPurchases((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
       console.error("Delete failed:", err);
@@ -199,9 +190,10 @@ export default function PurchaseList() {
 
   return (
     <div className="min-h-screen font-sans">
-   
+      <Helmet>
+        <title>Purchase List | POS System</title>
+      </Helmet>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           title={t("purchase.totalPurchases")}

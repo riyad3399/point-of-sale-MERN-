@@ -18,7 +18,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
   return (
     <motion.div
       whileHover={{ y: -3 }}
-      className="bg-white rounded-xl p-5 shadow-lg border border-slate-100 flex justify-between items-center"
+      className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex justify-between items-center"
     >
       <div>
         <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>

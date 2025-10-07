@@ -9,259 +9,278 @@ import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "../hooks/usePermission";
 import { useAuth } from "../context/AuthContext";
+import { Helmet } from "react-helmet-async";
+import toast from "react-hot-toast";
 
+const tabVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+};
 
 const ProductesPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>("productes");
-  const [allProduct, setAllProduct] = useState([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [categories, setCategories] = useState([]);
+  const [activeTab, setActiveTab] = useState<"productes" | "add">("productes");
+  const [allProduct, setAllProduct] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [categories, setCategories] = useState<any[]>([]);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [search, setSearch] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const { hasPermission } = usePermission()
-  const { token } = useAuth()
+  const { hasPermission } = usePermission();
+  const { token } = useAuth();
   const BASE_URL = import.meta.env.VITE_BASE_URI;
+  const { t } = useTranslation();
 
-
-  const tabVariants = {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 },
-  };
+  const canView = hasPermission("inventory", "products", ["view"]);
+  const canAdd = hasPermission("inventory", "products", ["add"]);
+  const defaultTab = canView ? "productes" : "add";
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${BASE_URL}/product`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setAllProduct(res.data);
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${BASE_URL}/product`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAllProduct(res.data || []);
         setCurrentPage(1);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      })
-      .finally(() => {
+      } catch (err) {
+        toast.error(`Error fetching products: ${err.message}`);
+      } finally {
         setLoading(false);
-      });
-  }, [activeTab, token]);
+      }
+    };
 
+    fetchProducts();
+  }, [activeTab]);
 
   useEffect(() => {
-    axios
-      .get(`${BASE_URL}/category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((err) => console.error("Error fetching categories:", err));
-  }, [token]);
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${BASE_URL}/category`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCategories(res.data || []);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  // 🧠 Filter logic with search + category
   const filteredProducts = allProduct.filter((product) => {
+    const q = search.toLowerCase().trim();
     const matchesSearch =
-      product.productName?.toLowerCase().includes(search.toLowerCase()) ||
-      product.productCode?.toString().includes(search);
-
+      !q ||
+      (product.productName || "").toLowerCase().includes(q) ||
+      String(product.productCode || "").includes(q);
     const matchesCategory =
       categoryFilter === "all" || product.category === categoryFilter;
-
     return matchesSearch && matchesCategory;
   });
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredProducts.length / itemsPerPage)
+  );
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirst, indexOfLast);
 
   const nextPage = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+    if (currentPage < totalPages) setCurrentPage((p) => p + 1);
   };
-
   const prevPage = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    if (currentPage > 1) setCurrentPage((p) => p - 1);
   };
 
-  const { t } = useTranslation();
+  const availableTabs = [
+    canView && {
+      key: "productes",
+      label: t("product.productList") || "Products",
+    },
+    canAdd && { key: "add", label: t("product.addProduct") || "Add Product" },
+  ].filter(Boolean) as { key: "productes" | "add"; label: string }[];
+
+  if (!canView && !canAdd) {
+    return (
+      <div className="p-6">
+        <p className="text-center text-gray-600">
+          You don't have permission to view this page.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto p-4">
-      {/* Tab Buttons */}
-      <div className="flex border-b border-gray-200 mb-4">
-        <button
-          onClick={() => setActiveTab("productes")}
-          className={`px-4 py-2 focus:outline-none ${
-            activeTab === "productes"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-600 hover:text-blue-600"
-          }`}
-        >
-          {t("product.productList")}
-        </button>
-        {hasPermission("inventory", "products", ["add"]) && (
-          <button
-            onClick={() => setActiveTab("add")}
-            className={`px-4 py-2 focus:outline-none ${
-              activeTab === "add"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }`}
-          >
-            {t("product.addProduct")}
-          </button>
-        )}
-      </div>
+    <div className="w-full mx-auto bg-white rounded-2xl overflow-hidden">
+      <Helmet>
+        <title>{t("product.productList") || "Products"} | POS System</title>
+      </Helmet>
 
-      <div className="relative min-h-screen">
-        <AnimatePresence mode="wait">
-          {activeTab === "productes" && (
-            <div>
-              <div className="flex justify-between mb-4 mt-6 gap-4 flex-wrap">
-                {/* Search Box */}
-                <div className="relative w-full max-w-md">
-                  <Search
-                    className="absolute left-3 top-2.5 text-gray-400"
-                    size={18}
-                  />
-                  <input
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    placeholder={t("product.searchPlaceholder")}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 input bg-white"
-                  />
-                </div>
+      {availableTabs.length > 0 && (
+        <div className="flex justify-center border-b bg-gray-50">
+          {availableTabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key);
+                setCurrentPage(1);
+              }}
+              className={`w-1/2 py-4 font-semibold transition duration-300 ${
+                activeTab === tab.key
+                  ? "text-primary-600 border-b-2 border-primary-600 bg-white"
+                  : "text-gray-500 hover:text-primary-600"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-                {/* Category Filter */}
-                <div className="flex items-center space-x-2">
-                  <label className="font-medium text-sm">
-                    {t("product.filter")}:
-                  </label>
-                  <select
-                    value={categoryFilter}
-                    onChange={(e) => {
-                      setCategoryFilter(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="px-3 py-2 border border-gray-300 rounded-lg input bg-white"
-                  >
-                    <option value="all">{t("product.all")}</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat.categoryName}>
-                        {cat.categoryName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <motion.div
-                key="productes"
-                variants={tabVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-                className="card overflow-hidden"
-              >
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          {t("product.photo")}
-                        </th>
-                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          {t("product.productId")}
-                        </th>
-                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          {t("product.productName")}
-                        </th>
-                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          {t("product.category")}
-                        </th>
-                        <th className="text-left py-3 border px-4 font-medium text-gray-600">
-                          {t("product.quantity")}
-                        </th>
-                        <th className="py-3 border px-4 font-medium text-gray-600">
-                          {t("product.actions")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loading ? (
-                        <tr>
-                          <td colSpan={6} className="text-center h-60">
-                            <Loading />
-                          </td>
-                        </tr>
-                      ) : currentProducts.length > 0 ? (
-                        currentProducts.map((product) => (
-                          <ShowProduct
-                            product={product}
-                            key={product._id}
-                            setAllProduct={setAllProduct}
-                          />
-                        ))
-                      ) : (
-                        <tr>
-                          <td
-                            colSpan={6}
-                            className="text-center py-6 text-gray-500"
-                          >
-                            <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                            <p>{t("category.no_data")}</p>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </motion.div>
+      <div className="p-6 bg-white min-h-full">
+        {activeTab === "productes" && (
+          <div className="flex justify-between mb-8">
+            <div className="relative w-full max-w-md">
+              <Search
+                className="absolute left-3 top-2.5 text-gray-400"
+                size={18}
+              />
+              <input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder={
+                  t("product.searchPlaceholder") || "Search products"
+                }
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg input bg-white"
+              />
             </div>
-          )}
 
-          {activeTab === "add" && (
+            <div className="flex items-center space-x-2">
+              <label className="font-medium text-sm">
+                {t("product.filter") || "Filter"}:
+              </label>
+              <select
+                value={categoryFilter}
+                onChange={(e) => {
+                  setCategoryFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-lg input bg-white"
+              >
+                <option value="all">{t("product.all") || "All"}</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.categoryName}>
+                    {cat.categoryName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+        <AnimatePresence mode="wait">
+          {activeTab === "productes" && canView && (
             <motion.div
-              key="add"
+              key="productes"
               variants={tabVariants}
               initial="initial"
               animate="animate"
               exit="exit"
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 w-full mx-auto"
+              className="card md:overflow-hidden overflow-x-auto"
+            >
+              {loading ? (
+                <Loading />
+              ) : (
+                <table className="w-full border border-gray-300 text-left">
+                  <thead className="bg-gray-100 ">
+                    <tr>
+                      <th className="p-2 border font-semibold">
+                        {t("product.photo") || "Photo"}
+                      </th>
+                      <th className="p-2 border font-semibold">
+                        {t("product.productId") || "Product ID"}
+                      </th>
+                      <th className="p-2 border font-semibold">
+                        {t("product.productName") || "Name"}
+                      </th>
+                      <th className="p-2 border font-semibold">
+                        {t("product.category") || "Category"}
+                      </th>
+                      <th className="p-2 border font-semibold">
+                        {t("product.quantity") || "Quantity"}
+                      </th>
+                      <th className="p-2 border font-semibold text-center">
+                        {t("product.actions") || "Actions"}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentProducts.length > 0 ? (
+                      currentProducts.map((product) => (
+                        <ShowProduct
+                          product={product}
+                          key={product._id}
+                          setAllProduct={setAllProduct}
+                        />
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="text-center py-6 text-gray-500"
+                        >
+                          <Box className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                          <p>{t("category.no_data") || "No products found."}</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
+
+              {filteredProducts.length > itemsPerPage && (
+                <div className="flex justify-end mt-4">
+                  <Pagination
+                    page={currentPage}
+                    total={totalPages}
+                    pageSize={itemsPerPage}
+                    currentTransactions={currentProducts}
+                    prevPage={prevPage}
+                    nextPage={nextPage}
+                    setPage={setCurrentPage}
+                  />
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {activeTab === "add" && canAdd && (
+            <motion.div
+              key="add"
+              className="bg-white"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.4 }}
             >
               <Index />
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Pagination */}
-        <div className="flex justify-end mt-4">
-          {!loading &&
-            activeTab === "productes" &&
-            filteredProducts.length > 10 && (
-              <Pagination
-                page={currentPage}
-                totalPages={totalPages}
-                pageSize={itemsPerPage}
-                currentTransactions={currentProducts}
-                prevPage={prevPage}
-                nextPage={nextPage}
-                setPage={setCurrentPage}
-              />
-            )}
-        </div>
       </div>
     </div>
   );

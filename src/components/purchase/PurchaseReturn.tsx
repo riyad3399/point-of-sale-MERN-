@@ -4,6 +4,7 @@ import Select from "react-select";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { Helmet } from "react-helmet-async";
 
 type PurchaseItem = {
   product?: string;
@@ -421,6 +422,9 @@ export default function PurchaseReturn() {
 
   return (
     <div className="bg-white border rounded-lg p-6">
+      <Helmet>
+        <title>Purchase Return | POS System</title>
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
           <div className="lg:col-span-2">

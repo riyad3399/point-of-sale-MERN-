@@ -1,30 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TbCurrencyTaka } from "react-icons/tb";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { Purchase } from "../../types";
 import { handleGetSinglePurchase } from "../../utils/api";
 import { usePermission } from "../../hooks/usePermission";
 import * as XLSX from "xlsx";
-import toast from "react-hot-toast";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { formatDate } from "../../utils/formatDate";
 
 interface Props {
   purchases: Purchase[];
   onDelete?: (id: string) => void;
 }
 
-const formatDate = (iso?: string) => {
-  if (!iso) return "-";
-  try {
-    return new Date(iso).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  } catch {
-    return iso;
-  }
-};
+
 
 const downloadCSV = (rows: any[], filename = "purchases.csv") => {
   if (!rows || rows.length === 0) {
@@ -80,7 +70,6 @@ const exportExcel = (rows: any[], filename = "purchases.xlsx") => {
   XLSX.writeFile(wb, filename);
 };
 
-// replace your existing printRows with this function
 const printRows = (rows: any[], title = "Purchases") => {
   if (!rows || rows.length === 0) {
     alert("No rows to print");
@@ -117,7 +106,6 @@ const printRows = (rows: any[], title = "Purchases") => {
           table { width: 100%; border-collapse: collapse; margin-top: 12px; }
           th, td { border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; font-size: 13px; }
           th { background: #f8fafc; font-weight: 600; }
-          /* prevent breaking table cells across pages */
           tr, td, th { page-break-inside: avoid; }
           @media print {
             body { padding: 0; }
@@ -135,7 +123,6 @@ const printRows = (rows: any[], title = "Purchases") => {
       </body>
     </html>`;
 
-  // Create hidden iframe
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.right = "0";
@@ -152,7 +139,6 @@ const printRows = (rows: any[], title = "Purchases") => {
     doc.write(html);
     doc.close();
   } catch (err) {
-    // fallback: some CSP or older browsers may block writing to iframe -> try window.open fallback
     console.warn(
       "iframe write failed, falling back to window.open print:",
       err
@@ -177,28 +163,25 @@ const printRows = (rows: any[], title = "Purchases") => {
     return;
   }
 
-  // Wait until iframe document is ready, then print
   const tryPrint = () => {
     try {
       const win = iframe.contentWindow!;
-      // focus then print
       win.focus();
-      // Some browsers require user gesture; this will still attempt to print
       win.print();
     } catch (err) {
       console.error("Print attempt failed:", err);
     } finally {
-      // remove iframe after a delay so print dialog can open
       setTimeout(() => {
         try {
           document.body.removeChild(iframe);
-        } catch {}
+        } catch {
+          
+        }
       }, 1000);
     }
   };
 
-  // Wait for readyState complete or fallback after timeout
-  const maxWait = 2000; // ms
+  const maxWait = 2000;
   const start = Date.now();
   const check = () => {
     try {
@@ -208,11 +191,9 @@ const printRows = (rows: any[], title = "Purchases") => {
       } else if (Date.now() - start < maxWait) {
         setTimeout(check, 50);
       } else {
-        // last resort
         tryPrint();
       }
     } catch (e) {
-      // If cross-origin or other errors, fallback to window.open
       console.warn(
         "iframe ready check failed, falling back to window.open:",
         e
@@ -252,7 +233,7 @@ const PaginationButtons: React.FC<{
 }> = ({ current, total, onChange }) => {
   if (total <= 1) return null;
 
-  const visible = 5; // maximum visible page buttons
+  const visible = 5;
   let start = Math.max(1, current - Math.floor(visible / 2));
   let end = Math.min(total, start + visible - 1);
   if (end - start + 1 < visible) {
@@ -322,21 +303,17 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
   const navigate = useNavigate();
   const { hasPermission } = usePermission();
 
-  // Parent controls filtering; just show whatever is passed
   const filtered = useMemo(() => purchases ?? [], [purchases]);
 
-  // Pagination state
   const [pageSize, setPageSize] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const totalRecords = filtered.length;
   const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
 
-  // Reset / clamp current page when filtered or pageSize changes
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(1);
   }, [totalPages, currentPage]);
 
-  // current page slice
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = Math.min(totalRecords, startIndex + pageSize);
   const pageRows = filtered.slice(startIndex, endIndex);
@@ -360,19 +337,12 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
     Total: p.total ?? 0,
     Paid: p.paid ?? 0,
     Due: p.due ?? 0,
-    PaymentMethod: p.paymentMethod ?? "",
+    PaymentMethod: p.paymentMethod ?? 0,
   }));
 
   const handleView = (id: string) => {
     handleGetSinglePurchase(id, navigate);
   };
-
-  // const handleDeleteInternal = (id: string) => {
-  //   if (onDelete) return onDelete(id);
-  //   if (!confirm("Are you sure to delete this purchase?")) return;
-  //   console.log("Delete (no parent handler):", id);
-  //   toast.success("Delete handler not implemented");
-  // };
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
@@ -415,9 +385,9 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
               value={String(pageSize)}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));
-                setCurrentPage(1); // reset to first page when page size changes
+                setCurrentPage(1);
               }}
-              className="border-2 border-primary-500 rounded px-2 py-1 text-sm "
+              className="border-2 border-primary-500 outline-none rounded px-2 py-1 text-sm "
             >
               <option value="25">25</option>
               <option value="50">50</option>
@@ -430,25 +400,33 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full table-auto">
+        <table className="min-w-full table-auto border border-gray-200">
           <thead className="bg-slate-50 border-b">
             <tr className="text-left text-sm text-slate-600">
-              <th className="px-4 py-3 w-16">SL</th>
-              <th className="px-4 py-3">Invoice No</th>
-              <th className="px-4 py-3">Supplier Name</th>
-              <th className="px-4 py-3">Purchase Date</th>
-              <th className="px-4 py-3">Due</th>
-              <th className="px-4 py-3">Pay Method</th>{" "}
-              <th className="px-4 py-3 text-right">Price</th>
-              <th className="px-4 py-3 text-center">Action</th>
+              <th className="px-4 py-3 w-16 border border-gray-200">SL</th>
+              <th className="px-4 py-3 border border-gray-200">Invoice No</th>
+              <th className="px-4 py-3 border border-gray-200">
+                Supplier Name
+              </th>
+              <th className="px-4 py-3 border border-gray-200">
+                Purchase Date
+              </th>
+              <th className="px-4 py-3 border border-gray-200">Due</th>
+              <th className="px-4 py-3 border border-gray-200">Pay Method</th>
+              <th className="px-4 py-3 text-right border border-gray-200">
+                Price
+              </th>
+              <th className="px-4 py-3 text-center border border-gray-200">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>
             {pageRows.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
-                  className="px-4 py-6 text-center text-sm text-slate-500"
+                  colSpan={8}
+                  className="px-4 py-6 text-center text-sm text-slate-500 border border-gray-200"
                 >
                   No purchases found.
                 </td>
@@ -456,12 +434,12 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
             )}
 
             {pageRows.map((p, idx) => (
-              <tr key={p._id} className="border-b hover:bg-slate-50 transition">
-                <td className="px-4 py-4 text-sm text-slate-600">
+              <tr key={p._id} className="hover:bg-slate-50 transition">
+                <td className="px-4 py-4 text-sm text-slate-600 border border-gray-200">
                   {startIndex + idx + 1}
                 </td>
 
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 border border-gray-200">
                   <button
                     onClick={() => handleView(p._id)}
                     className="text-green-600 font-medium hover:underline text-sm"
@@ -470,26 +448,28 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
                   </button>
                 </td>
 
-                <td className="px-4 py-4 text-sm text-slate-700">
-                  {p.supplierName ?? p.supplier?.name ?? ""}
+                <td className="px-4 py-4 text-sm text-slate-700 border border-gray-200">
+                  {capitalizeFirstLetter(p.supplierName)}
                 </td>
 
-                <td className="px-4 py-4 text-sm text-slate-600">
+                <td className="px-4 py-4 text-sm text-slate-600 border border-gray-200">
                   {formatDate(p.purchaseDate)}
                 </td>
-                <td className="px-4 py-4 text-sm text-slate-600">{p.due}</td>
-                <td className="px-4 py-4 text-sm text-slate-600">
+                <td className="px-4 py-4 text-sm text-slate-600 border border-gray-200">
+                  {p.due}
+                </td>
+                <td className="px-4 py-4 text-sm text-slate-600 border border-gray-200">
                   {p.paymentMethod}
                 </td>
 
-                <td className="px-4 py-4 text-sm text-right font-semibold text-slate-800">
+                <td className="px-4 py-4 text-sm text-right font-semibold text-slate-800 border border-gray-200">
                   <span className="inline-flex items-center gap-1 justify-end">
                     <TbCurrencyTaka className="inline" />
                     {Number(p.total || 0).toLocaleString()}
                   </span>
                 </td>
 
-                <td className="px-4 py-4 text-center">
+                <td className="px-4 py-4 text-center border border-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     {hasPermission("purchase", "purchase", ["edit"]) && (
                       <button
@@ -501,15 +481,6 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
                       </button>
                     )}
 
-                    {/* {hasPermission("purchase", "purchase", ["delete"]) && (
-                      <button
-                        onClick={() => handleDeleteInternal(p._id)}
-                        className="p-2 bg-red-50 hover:bg-red-100 rounded text-red-600"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )} */}
                   </div>
                 </td>
               </tr>
@@ -518,7 +489,6 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
         </table>
       </div>
 
-      {/* Pagination Footer */}
       <div className="p-4 border-t flex flex-col md:flex-row items-center md:justify-between gap-3">
         <div className="text-sm text-slate-600">
           Page <span className="font-medium">{currentPage}</span> of{" "}
@@ -532,7 +502,6 @@ const PurchaseTable: React.FC<Props> = ({ purchases, onDelete }) => {
             onChange={(p) => setCurrentPage(p)}
           />
 
-          {/* quick jump */}
           <div className="flex items-center gap-2">
             <label className="text-sm text-slate-600">Go to</label>
             <input

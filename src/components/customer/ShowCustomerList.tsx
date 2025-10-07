@@ -5,7 +5,6 @@ import { useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import UpdateCustomerModal from "./UpdateCustomerModal";
-import { Helmet } from "react-helmet-async";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
@@ -71,10 +70,6 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="hover:bg-gray-100 transition-colors "
     >
-      <Helmet>
-        <title>Customers | POS System</title>
-      </Helmet>
-
       <td className="p-3 border border-gray-300">{customer.customerId}</td>
       <td className="p-3 border border-gray-300 font-medium">
         {capitalizeFirstLetter(customer.customerName)}
