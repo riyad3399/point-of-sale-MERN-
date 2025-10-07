@@ -43,6 +43,7 @@ import UnauthorizedPage from "./pages/UnauthorizedPage";
 import ShortcutListener from "./components/shortcuts/ShortcutListener";
 import PurchaseReturn from "./components/purchase/PurchaseReturn";
 import PurchaseReturnList from "./components/purchase/PurchaseReturnList";
+import PurchaseReturnPrint from "./components/purchase/PurchaseReturnPrint";
 
 function App() {
   return (
@@ -186,6 +187,7 @@ function App() {
                 />
                 <Route path="purchaseReturn" element={<PurchaseReturn />} />
                 <Route path="returnInvoice" element={<PurchaseReturnList />} />
+                <Route path="singleReturnInvoice/:id" element={<PurchaseReturnPrint />} />
                 <Route path="supplier" element={<SupplierPage />} />
                 <Route
                   path="alertItems"

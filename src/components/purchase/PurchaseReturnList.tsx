@@ -6,6 +6,7 @@ import Loading from "../Loading";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { formatDate } from "../../utils/formatDate";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 export default function PurchaseReturnList() {
   const [query, setQuery] = useState("");
@@ -16,6 +17,7 @@ export default function PurchaseReturnList() {
 
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
 
   function toCSV(items) {
     const header = ["SL", "Invoice No", "Supplier Name", "Date", "Price"];
@@ -111,6 +113,8 @@ export default function PurchaseReturnList() {
     fetchPurchaseReturnList();
   }, [BASE_URL, token]);
 
+  
+
   const filtered = useMemo(() => {
     const q = String(query || "")
       .trim()
@@ -171,8 +175,8 @@ export default function PurchaseReturnList() {
   return (
     <div className=" max-w-full">
       <Helmet>
-              <title>Return Invoice | POS System</title>
-            </Helmet>
+        <title>Return Invoice | POS System</title>
+      </Helmet>
       <div className="flex items-center gap-2 text-sm py-2">
         <span>Display</span>
         <select
@@ -284,15 +288,13 @@ export default function PurchaseReturnList() {
                       {row.totalReturnAmount} TK
                     </td>
                     <td className="py-3 px-3 align-top border border-gray-200">
-                      <button
+                      <Link
+                        to={`/singleReturnInvoice/${row._id}`}
                         title="View"
                         className="inline-flex items-center justify-center w-9 h-9 rounded bg-green-600 text-white shadow"
-                        onClick={() =>
-                          alert(`View invoice ${row.invoiceNumber}`)
-                        }
                       >
                         <Eye size={16} />
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))
