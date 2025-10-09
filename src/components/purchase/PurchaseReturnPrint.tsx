@@ -9,27 +9,22 @@ import Loading from "../Loading";
 export default function PurchaseReturnPrint() {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [singleReturnData, setSingleReturnData] = useState({});
+  const [singleReturnData, setSingleReturnData] = useState<any>({});
   const BASE_URL = import.meta.env.VITE_BASE_URI;
   const { id } = useParams();
 
   const d = singleReturnData;
 
-  const formatDateTime = (iso) => {
+  const formatDateTime = (iso: string) => {
     if (!iso) return "";
     const dt = new Date(iso);
     return dt.toLocaleString();
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   useEffect(() => {
     const fetchSinglePurchaseList = async () => {
       try {
         setLoading(true);
-
         const res = await axios.get(`${BASE_URL}/purchases/return-list/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -45,12 +40,89 @@ export default function PurchaseReturnPrint() {
   }, [BASE_URL, token, id]);
 
   if (loading) {
-     return <Loading/>
+    return <Loading />;
   }
 
+  const handlePrint = () => {
+    const html = `
+      <html>
+      <head>
+        <title>Purchase Return - ${d.invoiceNumber || ""}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 30px; background: #fff; }
+          h2 { text-align: center; margin-bottom: 10px; }
+          p { margin: 4px 0; }
+          table { border-collapse: collapse; width: 100%; margin-top: 20px; font-size: 14px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background: #f9f9f9; }
+          .reason { margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <h2>${d.shopName || "Shop Name"}</h2>
+        <p><strong>Supplier Name:</strong> ${capitalizeFirstLetter(
+          d.supplierName || ""
+        )}</p>
+        <p><strong>Date:</strong> ${formatDate(d.returnDate)}</p>
+        <p><strong>Invoice No:</strong> ${d.invoiceNumber || ""}</p>
+        <p><strong>Print Date:</strong> ${formatDateTime(
+          new Date().toISOString()
+        )}</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Ingredient Name</th>
+              <th>Return Qty</th>
+              <th>Price</th>
+              <th>Discount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${
+              d.items && d.items.length
+                ? d.items
+                    .map(
+                      (it: any) => `
+                <tr>
+                  <td>${capitalizeFirstLetter(it.productName)}</td>
+                  <td>${it.qty} ${it.unit || ""}</td>
+                  <td>${it.price}</td>
+                  <td>${it.discount || 0}</td>
+                  <td>${it.lineTotal}</td>
+                </tr>`
+                    )
+                    .join("")
+                : `<tr><td colspan="5" style="text-align:center;color:#777;">No items to show</td></tr>`
+            }
+          </tbody>
+        </table>
+
+        <div class="reason">
+          <p><strong>Reason:</strong></p>
+          <p>${d.reason || "No Reason"}</p>
+        </div>
+
+        <script>
+          window.onload = () => {
+            window.print();
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    const newTab = window.open("", "_blank");
+    if (!newTab) return alert("Please allow popups to use print");
+    newTab.document.open();
+    newTab.document.write(html);
+    newTab.document.close();
+  };
+
   return (
-    <div className=" min-h-screen bg-gray-50">
-      <div className="max-w-full  bg-white border rounded-lg p-8 print:border-none print:shadow-none">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-full bg-white border rounded-lg p-8 print:border-none print:shadow-none">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-semibold text-slate-800">
             {d.shopName || "Shop Name"}
@@ -62,13 +134,13 @@ export default function PurchaseReturnPrint() {
             </span>
           </p>
           <p className="text-slate-600">
-            Date :{" "}
+            Date:{" "}
             <span className="font-medium text-slate-800">
               {formatDate(d.returnDate)}
             </span>
           </p>
           <p className="text-slate-600">
-            Invoice No :
+            Invoice No:{" "}
             <span className="font-medium text-slate-800">
               {d.invoiceNumber}
             </span>
@@ -76,7 +148,7 @@ export default function PurchaseReturnPrint() {
           <p className="text-slate-600">
             Print Date:{" "}
             <span className="font-medium text-slate-800">
-              {formatDateTime(new Date())}
+              {formatDateTime(new Date().toISOString())}
             </span>
           </p>
         </div>
@@ -94,7 +166,7 @@ export default function PurchaseReturnPrint() {
             </thead>
             <tbody>
               {d.items && d.items.length ? (
-                d.items.map((it, idx) => (
+                d.items.map((it: any, idx: number) => (
                   <tr key={idx} className="border-b">
                     <td className="py-4 px-4 border">
                       {capitalizeFirstLetter(it.productName)}
@@ -137,21 +209,6 @@ export default function PurchaseReturnPrint() {
           </div>
         </div>
       </div>
-
-      {/* Simple footer to give whitespace on screen when not printing */}
-      <div className="max-w-5xl mx-auto mt-8 text-center text-slate-400 text-xs">
-        &nbsp;
-      </div>
-
-      {/* Print styles (only minimal inline for the component) */}
-      <style>{`
-        @media print {
-          body { -webkit-print-color-adjust: exact; }
-          button { display: none !important; }
-          .print\:border-none { border: none !important; }
-          .print\:shadow-none { box-shadow: none !important; }
-        }
-      `}</style>
     </div>
   );
 }
