@@ -40,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="h-fit absolute max-w-7xl inset-0 flex items-center justify-center bg-black/50 mx-auto w-full"
+          className="max-h-screen absolute max-w-full inset-0 flex items-center justify-center bg-black/50 w-full z-50"
           initial="hidden"
           animate="visible"
           exit="hidden"

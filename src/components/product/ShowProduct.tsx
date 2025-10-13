@@ -181,15 +181,17 @@ const ShowProduct: React.FC<ShowProductProps> = ({
       </motion.tr>
 
       {/* Modal render outside of <tr> */}
-      {open && (
-        <Modal
-          isOpen={open}
-          onClose={() => setOpen(false)}
-          title="Update Product"
-        >
-          <UpdateProduct product={product} setIsOpen={setOpen} />
-        </Modal>
-      )}
+      
+        {open && (
+          <Modal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            title="Update Product"
+          >
+            <UpdateProduct product={product} setIsOpen={setOpen} />
+          </Modal>
+        )}
+
     </>
   );
 };
