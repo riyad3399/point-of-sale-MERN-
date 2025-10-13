@@ -19,6 +19,7 @@ import {
   fetchTotalSales,
 } from "../utils/api";
 import Loading from "../components/Loading";
+import ShortcutBoxes from "../components/dashboard/ShortcutBoxes";
 
 type SalesSummaryType = {
   totalSales: number;
@@ -121,24 +122,18 @@ const DashboardPage: React.FC = () => {
 
       if (selectedDate) {
         const formattedDate = formatDateToYYYYMMDD(selectedDate);
-        response = await axios.get(
-          `${BASE_URL}/invoice/due-customers`,
-          {
-            params: { dueDate: formattedDate },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        response = await axios.get(`${BASE_URL}/invoice/due-customers`, {
+          params: { dueDate: formattedDate },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
-        response = await axios.get(
-          `${BASE_URL}/invoice/due-customers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        response = await axios.get(`${BASE_URL}/invoice/due-customers`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
 
       setDueCustomers(response.data);
@@ -164,6 +159,11 @@ const DashboardPage: React.FC = () => {
       <Helmet>
         <title>Dashboard | POS System</title>
       </Helmet>
+
+      {/* shortcut button  */}
+      <div className="mb-6">
+        <ShortcutBoxes />
+      </div>
 
       {/* Stats Grid */}
       <div className="mb-5">

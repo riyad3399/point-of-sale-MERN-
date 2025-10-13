@@ -20,45 +20,45 @@ export type SidebarShortcutAction =
   | "userManagement";
 
 const sidebarShortcutConfig: Record<string, SidebarShortcutAction> = {
-  "Shift+D": "dashboard",
+  "Alt+D": "dashboard",
 
   // Sales
-  "Shift+R": "retailSale",
-  "Shift+W": "wholeSale",
-  "Shift+T": "transactions",
-  "Shift+Q": "quotations",
+  "Alt+R": "retailSale",
+  "Alt+W": "wholeSale",
+  "Alt+T": "transactions",
+  "Alt+Q": "quotations",
 
   // Inventory
-  "Shift+C": "categories",
-  "Shift+P": "products",
-  "Shift+A": "alertItems",
+  "Alt+C": "categories",
+  "Alt+P": "products",
+  "Alt+A": "alertItems",
 
   // Purchase
-  "Shift+U": "purchase",
+  "Alt+U": "purchase",
 
   // Customers
-  "Shift+M": "customers",
+  "Alt+M": "customers",
 
   // Supplier
-  "Shift+L": "supplier",
+  "Alt+L": "supplier",
 
   // Expense
-  "Shift+E": "expense",
+  "Alt+E": "expense",
 
   // Accounts
-  "Shift+O": "accounts",
+  "Alt+O": "accounts",
 
   // Employee
-  "Shift+Y": "employee",
+  "Alt+Y": "employee",
 
   // Report
-  "Shift+X": "report",
+  "Alt+X": "report",
 
   // Settings
-  "Shift+S": "settings",
+  "Alt+S": "settings",
 
   // Users & Permission
-  "Shift+G": "userManagement",
+  "Alt+G": "userManagement",
 };
 
 export default sidebarShortcutConfig;
