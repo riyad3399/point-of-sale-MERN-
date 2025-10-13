@@ -152,9 +152,11 @@ const DashboardPage: React.FC = () => {
     return `${year}-${month}-${day}`;
   }
 
-  return loading ? (
-    <Loading />
-  ) : (
+  if (loading && !todaySales) {
+    return <Loading />;
+  } 
+
+  return (
     <div>
       <Helmet>
         <title>Dashboard | POS System</title>
@@ -162,6 +164,9 @@ const DashboardPage: React.FC = () => {
 
       {/* shortcut button  */}
       <div className="mb-6">
+        <h2 className="mb-2.5 lg:text-xl text-lg font-semibold text-gray-500">
+          {"Shortcuts"}
+        </h2>
         <ShortcutBoxes />
       </div>
 
@@ -276,43 +281,57 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            {dueCustomers?.map((dueCustomer, index) => (
-              <div
-                key={index}
-                className="flex items-center p-3 bg-gray-50 rounded-lg "
-              >
-                <div className="flex-1">
-                  <h3 className="font-medium">
-                    {capitalizeFirstLetter(dueCustomer.name)}
-                  </h3>
-                  <p className="text-sm text-gray-500">{dueCustomer.phone}</p>
+            {dueCustomers.length > 0 ? (
+              dueCustomers?.map((dueCustomer, index) => (
+                <div
+                  key={index}
+                  className="flex items-center p-3 bg-gray-50 rounded-lg "
+                >
+                  <div className="flex-1">
+                    <h3 className="font-medium">
+                      {capitalizeFirstLetter(dueCustomer.name)}
+                    </h3>
+                    <p className="text-sm text-gray-500">{dueCustomer.phone}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium flex items-center gap-0.5">
+                      <FaBangladeshiTakaSign size={13} />
+                      {dueCustomer.totalDue}
+                    </p>
+                  </div>
+                  <div className="ml-4">
+                    <button
+                      className="btn-primary text-white text-sm px-3 py-1 rounded"
+                      onClick={() =>
+                        sendSMS(
+                          dueCustomer.phone,
+                          dueCustomer.name,
+                          dueCustomer.totalDue,
+                          index
+                        )
+                      }
+                      disabled={loadingIndex === index}
+                    >
+                      {loadingIndex === index
+                        ? t("Dashboard.sending")
+                        : t("Dashboard.sendSms")}
+                    </button>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-medium flex items-center gap-0.5">
-                    <FaBangladeshiTakaSign size={13} />
-                    {dueCustomer.totalDue}
+              ))
+            ) : (
+              <div className="flex justify-center items-center h-32 ">
+                {loading ? (
+                  <div className="flex justify-center items-center">
+                    <Loading />
+                  </div>
+                ) : (
+                  <p className="text-danger-400 font-semibold">
+                    No DueCustomers{" "}
                   </p>
-                </div>
-                <div className="ml-4">
-                  <button
-                    className="btn-primary text-white text-sm px-3 py-1 rounded"
-                    onClick={() =>
-                      sendSMS(
-                        dueCustomer.phone,
-                        dueCustomer.name,
-                        dueCustomer.totalDue,
-                        index
-                      )
-                    }
-                    disabled={loadingIndex === index}
-                  >
-                    {loadingIndex === index
-                      ? t("Dashboard.sending")
-                      : t("Dashboard.sendSms")}
-                  </button>
-                </div>
+                )}
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

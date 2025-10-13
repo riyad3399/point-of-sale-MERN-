@@ -1,5 +1,4 @@
-// ShortcutBoxes.tsx
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaBoxOpen, FaTags, FaCashRegister, FaTruck } from "react-icons/fa";
@@ -11,14 +10,14 @@ export type ShortcutBoxDef = {
   description?: string;
   combo?: string; // optional badge text like "Alt+P"
   handler?: () => void;
-  icon?: React.ReactNode; // optional icon or emoji
-  accent?: string; // tailwind color class like "bg-indigo-50" (optional)
-  route?: string; // optional route string (navigates using react-router)
+  icon?: React.ReactNode;
+  accent?: string; // tailwind color class like "bg-indigo-50"
+  route?: string;
 };
 
 type Props = {
-  shortcuts?: ShortcutBoxDef[]; // optional: use defaults when not provided
-  cols?: number; // e.g. 4 => lg:grid-cols-4 on large screens
+  shortcuts?: ShortcutBoxDef[];
+  cols?: number; // preferred columns at large screens (clamped internally)
 };
 
 function isEditableTarget(target: EventTarget | null) {
@@ -35,7 +34,6 @@ export default function ShortcutBoxes({
 }: Props) {
   const navigate = useNavigate();
 
-  // sensible defaults if parent doesn't pass any shortcuts
   const defaultShortcuts: ShortcutBoxDef[] = [
     {
       id: "product",
@@ -108,20 +106,27 @@ export default function ShortcutBoxes({
       ? propShortcuts
       : defaultShortcuts;
 
-  // activation helper: call handler() if exists otherwise navigate(route) if route exists
-  const activate = (s: ShortcutBoxDef) => {
-    if (s.handler) {
-      try {
-        s.handler();
-      } catch (err) {
-        /* swallow */
-      }
-    } else if (s.route) {
-      navigate(s.route);
-    }
-  };
+  // keep a ref to shortcuts so global key handler sees latest
+  const shortcutsRef = useRef<ShortcutBoxDef[]>(shortcuts);
+  useEffect(() => {
+    shortcutsRef.current = shortcuts;
+  }, [shortcuts]);
 
-  // keyboard handler attached to each item (Enter / Space)
+  const activate = useCallback(
+    (s: ShortcutBoxDef) => {
+      if (s.handler) {
+        try {
+          s.handler();
+        } catch (err) {
+          // swallow but you might want to log in real app
+        }
+      } else if (s.route) {
+        navigate(s.route);
+      }
+    },
+    [navigate]
+  );
+
   const onItemKeyDown = (e: React.KeyboardEvent, s: ShortcutBoxDef) => {
     if (isEditableTarget(e.target)) return;
     if (e.key === "Enter" || e.key === " ") {
@@ -130,12 +135,72 @@ export default function ShortcutBoxes({
     }
   };
 
-  const gridColsClass = `lg:grid-cols-${cols}`;
+  // --- responsive grid class generation (clamped to sensible range) ---
+  const lgCols = Math.min(Math.max(1, Math.floor(cols)), 6);
+  const mdCols = Math.min(Math.max(1, Math.floor(Math.max(2, lgCols - 1))), 6);
+  const xlCols = Math.min(lgCols + 1, 6);
+  const gridColsClass = `grid-cols-1 sm:grid-cols-2 md:grid-cols-${mdCols} lg:grid-cols-${lgCols} xl:grid-cols-${xlCols}`;
+
+  // --- global keyboard shortcuts support (parses combos like "Alt+P" or "Ctrl+Shift+S") ---
+  function parseCombo(combo?: string) {
+    if (!combo) return null;
+    const parts = combo.split("+").map((p) => p.trim().toLowerCase());
+    const key = parts.find(
+      (p) =>
+        !["alt", "ctrl", "control", "shift", "meta", "cmd", "command"].includes(
+          p
+        )
+    );
+    return {
+      ctrl: parts.includes("ctrl") || parts.includes("control"),
+      alt: parts.includes("alt"),
+      shift: parts.includes("shift"),
+      meta:
+        parts.includes("meta") ||
+        parts.includes("cmd") ||
+        parts.includes("command"),
+      key: key || null,
+    };
+  }
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // ignore when typing in inputs
+      if (isEditableTarget(e.target)) return;
+
+      for (const s of shortcutsRef.current) {
+        if (!s.combo) continue;
+        const parsed = parseCombo(s.combo);
+        if (!parsed || !parsed.key) continue;
+
+        // match modifier keys
+        if (parsed.ctrl !== !!e.ctrlKey) continue;
+        if (parsed.alt !== !!e.altKey) continue;
+        if (parsed.shift !== !!e.shiftKey) continue;
+        if (parsed.meta !== !!e.metaKey) continue;
+
+        // match main key (compare as lowercase single char or string)
+        const pressed = (e.key || "").toLowerCase();
+        if (pressed === parsed.key.toLowerCase()) {
+          e.preventDefault();
+          try {
+            activate(s);
+          } catch (err) {
+            // ignore
+          }
+          break; // only trigger the first matching shortcut
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [activate]);
 
   return (
     <div className="w-full">
       <div
-        className={`grid grid-cols-2 sm:grid-cols-3 ${gridColsClass} gap-4`}
+        className={`grid gap-4 ${gridColsClass}`}
         role="list"
         aria-label="Shortcut boxes"
       >
@@ -146,9 +211,9 @@ export default function ShortcutBoxes({
             tabIndex={0}
             onClick={() => activate(s)}
             onKeyDown={(e) => onItemKeyDown(e, s)}
-            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`relative group flex items-start gap-3 p-4 rounded-lg border transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300 cursor-pointer ${
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className={`relative group flex items-start gap-3 p-4 sm:p-4 md:p-5 rounded-lg border transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300 cursor-pointer min-h-[72px] ${
               s.accent ?? "bg-white"
             }`}
             aria-label={s.label}
@@ -156,7 +221,7 @@ export default function ShortcutBoxes({
             data-shortcut-first={idx === 0 ? true : undefined}
           >
             <div
-              className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl shrink-0"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center text-2xl shrink-0 bg-white/0"
               aria-hidden
             >
               {s.icon ?? <span className="text-2xl">📦</span>}
@@ -165,11 +230,11 @@ export default function ShortcutBoxes({
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <div className="truncate">
-                  <div className="text-sm font-semibold text-gray-800 truncate">
+                  <div className="text-sm md:text-base font-semibold text-gray-800 truncate">
                     {s.label}
                   </div>
                   {s.description && (
-                    <div className="text-xs text-gray-500 truncate">
+                    <div className="text-xs md:text-sm text-gray-500 truncate">
                       {s.description}
                     </div>
                   )}
@@ -184,12 +249,12 @@ export default function ShortcutBoxes({
                 )}
               </div>
 
-              <div className="text-xs text-gray-400 mt-2">
+              <div className="text-xs md:text-sm text-gray-400 mt-2">
                 Click or press Enter
               </div>
             </div>
 
-            <div className="absolute right-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-gray-400">
+            <div className="absolute right-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-gray-400 hidden sm:block">
               Open →
             </div>
           </motion.div>
