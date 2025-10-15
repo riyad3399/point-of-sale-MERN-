@@ -3,7 +3,8 @@ export interface Product {
   _id: string;
   productName: string;
   description: string;
-  productCode: number;
+  barcode: string;
+  barcodeType: string;
   category: string;
   brand: string;
   purchasePrice: number;
@@ -20,7 +21,7 @@ export interface Product {
   color?: string;
   createdAt: string;
   updatedAt: string;
-  photo?:string
+  photo?: string;
   fifoStock: {
     purchasePrice: number;
     remainingQuantity: number;

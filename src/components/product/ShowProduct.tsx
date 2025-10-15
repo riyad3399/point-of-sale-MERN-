@@ -13,11 +13,13 @@ import { Product } from "../../types";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import Barcode from "react-barcode";
 
 interface ShowProductProps {
   product: Product;
   setAllProduct: React.Dispatch<React.SetStateAction<Product[]>>;
 }
+
 
 const buttonVariants = {
   initial: { scale: 1 },
@@ -43,6 +45,8 @@ const ShowProduct: React.FC<ShowProductProps> = ({
   const handleViewProduct = (singleProduct: Product) => {
     navigate("/showProduct", { state: { singleProduct, loading } });
   };
+
+
 
   const handleSingleProduct = async (id: string) => {
     try {
@@ -113,7 +117,17 @@ const ShowProduct: React.FC<ShowProductProps> = ({
             />
           </div>
         </td>
-        <td className="px-4 py-3 border">{product.productCode}</td>
+        <td className="px-4 py-3 border text-center">
+          {product.barcode && (
+            <Barcode
+              value={String(product.barcode)}
+              height={30}
+              width={1.2}
+              displayValue={true}
+              fontSize={13}
+            />
+          )}
+        </td>
         <td className="px-4 py-3 border">
           {capitalizeFirstLetter(product.productName)}
           {(product.size || product.color) && (
@@ -181,17 +195,16 @@ const ShowProduct: React.FC<ShowProductProps> = ({
       </motion.tr>
 
       {/* Modal render outside of <tr> */}
-      
-        {open && (
-          <Modal
-            isOpen={open}
-            onClose={() => setOpen(false)}
-            title="Update Product"
-          >
-            <UpdateProduct product={product} setIsOpen={setOpen} />
-          </Modal>
-        )}
 
+      {open && (
+        <Modal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title="Update Product"
+        >
+          <UpdateProduct product={product} setIsOpen={setOpen} />
+        </Modal>
+      )}
     </>
   );
 };
