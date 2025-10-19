@@ -103,7 +103,7 @@ const ShowProduct: React.FC<ShowProductProps> = ({
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="hover:bg-gray-50 transition-colors"
+        className="hover:bg-gray-50 transition-colors "
       >
         <td className="px-4 py-3 border">
           <div className="w-12 h-12 rounded-md overflow-hidden">
@@ -194,7 +194,6 @@ const ShowProduct: React.FC<ShowProductProps> = ({
         </td>
       </motion.tr>
 
-      {/* Modal render outside of <tr> */}
 
       {open && (
         <Modal

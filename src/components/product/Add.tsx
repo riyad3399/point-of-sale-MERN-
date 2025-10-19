@@ -241,7 +241,7 @@ const onSubmit = async (data: any) => {
         <title>Add Product | POS System</title>
       </Helmet>
 
-      <motion.div variants={fieldVariants} initial="hidden" animate="visible">
+      <motion.div variants={fieldVariants} initial="hidden" animate="visible" className="p-6">
         <h2 className="text-2xl font-semibold text-gray-800 mb-3">
           {t("addProduct.formTitle")}
         </h2>
@@ -258,7 +258,7 @@ const onSubmit = async (data: any) => {
         animate="visible"
       >
         <motion.div
-          className="lg:col-span-4 col-span-1 bg-gradient-to-b from-white to-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-4"
+          className="lg:col-span-4 col-span-1 bg-gradient-to-b from-white to-gray-50 p-4 rounded-md border border-gray-100 shadow-sm flex flex-col gap-4"
           variants={fieldVariants}
         >
           <div className="w-full flex items-center justify-center">

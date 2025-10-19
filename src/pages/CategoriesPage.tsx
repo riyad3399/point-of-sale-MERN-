@@ -73,32 +73,47 @@ const CategoriesPage: React.FC = () => {
   ].filter(Boolean) as { key: "categories" | "add"; label: string }[];
 
   return (
-    <div className="w-full mx-auto bg-white rounded-2xl overflow-hidden">
+    <div className="w-full mx-auto bg-gray-50 rounded-sm overflow-hidden">
       <Helmet>
         <title>Categories | POS System</title>
       </Helmet>
 
       {availableTabs.length > 0 && (
-        <div className="flex justify-center border-b bg-gray-50">
-          {availableTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`w-1/2 py-4 font-semibold transition duration-300 ${
-                activeTab === tab.key
-                  ? "text-primary-600 border-b-2 border-primary-600 bg-white"
-                  : "text-gray-500 hover:text-primary-600"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div
+          role="tablist"
+          aria-label="Products tabs"
+          className="relative flex justify-start border-b border-gray-300 bg-gray-50"
+        >
+          {availableTabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={isActive}
+                title={tab.label}
+                onClick={() => {
+                  setActiveTab(tab.key);
+                  setCurrentPage(1);
+                }}
+                className={`relative px-5 py-2 text-sm font-medium transition-all duration-200
+          ${
+            isActive
+              ? "bg-white text-primary-700 -mb-[1px] border border-gray-300 border-b-white rounded-t-md shadow-sm"
+              : "text-gray-500 hover:text-primary-500"
+          }
+        `}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       )}
 
-      <div className="p-6 bg-white min-h-full">
+      <div className=" bg-gray-50 min-h-full ">
         {activeTab === "categories" ? (
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center p-6 border-r border-l">
             <div className="relative w-full max-w-md mb-4 ">
               <Search
                 className="absolute left-3 top-2.5 text-gray-400"
@@ -145,7 +160,7 @@ const CategoriesPage: React.FC = () => {
         ) : (
           ""
         )}
-        <AnimatePresence mode="wait">
+        <div>
           {activeTab === "categories" && canView && (
             <motion.div
               key="categories"
@@ -154,9 +169,11 @@ const CategoriesPage: React.FC = () => {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.3 }}
-              className="card md:overflow-hidden overflow-x-auto"
+              className=" md:overflow-hidden overflow-x-auto"
             >
-              {loading ? <Loading /> :
+              {loading ? (
+                <Loading />
+              ) : (
                 <table className="w-full border border-gray-300 text-left">
                   <thead className="bg-gray-100">
                     <tr>
@@ -176,7 +193,7 @@ const CategoriesPage: React.FC = () => {
                     </tr>
                   </thead>
 
-                  <tbody>
+                  <tbody >
                     {currentCategories.map((cat, idx) => (
                       <ShowCategories
                         key={cat._id ?? idx}
@@ -185,7 +202,8 @@ const CategoriesPage: React.FC = () => {
                       />
                     ))}
                   </tbody>
-                </table>}
+                </table>
+              )}
 
               {/* No data message */}
               {filteredCategories.length === 0 && (
@@ -225,7 +243,7 @@ const CategoriesPage: React.FC = () => {
               <AddCategory />
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );

@@ -66,7 +66,7 @@ const AddCategory: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className=" rounded-2xl p-6 md:w-[50%] mx-auto shadow-md"
+      className=" rounded-md p-6 m-6 md:w-[50%] mx-auto shadow-md"
     >
       <Helmet>
         <title>Add Category | POS System</title>

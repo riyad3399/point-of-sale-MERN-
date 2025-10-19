@@ -189,7 +189,7 @@ export default function PurchaseList() {
   if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen font-sans">
+    <div className="min-h-screen font-sans py-6">
       <Helmet>
         <title>Purchase List | POS System</title>
       </Helmet>

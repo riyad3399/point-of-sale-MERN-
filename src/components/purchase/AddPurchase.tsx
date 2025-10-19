@@ -171,12 +171,11 @@ export default function PurchaseFormPhotostyle() {
   };
 
   return (
-    <div className="max-w-full ">
+    <div className="max-w-full pt-6">
       <Helmet>
         <title>Add Purchase | POS System</title>
       </Helmet>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Top area: Supplier, Invoice, Dates, Payment Type, Details */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 px-6">
         <div className="grid grid-cols-12 gap-4 items-center mb-6">
           <div className="col-span-5">
             <label className="text-sm font-medium text-gray-700">
@@ -273,8 +272,8 @@ export default function PurchaseFormPhotostyle() {
         </div>
 
         {/* Items table */}
-        <div className="border rounded-lg overflow-hidden">
-          <div className="bg-white">
+        <div className=" overflow-hidden">
+          <div>
             <div className="grid grid-cols-12 gap-4 text-sm font-semibold text-gray-600 border-b px-4 py-3">
               <div className="col-span-2">
                 Item Information <span className="text-red-500">*</span>
@@ -527,7 +526,7 @@ export default function PurchaseFormPhotostyle() {
         </div>
 
         {/* Submit button */}
-        <div className="text-right">
+        <div className="text-right pb-2">
           <button
             type="submit"
             className="btn-primary  min-w-48"

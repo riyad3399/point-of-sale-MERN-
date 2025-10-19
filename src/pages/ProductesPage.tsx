@@ -122,35 +122,47 @@ const ProductesPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full mx-auto bg-white rounded-2xl overflow-hidden">
+    <div className="min-w-full bg-white rounded-sm overflow-hidden">
       <Helmet>
         <title>{t("product.productList") || "Products"} | POS System</title>
       </Helmet>
 
       {availableTabs.length > 0 && (
-        <div className="flex justify-center border-b bg-gray-50">
-          {availableTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => {
-                setActiveTab(tab.key);
-                setCurrentPage(1);
-              }}
-              className={`w-1/2 py-4 font-semibold transition duration-300 ${
-                activeTab === tab.key
-                  ? "text-primary-600 border-b-2 border-primary-600 bg-white"
-                  : "text-gray-500 hover:text-primary-600"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div
+          role="tablist"
+          aria-label="Products tabs"
+          className="relative flex justify-start border-b border-gray-300 bg-gray-50"
+        >
+          {availableTabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={isActive}
+                title={tab.label}
+                onClick={() => {
+                  setActiveTab(tab.key);
+                  setCurrentPage(1);
+                }}
+                className={`relative px-5 py-2 text-sm font-medium transition-all duration-200
+          ${
+            isActive
+              ? "bg-white text-gray-900 -mb-[1px] border border-gray-300 border-b-white rounded-t-md shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+          }
+        `}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       )}
 
-      <div className="p-6 bg-white min-h-full">
+      <div className=" bg-gray-50 min-h-full ">
         {activeTab === "productes" && (
-          <div className="flex justify-between mb-8">
+          <div className="flex justify-between p-6 border-r border-l">
             <div className="relative w-full max-w-md">
               <Search
                 className="absolute left-3 top-2.5 text-gray-400"
@@ -165,7 +177,7 @@ const ProductesPage: React.FC = () => {
                 placeholder={
                   t("product.searchPlaceholder") || "Search products"
                 }
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg input bg-white"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md input bg-white"
               />
             </div>
 
@@ -179,7 +191,7 @@ const ProductesPage: React.FC = () => {
                   setCategoryFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="px-3 py-2 border border-gray-300 rounded-lg input bg-white"
+                className="px-3 py-2 border border-gray-300 rounded-md input bg-white"
               >
                 <option value="all">{t("product.all") || "All"}</option>
                 {categories.map((cat) => (
@@ -191,7 +203,7 @@ const ProductesPage: React.FC = () => {
             </div>
           </div>
         )}
-        <AnimatePresence mode="wait">
+        <div>
           {activeTab === "productes" && canView && (
             <motion.div
               key="productes"
@@ -200,7 +212,7 @@ const ProductesPage: React.FC = () => {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.3 }}
-              className="card md:overflow-hidden overflow-x-auto"
+              className=" md:overflow-hidden overflow-x-auto"
             >
               {loading ? (
                 <Loading />
@@ -208,22 +220,22 @@ const ProductesPage: React.FC = () => {
                 <table className="w-full border border-gray-300 text-left">
                   <thead className="bg-gray-100 ">
                     <tr>
-                      <th className="p-2 border font-semibold">
+                      <th className="p-2 border font-light">
                         {t("product.photo") || "Photo"}
                       </th>
-                      <th className="p-2 border font-semibold">
+                      <th className="p-2 border font-light">
                         {t("product.productId") || "Product ID"}
                       </th>
-                      <th className="p-2 border font-semibold">
+                      <th className="p-2 border font-light">
                         {t("product.productName") || "Name"}
                       </th>
-                      <th className="p-2 border font-semibold">
+                      <th className="p-2 border font-light">
                         {t("product.category") || "Category"}
                       </th>
-                      <th className="p-2 border font-semibold">
+                      <th className="p-2 border font-light">
                         {t("product.quantity") || "Quantity"}
                       </th>
-                      <th className="p-2 border font-semibold text-center">
+                      <th className="p-2 border font-light text-center">
                         {t("product.actions") || "Actions"}
                       </th>
                     </tr>
@@ -280,7 +292,7 @@ const ProductesPage: React.FC = () => {
               <Index />
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );
