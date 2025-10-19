@@ -15,6 +15,8 @@ import { addToCart } from "../utils/cartUtils";
 import { handleGetProduct } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import Loading from "../components/Loading";
+import { Howl } from "howler";
+
 
 export default function WholeSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -37,7 +39,6 @@ export default function WholeSalePage() {
   const location = useLocation();
   const editQuotation = location.state;
   const BASE_URL = import.meta.env.VITE_BASE_URI;
-
 
   useEffect(() => {
     if (editQuotation) {
@@ -77,12 +78,17 @@ export default function WholeSalePage() {
   };
 
   const handleAddToCart = (id: string) => {
+    const sound = new Howl({ src: ["/add-product.mp3"], preload: true });
+    sound.play();
     addToCart(id, getProductById, setCart, cart);
   };
 
   const updateQuantity = (id: string, delta: number) => {
     const product = getProductById(id);
     if (!product) return;
+
+    const sound = new Howl({ src: ["/add-product.mp3"], preload: true });
+    sound.play();
 
     setCart(
       (prev) =>

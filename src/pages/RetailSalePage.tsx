@@ -16,6 +16,7 @@ import { handleGetProduct } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import ProductSearch from "../components/product/ProductSearch";
 import Loading from "../components/Loading";
+import { Howl } from "howler";
 
 export default function RetailSalePage() {
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
@@ -34,15 +35,11 @@ export default function RetailSalePage() {
     [productId: string]: string;
   }>({});
 
-
-  const { token  } = useAuth();
+  const { token } = useAuth();
 
   const location = useLocation();
   const editQuotation = location.state;
   const BASE_URL = import.meta.env.VITE_BASE_URI;
-
-
-
 
   useEffect(() => {
     if (editQuotation) {
@@ -82,6 +79,8 @@ export default function RetailSalePage() {
   };
 
   const handleAddToCart = (id: string) => {
+   const sound = new Howl({ src: ["/add-product.mp3"], preload: true });
+   sound.play();
     addToCart(id, getProductById, setCart, cart);
   };
 
@@ -89,6 +88,8 @@ export default function RetailSalePage() {
     const product = getProductById(id);
     if (!product) return;
 
+  const sound = new Howl({ src: ["/add-product.mp3"], preload: true });
+  sound.play();
     setCart(
       (prev) =>
         prev
@@ -137,20 +138,19 @@ export default function RetailSalePage() {
 
   const categories = ["All", ...new Set(allProduct.map((p) => p.category))];
 
-const filteredProducts = allProduct.filter((product) => {
-  // category match (case-insensitive)
-  const matchesCategory =
-    selectedCategory === "All" ||
-    product.category?.toLowerCase() === selectedCategory.toLowerCase();
+  const filteredProducts = allProduct.filter((product) => {
+    // category match (case-insensitive)
+    const matchesCategory =
+      selectedCategory === "All" ||
+      product.category?.toLowerCase() === selectedCategory.toLowerCase();
 
-  // search match (null/empty safe)
-  const matchesSearch = product.productName
-    ?.toLowerCase()
-    .includes(search.toLowerCase());
+    // search match (null/empty safe)
+    const matchesSearch = product.productName
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
 
-  return matchesCategory && matchesSearch;
-});
-
+    return matchesCategory && matchesSearch;
+  });
 
   const handleReturnSale = (
     product: Product,
@@ -320,14 +320,12 @@ const filteredProducts = allProduct.filter((product) => {
                   </motion.div>
                 ) : (
                   filteredProducts.map((product) => {
-                    // FIFO stock থেকে মোট পরিমাণ স্টক বের করো
                     const totalQuantity =
                       product.fifoStock?.reduce(
                         (sum, stock) => sum + (stock.remainingQuantity || 0),
                         0
                       ) || 0;
 
-                    // FIFO অনুযায়ী প্রোডাক্টের বর্তমান বিক্রয় মূল্য
                     const currentRetailPrice =
                       product.fifoStock?.[0]?.retailPrice ??
                       product.retailPrice;
@@ -343,7 +341,6 @@ const filteredProducts = allProduct.filter((product) => {
                           totalQuantity > 0 && handleAddToCart(product._id)
                         }
                       >
-                        {/* ✅ Stock Image and Stock Out Badge */}
                         <div className="relative overflow-hidden inline-block w-full h-28">
                           <img
                             src={
@@ -362,7 +359,6 @@ const filteredProducts = allProduct.filter((product) => {
                           )}
                         </div>
 
-                        {/* ✅ Product Info */}
                         <div className="p-2 space-y-1">
                           <h2 className="font-semibold text-sm text-gray-800">
                             {product.productName}
