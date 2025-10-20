@@ -101,44 +101,54 @@ export default function CustomerTabs() {
   }
 
   return (
-    <div className="w-full mx-auto bg-white rounded-2xl overflow-hidden">
+    <div className="w-full mx-auto bg-gray-50 rounded-sm overflow-hidden">
       <Helmet>
         <title>Show Customers | POS System</title>
       </Helmet>
       {availableTabs.length > 0 && (
-        <div className="flex justify-center border-b bg-gray-50">
-          {availableTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`w-1/2 py-4 font-semibold transition duration-300 ${
-                activeTab === tab.key
-                  ? "text-primary-600 border-b-2 border-primary-600 bg-white"
-                  : "text-gray-500 hover:text-primary-600"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div
+          role="tablist"
+          aria-label="Products tabs"
+          className="relative flex justify-start border-b border-gray-300 bg-gray-50"
+        >
+          {availableTabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={isActive}
+                title={tab.label}
+                onClick={() => {
+                  setActiveTab(tab.key);
+                  setCurrentPage(1);
+                }}
+                className={`relative px-5 py-2 text-sm font-medium transition-all duration-200
+          ${
+            isActive
+              ? "bg-white text-primary-700 -mb-[1px] border border-gray-300 border-b-white rounded-t-md shadow-sm"
+              : "text-gray-500 hover:text-primary-500"
+          }
+        `}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       )}
 
       {/* Animated Tab Content */}
-      <div className="p-6 bg-white min-h-[300px]">
-        <AnimatePresence mode="wait">
+      <div className="bg-gray-50 min-h-full ">
+        <div>
           {activeTab === "list" && canView && (
-            <motion.div
+            <div
               key="list"
-              variants={tabVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-              className="card md:overflow-hidden overflow-x-auto"
+              className="border-l border-r"
             >
-              <div className="relative w-full max-w-md mb-6 mt-2 ml-2">
+              <div className=" relative w-full max-w-md p-6 ">
                 <Search
-                  className="absolute left-3 top-2.5 text-gray-400"
+                  className="absolute left-8 top-9 text-gray-400"
                   size={18}
                 />
                 <input
@@ -191,7 +201,7 @@ export default function CustomerTabs() {
                   />
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
 
           {activeTab === "add" && canAdd && (
@@ -201,11 +211,12 @@ export default function CustomerTabs() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.4 }}
+              className="p-6 border-b border-l border-r"
             >
               <AddCustomer />
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );

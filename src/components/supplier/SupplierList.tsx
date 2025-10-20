@@ -19,7 +19,6 @@ import { fetchSupplierDetails } from "../../utils/api";
 import ViewSupplierDetailsModal from "./ViewSupplierDetailsModal";
 import { Supplier } from "../../types";
 import { useTranslation } from "react-i18next";
-import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
 
 const SupplierList = () => {
@@ -62,22 +61,19 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
     fetchSuppliers();
   }, [token]);
 
-  // Memoize filtered and sorted suppliers
   const filteredAndSortedSuppliers = useMemo(() => {
     let currentSuppliers = suppliers;
 
-    // Apply Search Filter
     if (searchTerm) {
       currentSuppliers = currentSuppliers.filter(
         (supplier) =>
           supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           supplier.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           supplier.phone?.includes(searchTerm) ||
-          supplier.address?.toLowerCase().includes(searchTerm.toLowerCase()) // Also include address in search
+          supplier.address?.toLowerCase().includes(searchTerm.toLowerCase()) 
       );
     }
 
-    // Apply Contact Info Filters
     if (filterByEmail) {
       currentSuppliers = currentSuppliers.filter((supplier) => supplier.email);
     }
@@ -90,14 +86,13 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
       );
     }
 
-    // Apply Sorting
     currentSuppliers.sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "date")
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-      return 0; // Default or fallback
+      return 0; 
     });
 
     return currentSuppliers;
@@ -110,7 +105,6 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
     sortBy,
   ]);
 
-  // Calculate Stats based on ALL suppliers (not filtered)
   const stats = useMemo(() => {
     const withEmail = suppliers.filter((s) => s.email).length;
     const withPhone = suppliers.filter((s) => s.phone).length;
@@ -125,7 +119,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
     setFilterByPhone(false);
     setFilterByAddress(false);
     setSortBy("name");
-    setShowFilters(false); // Optionally if you want the panel to close on clear
+    setShowFilters(false); 
   };
 
   // view details
@@ -137,26 +131,21 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
     }
   };
 
-  // --- Loading State ---
   if (loading) {
     return <Loading />;
   }
 
   return (
     <div className="min-h-screen " >
-      <div className="max-w-7xl mx-auto">
-        {/* Header Title */}
-        <h2 className="text-3xl font-bold text-gray-800  mb-6 text-center md:text-left flex items-center gap-2">
-          <Truck className="text-primary-500 h-8 w-8" />{" "}
-          {t("supplier.supplierDirectory")}
-        </h2>
+      <div className="max-w-full">
+        
 
         {/* Stats Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4 "
         >
           <motion.div
             variants={cardVariants}

@@ -23,36 +23,43 @@ export default function SupplierPage() {
   ].filter(Boolean) as { key: "form" | "list"; label: string }[];
 
   return (
-    <div className="p-4 max-w-7xl mx-auto bg-gray-50">
+    <div className="min-w-full bg-gray-50">
       {/* Conditional Smart Tab Header */}
       {availableTabs.length > 0 && (
-        <div className="relative flex border-b border-gray-300 mb-6">
-          {availableTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`relative w-full px-4 py-3 text-center font-medium transition-colors duration-300 ${
-                activeTab === tab.key
-                  ? "text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {tab.label}
-              {activeTab === tab.key && (
-                <motion.div
-                  layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-500 rounded-full"
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </button>
-          ))}
+        <div
+          role="tablist"
+          aria-label="Products tabs"
+          className="relative flex justify-start border-b border-gray-300 bg-gray-50"
+        >
+          {availableTabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={isActive}
+                title={tab.label}
+                onClick={() => {
+                  setActiveTab(tab.key);
+                }}
+                className={`relative px-5 py-2 text-sm font-medium transition-all duration-200
+          ${
+            isActive
+              ? "bg-white text-primary-700 -mb-[1px] border border-gray-300 border-b-white rounded-t-md shadow-sm"
+              : "text-gray-500 hover:text-primary-500"
+          }
+        `}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       )}
 
       {/* Tab Content */}
-      <div className="bg-white p-4 rounded-xl shadow-md min-h-[300px]">
-        <AnimatePresence mode="wait">
+      <div className="bg-gray-50 border-l border-r border-b min-h-[300px]">
+        <div className="">
           {activeTab === "form" && canAdd && (
             <motion.div
               key="form"
@@ -78,7 +85,7 @@ export default function SupplierPage() {
               <SupplierList />
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import AddCategory from "../components/category/AddCategory";
 import ShowCategories from "../components/category/ShowCategories";
-import { Box, Divide, Search } from "lucide-react";
+import { Box, Search } from "lucide-react";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
 import { useTranslation } from "react-i18next";

@@ -64,7 +64,7 @@ export default function WholeSalePage() {
 
   const deleteSelectedItems = () => {
     setCart((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
-    setSelectedItems([]); // clear selection
+    setSelectedItems([]); 
   };
 
   const toggleSelectItem = (id: string) => {

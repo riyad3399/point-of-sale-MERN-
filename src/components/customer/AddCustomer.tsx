@@ -66,7 +66,7 @@ export default function AddCustomer() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.4 }}
-      className="space-y-6 shadow-md p-6 rounded-2xl  max-w-2xl mx-auto"
+      className="space-y-6 shadow-md p-6 rounded-md w-fit mx-auto bg-white"
     >
       <Helmet>
         <title>Add Customer | POS System</title>
