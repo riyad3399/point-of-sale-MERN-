@@ -2,11 +2,11 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Loader } from "lucide-react";
-import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import Loading from "../Loading";
 
 interface Customer {
   customerName: string;
@@ -59,6 +59,10 @@ export default function AddCustomer() {
   };
 
   const { t } = useTranslation();
+
+  if (loading) {
+    return <Loading/>
+  }
 
   return (
     <motion.form

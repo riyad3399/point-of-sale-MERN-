@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import SupplierAddForm from "../components/supplier/SupplierAddForm";
 import SupplierList from "../components/supplier/SupplierList";
 import { useTranslation } from "react-i18next";
@@ -24,7 +24,6 @@ export default function SupplierPage() {
 
   return (
     <div className="min-w-full bg-gray-50">
-      {/* Conditional Smart Tab Header */}
       {availableTabs.length > 0 && (
         <div
           role="tablist"
@@ -56,8 +55,8 @@ export default function SupplierPage() {
           })}
         </div>
       )}
+      
 
-      {/* Tab Content */}
       <div className="bg-gray-50 border-l border-r border-b min-h-[300px]">
         <div className="">
           {activeTab === "form" && canAdd && (

@@ -9,6 +9,7 @@ import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { usePermission } from "../../hooks/usePermission";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import Loading from "../Loading";
 
 interface Customer {
   _id: string;
@@ -29,7 +30,11 @@ const buttonVariants = {
   tap: { scale: 0.9 },
 };
 
-export default function ShowCustomerList({ customer, setCustomers }: Props) {
+export default function ShowCustomerList({
+  customer,
+  setCustomers,
+
+}: Props) {
   const [editing, setEditing] = useState(false);
   const { hasPermission } = usePermission();
   const { token } = useAuth();
@@ -47,6 +52,7 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
     });
 
     if (result.isConfirmed) {
+      setLoading(true);
       try {
         await axios.delete(`${BASE_URL}/customer/${id}`, {
           headers: {
@@ -59,9 +65,13 @@ export default function ShowCustomerList({ customer, setCustomers }: Props) {
         toast.success("Customer deleted successfully");
       } catch (err) {
         toast.error("Failed to delete the Customer. Please try again.");
+      } finally {
+        setLoading(false);
       }
     }
   };
+
+
 
   return (
     <motion.tr

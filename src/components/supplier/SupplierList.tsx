@@ -36,10 +36,10 @@ const SupplierList = () => {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
-const BASE_URL = import.meta.env.VITE_BASE_URI;
+  const BASE_URL = import.meta.env.VITE_BASE_URI;
 
   const { t } = useTranslation();
-  const {token} = useAuth()
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -59,7 +59,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
       }
     };
     fetchSuppliers();
-  }, [token]);
+  }, [token, BASE_URL]);
 
   const filteredAndSortedSuppliers = useMemo(() => {
     let currentSuppliers = suppliers;
@@ -70,7 +70,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
           supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           supplier.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           supplier.phone?.includes(searchTerm) ||
-          supplier.address?.toLowerCase().includes(searchTerm.toLowerCase()) 
+          supplier.address?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -92,7 +92,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-      return 0; 
+      return 0;
     });
 
     return currentSuppliers;
@@ -119,10 +119,9 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
     setFilterByPhone(false);
     setFilterByAddress(false);
     setSortBy("name");
-    setShowFilters(false); 
+    setShowFilters(false);
   };
 
-  // view details
   const handleViewDetails = async (id: string) => {
     const data = await fetchSupplierDetails(id);
     if (data) {
@@ -136,11 +135,8 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
   }
 
   return (
-    <div className="min-h-screen " >
+    <div className="min-h-screen ">
       <div className="max-w-full">
-        
-
-        {/* Stats Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -156,9 +152,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
                 <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.totalSuppliers")}
                 </p>
-                <p className="text-2xl font-bold  ">
-                  {stats.total}
-                </p>
+                <p className="text-2xl font-bold  ">{stats.total}</p>
               </div>
               <div className="w-10 h-10 bg-primary-100  rounded-xl flex items-center justify-center">
                 <Users className="w-5 h-5 text-primary-600 " />
@@ -175,9 +169,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
                 <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.withEmail")}
                 </p>
-                <p className="text-2xl font-bold  ">
-                  {stats.withEmail}
-                </p>
+                <p className="text-2xl font-bold  ">{stats.withEmail}</p>
               </div>
               <div className="w-10 h-10 bg-green-100  rounded-xl flex items-center justify-center">
                 <Mail className="w-5 h-5 text-green-600 " />
@@ -194,9 +186,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
                 <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.withPhone")}
                 </p>
-                <p className="text-2xl font-bold  ">
-                  {stats.withPhone}
-                </p>
+                <p className="text-2xl font-bold  ">{stats.withPhone}</p>
               </div>
               <div className="w-10 h-10 bg-purple-100  rounded-xl flex items-center justify-center">
                 <Phone className="w-5 h-5 text-purple-600 " />
@@ -213,9 +203,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
                 <p className="text-sm text-gray-600  mb-1">
                   {t("supplier.withAddress")}
                 </p>
-                <p className="text-2xl font-bold  ">
-                  {stats.withAddress}
-                </p>
+                <p className="text-2xl font-bold  ">{stats.withAddress}</p>
               </div>
               <div className="w-10 h-10 bg-orange-100  rounded-xl flex items-center justify-center">
                 <MapPin className="w-5 h-5 text-orange-600 " />
@@ -365,9 +353,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URI;
             className="bg-white  rounded-2xl p-12 text-center shadow-sm border border-gray-100 "
           >
             <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold   mb-2">
-              No suppliers found
-            </h3>
+            <h3 className="text-xl font-semibold   mb-2">No suppliers found</h3>
             <p className="text-gray-600 ">
               {searchTerm || filterByEmail || filterByPhone || filterByAddress
                 ? "Try adjusting your search or filter criteria"
@@ -520,7 +506,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05 }, 
+    transition: { staggerChildren: 0.05 },
   },
 };
 
@@ -532,8 +518,8 @@ const cardVariants = {
     transition: { duration: 0.4, ease: "easeOut" },
   },
   hover: {
-    y: -5, 
-    boxShadow: "0 8px 15px rgba(0,0,0,0.08)", 
+    y: -5,
+    boxShadow: "0 8px 15px rgba(0,0,0,0.08)",
     transition: { duration: 0.2 },
   },
 };

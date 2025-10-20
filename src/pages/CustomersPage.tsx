@@ -96,10 +96,6 @@ export default function CustomerTabs() {
     canAdd && { key: "add", label: t("customers.addCustomer") },
   ].filter(Boolean) as { key: "list" | "add"; label: string }[];
 
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <div className="w-full mx-auto bg-gray-50 rounded-sm overflow-hidden">
       <Helmet>
@@ -138,14 +134,12 @@ export default function CustomerTabs() {
         </div>
       )}
 
-      {/* Animated Tab Content */}
+      {loading && <Loading />}
+
       <div className="bg-gray-50 min-h-full ">
         <div>
           {activeTab === "list" && canView && (
-            <div
-              key="list"
-              className="border-l border-r"
-            >
+            <div key="list" className="border-l border-r">
               <div className=" relative w-full max-w-md p-6 ">
                 <Search
                   className="absolute left-8 top-9 text-gray-400"
